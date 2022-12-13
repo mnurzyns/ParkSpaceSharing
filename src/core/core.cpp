@@ -1,7 +1,6 @@
 #pragma once
 #include "core.hpp"
 
-ParkingSpace::ParkingSpace()
-{
-
-}
+ParkingSpace::ParkingSpace(int id) : 
+    id_(id)
+{}
