@@ -1,8 +1,8 @@
 class ParkingSpace{
 public:
-    ParkingSpace(){}
+    ParkingSpace(int id): id(id) {}
 
 private:
-
+    const unsigned int id;
 
 };
