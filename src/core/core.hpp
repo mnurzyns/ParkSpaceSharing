@@ -2,7 +2,20 @@
 using namespace std;
 
 class ParkingSpace{
+public:
+    ParkingSpace(int id);
 
+private:
+    const unsigned int id_;
+};
+
+class Offer{
+public:
+    Offer(int id);
+
+private:
+    const unsigned int id_;
+    
 };
 
 class User{
@@ -13,3 +26,4 @@ private:
     const unsigned int id_;
     string password_;
 };
+
