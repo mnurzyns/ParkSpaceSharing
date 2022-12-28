@@ -1,13 +1,18 @@
 #pragma once
 
 #include <filesystem>
-#include <functional>
-#include <string_view>
 
 #include <sqlite3.h>
 
 namespace db
 {
+
+/**
+ * @brief Callback for sqlite3 queries
+ *
+ * @returns 0 on success, non-zero stops the execution of any subsequent SQL statements.
+ */
+using query_cb = int(*)(void* user_data, int col_count, char** col_text, char** col_names);
 
 /**
  * @brief Context for database operations.
@@ -23,7 +28,7 @@ public:
      * @brief Opens the database and initializes the handle.
      * The database is opened with write permissions.
      *
-     * @throws std::runtime_error when the database could not be opened and prints the error to <tt>stderr</tt>.
+     * @throws db::database_open_error when the database could not be opened and prints the error to <tt>stderr</tt>.
      * @param path Valid path to the sqlite3 database.
      */
     [[nodiscard]]
@@ -33,25 +38,27 @@ public:
     ~context();
 
     context(context const&) = delete;
-    context(context&&) = default;
+
+    [[nodiscard]]
+    context(context&&) noexcept;
 
     context&
     operator=(context const&) = delete;
 
     [[nodiscard]]
     context&
-    operator=(context&&) = default;
+    operator=(context&&) noexcept;
 
     /**
      * @brief Executes a raw query.
      *
      * @attention Failed query is considered a bug and should not happen.
-     * @throws std::runtime_error when query fails and prints the error to <tt>stderr</tt>.
+     * @throws db::database_query_error when query fails and prints the error to <tt>stderr</tt>.
      */
     void
     raw_query(
         char const* query,
-        int(*callback)(void*,int,char**,char**),
+        query_cb callback,
         void* user_data = nullptr
     );
 

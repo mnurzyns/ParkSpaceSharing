@@ -5,6 +5,8 @@ target_sources(
     src/context.cc
 )
 
+# DATABASE_DIR points to the directory
+# with databases needed for unit tests
 target_compile_definitions(
     DatabaseTest PRIVATE
     DATABASE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/databases"

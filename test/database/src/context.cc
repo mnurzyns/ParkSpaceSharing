@@ -2,13 +2,16 @@
 
 #include <cstring>
 
-#include <database/context.hh>
+#include "database/context.hh"
 
 namespace
 {
 
 TEST(Database, Context)
 {
+    // DATABASE_DIR is defined in CMakeLists.txt
+    // and points to the directory with databases
+    // needed for unit tests
     db::context ctx{DATABASE_DIR "/context.sqlite"};
 
     ctx.raw_query(
