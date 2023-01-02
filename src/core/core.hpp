@@ -1,15 +1,12 @@
 #include <string>
 #include <vector>
-using namespace std;
 
 
-std::vector<ParkingSpace> ParkingSpaces;
-std::vector<Offer> Offers;
-std::vector<User> Users;
-
-
-/* TAKES ALL DATA FROM DATABASE */
-void getAllData();
+/* USER INTERACTION */
+void MakeOffer()   {}
+void RemoveOffer() {}
+void RentOffer()   {}
+void BuyOffer()    {}
 
 
 class ParkingSpace{
@@ -22,30 +19,24 @@ private:
 
 class Offer{
 public:
-    Offer(int id,int ID_of_Offered_Parking_Space);
+    Offer(int id,int id_parking_space);
 
 protected:
     const unsigned int id_;
-    const unsigned int ID_of_Offered_Parking_Space_;
+    const unsigned int parking_space_id;
 
 };
 
 class User{
 public:
-    User(int id, string password);
-
-    /* USER INTERACTION */
-    void MakeOffer()   {};
-    void RemoveOffer() {};
-    void RentOffer()   {};
-    void BuyOffer()    {};
+    User(int id, std::string password);
 
 private:
     const unsigned int id_;
-    string password_;
+    std::string password_;
 
-    std::vector<const unsigned int> ID_of_Owned_Parking_Spaces;
-    std::vector<const unsigned int> ID_of_Posted_Offers;
+    std::vector<const unsigned int> id_owned_parking_spaces;
+    std::vector<const unsigned int> id_posted_offers;
 
 };
 
