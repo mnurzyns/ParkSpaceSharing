@@ -6,6 +6,7 @@ set_property(GLOBAL PROPERTY ALL_TESTS_LIST)
 get_property(ALL_TESTS_LIST GLOBAL PROPERTY ALL_TESTS_LIST)
 
 add_subdirectory(example)
+add_subdirectory(Proxy)
 
 add_custom_target(all_tests
     DEPENDS
