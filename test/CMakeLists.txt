@@ -9,6 +9,7 @@ get_property(ALL_TESTS_LIST GLOBAL PROPERTY ALL_TESTS_LIST)
 add_subdirectory(core)
 add_subdirectory(example)
 add_subdirectory(database)
+add_subdirectory(Proxy)
 
 add_custom_target(all_tests
     DEPENDS
