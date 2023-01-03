@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 set(PROJECT_SOURCES
         main.cpp
         gui/resources/qml.qrc
+        Proxy
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${PROJECT_SOURCES})
