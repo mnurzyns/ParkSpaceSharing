@@ -13,6 +13,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(example)
+add_subdirectory(database)
 
 add_custom_target(${CMAKE_PROJECT_NAME}-run
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}
