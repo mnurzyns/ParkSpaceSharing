@@ -6,6 +6,7 @@ TEST(AddUser,Adduser)
 {
     User usr1{
             1232354,
+            "Ala",
             "AlaHasAcat123"
     };
 }
