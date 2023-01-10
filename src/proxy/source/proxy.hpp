@@ -1,12 +1,13 @@
 #include <string>
 
-namespace example {
+namespace poxy
+{  
 
-class proxy {
-public:
-    const std::string& getName() const;
-private:
-    const std::string _name {"Proxy"};
+class Proxy {
+    public:
+        const std::string& getName() const;
+    private:
+        const std::string _name {"Proxy"};
 };
 
-}
+} // namespace poxy

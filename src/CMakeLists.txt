@@ -12,7 +12,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     ${QtLib}
 )
 
+add_subdirectory(proxy/source)
 add_subdirectory(example)
+
 
 add_custom_target(${CMAKE_PROJECT_NAME}-run
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}

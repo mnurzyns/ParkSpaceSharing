@@ -1,8 +1,10 @@
 #include "proxy.hpp"
 
-namespace proxy {
+namespace poxy
+{  
 
-const std::string& proxy::getName() const {
+const std::string& Proxy::getName() const {
     return _name;
 }
-}
+
+} // namespace poxy
