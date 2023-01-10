@@ -14,6 +14,12 @@ Project created by trainees of Bakcyl Programowania in 2022/2023.
                       qml-module-qtquick-controls
 ```
 
+# Install Sqlite3
+```console
+[sudo] apt install -y sqlite3 \
+                      libsqlite3-dev 
+```
+
 # Run cmake
 ```console
 cmake -Bbuild -H.
