@@ -1,10 +1,12 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
 
 /* USER INTERACTION */
-static void RemoveOffer() {}
-static void RentOffer()   {}
+void RemoveOffer();
+void RentOffer();
 
 
 class ParkingSpace{
