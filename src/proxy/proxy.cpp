@@ -2,7 +2,7 @@
 
 namespace proxy {
 
-const int testfunction(int x){
+int Proxy::testfunction(int x){
     return x;
 }
 
