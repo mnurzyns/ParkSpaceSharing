@@ -1,8 +1,13 @@
 #pragma once
 
+#include <bits/utility.h>
+#include <cstring>
 #include <filesystem>
 
 #include <sqlite3.h>
+#include <utility>
+
+#include "database/descriptor.hh"
 
 namespace db
 {
@@ -61,6 +66,48 @@ public:
         query_cb callback,
         void* user_data = nullptr
     );
+
+    template<class T>
+    T
+    select_one()
+    {
+        auto desc = db::descriptor<T>::get();
+
+        std::string query{"SELECT * FROM "};
+        query += desc.second;
+        query += ";";
+
+        T ret{};
+
+//int(*)(void* user_data, int col_count, char** col_text, char** col_names);
+        auto res = ::sqlite3_exec(handle_, query.c_str(),
+            [](
+                void* user_data,
+                int col_count,
+                char** col_text,
+                char** col_names
+            ) -> int{
+                auto desc = db::descriptor<T>::get();
+                [&]<class... Args>(std::tuple<Args...> tup) {
+                    [&]<std::size_t... Index>(std::integer_sequence<std::size_t, Index...>) {
+                        (..., [&](auto pair){
+                         for(int name_i = 0; name_i < col_count; ++name_i) {
+                            if(std::strcmp(col_names[name_i], pair.second) == 0) {
+                                if constexpr(std::is_same_v<std::string, std::decay_t<decltype((*static_cast<T*>(user_data)).*pair.first)>>) {
+                                    (*static_cast<T*>(user_data)).*pair.first = col_text[name_i];
+                                } else {
+                                    (*static_cast<T*>(user_data)).*pair.first = std::atoi(col_text[name_i]);
+                                }
+                            }
+                         }
+                         }(std::get<Index>(tup)));
+                    }(std::make_integer_sequence<std::size_t, sizeof...(Args)>());
+                }(desc.first);
+                return 0;
+        }, static_cast<void*>(&ret), nullptr);
+
+        return ret;
+    };
 
 private:
     ::sqlite3* handle_;

@@ -15,6 +15,7 @@ target_compile_definitions(
 target_link_libraries(
     DatabaseTest PRIVATE
     database
+    CoreLib
     GTest::GTest
     GTest::Main
     gmock

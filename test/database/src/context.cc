@@ -3,6 +3,8 @@
 #include <cstring>
 
 #include "database/context.hh"
+#include "core.hpp"
+#include "database.hh"
 
 namespace
 {
@@ -29,6 +31,17 @@ TEST(Database, Context)
             return 0;
         }
     );
+}
+
+TEST(Database, Select)
+{
+    db::context ctx{"db.sqlite3"};
+
+    auto user = ctx.select_one<User>();
+
+    std::cout << user.id << '\n';
+    std::cout << user.password << '\n';
+    std::cout << user.username << '\n';
 }
 
 }  // namespace
