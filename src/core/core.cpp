@@ -12,11 +12,11 @@ Offer::Offer(int id,int id_parking_space, std::string description):
     description_(description)
 {}
 
-User::User(int id, std::string username, std::string password):
-    id_(id),
-    username_(username),
-    password_(password)
-{}
+//User::User(int id, std::string username, std::string password):
+//    id_(id),
+//    username_(username),
+//    password_(password)
+//{}
 
 void RemoveOffer() {}
 void RentOffer()   {}

@@ -31,14 +31,10 @@ protected:
 
 };
 
-class User{
-public:
-    User(int id, std::string username, std::string password);
-
-private:
-    const unsigned int id_;
-    std::string username_;
-    std::string password_;
-
+struct User
+{
+    unsigned id;
+    std::string username;
+    std::string password;
 };
 
