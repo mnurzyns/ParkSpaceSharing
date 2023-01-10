@@ -2,9 +2,9 @@
 
 namespace proxy {
 
-class proxy {
+class Proxy {
 public:
-    const int testfunction(int x);
+    int testfunction(int x);
 };
 
 }
