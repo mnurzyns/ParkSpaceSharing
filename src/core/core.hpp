@@ -3,8 +3,8 @@
 
 
 /* USER INTERACTION */
-void RemoveOffer() {}
-void RentOffer()   {}
+static void RemoveOffer() {}
+static void RentOffer()   {}
 
 
 class ParkingSpace{
