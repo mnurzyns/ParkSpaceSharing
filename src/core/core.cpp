@@ -1,7 +1,7 @@
 #include "core.hpp"
 
 ParkingSpace::ParkingSpace(int id, int owner_id, std::string location):
-    id_(id),   
+    id_(id),
     owner_id_(owner_id),
     location_(location)
 {}
@@ -17,3 +17,6 @@ User::User(int id, std::string username, std::string password):
     username_(username),
     password_(password)
 {}
+
+void RemoveOffer() {}
+void RentOffer()   {}

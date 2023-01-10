@@ -12,3 +12,5 @@ target_link_libraries(
     database PRIVATE
     SQLite::SQLite3
 )
+
+add_subdirectory(config)
