@@ -37,6 +37,7 @@ find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 find_package(Threads REQUIRED)
 find_package(SQLite3 REQUIRED)
+find_package(nlohmann_json 3.11.0 REQUIRED)
 
 set(INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 set(TEST_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/test)

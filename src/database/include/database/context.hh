@@ -1,8 +1,12 @@
 #pragma once
 
+#include "database/statement.hh"
+
 #include <filesystem>
 
 #include <sqlite3.h>
+
+#include <nlohmann/json.hpp>
 
 namespace db
 {
@@ -33,7 +37,7 @@ public:
      */
     [[nodiscard]]
     explicit
-    context(std::filesystem::path const& path);
+    context(std::filesystem::path const& path, int flags = DEFAULT_OPEN_FLAGS);
 
     ~context();
 
@@ -50,6 +54,16 @@ public:
     operator=(context&&) noexcept;
 
     /**
+     * @brief Prepares a statement.
+     * A statement is used to execute databasee queries.
+     *
+     * @param str Query string
+     */
+    [[nodiscard]]
+    db::statement
+    prepare_statement(char const* str) noexcept;
+
+    /**
      * @brief Executes a raw query.
      *
      * @attention Failed query is considered a bug and should not happen.
@@ -61,6 +75,11 @@ public:
         query_cb callback,
         void* user_data = nullptr
     );
+
+    static
+    constexpr
+    int
+    DEFAULT_OPEN_FLAGS {SQLITE_OPEN_READWRITE};
 
 private:
     ::sqlite3* handle_;
