@@ -1,0 +1,22 @@
+Checks: '
+    boost-*,
+    bugprone-*,
+    clang-analyzer-*,
+    concurrency-*,
+    cppcoreguidelines-*,
+    google-*,
+    hicpp-*,
+    misc-*,
+    modernize-*,
+    openmp-*,
+    performance-*,
+    portability-*,
+    readability-*,
+    -modernize-use-trailing-return-type,
+'
+
+CheckOptions:
+  - key: readability-magic-numbers.IgnoredIntegerValues
+    value: 0;1;2;3;4;10
+  - key: cppcoreguidelines-avoid-magic-numbers.IgnoredIntegerValues
+    value: 0;1;2;3;4;10
