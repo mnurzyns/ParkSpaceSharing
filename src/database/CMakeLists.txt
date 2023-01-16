@@ -9,7 +9,7 @@ target_sources(
 )
 
 target_link_libraries(
-    database PRIVATE
+    database PUBLIC
     SQLite::SQLite3
 )
 

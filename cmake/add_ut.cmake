@@ -16,7 +16,6 @@ target_link_libraries(${ADD_UT_NAME}Test PRIVATE
     ${ADD_UT_DEPENDS}
     GTest::GTest
     GTest::gtest_main
-    gmock
     )
 
 target_include_directories(${ADD_UT_NAME}Test PRIVATE ${INCLUDE_DIR} ${TEST_INCLUDE_DIR})
