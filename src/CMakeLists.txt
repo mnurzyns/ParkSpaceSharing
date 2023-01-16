@@ -13,7 +13,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(core)
-add_subdirectory(example)
 add_subdirectory(database)
 add_subdirectory(proxy)
 
