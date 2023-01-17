@@ -1,5 +1,4 @@
 set(SQLITE3_COMMAND sqlite3)
-set(DATABASE_PATH ${CMAKE_CURRENT_BINARY_DIR}/database.sqlite3)
 
 add_custom_target(
     sqlite-configure

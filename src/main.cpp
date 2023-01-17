@@ -1,5 +1,7 @@
+#include <iostream>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include "core/core.hpp"
 #include "database/include/database/context.hh"
 
 int main(int argc, char *argv[])
@@ -16,10 +18,7 @@ int main(int argc, char *argv[])
         }, Qt::QueuedConnection);
     engine.load(url);
 
-
     
-
-
 
     return app.exec();
 }

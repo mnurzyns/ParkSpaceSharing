@@ -1,5 +1,7 @@
 add_library(database)
 
+set(DATABASE_PATH ${CMAKE_CURRENT_BINARY_DIR}/database.db)
+
 target_include_directories(database PRIVATE detail)
 target_include_directories(database PUBLIC  include)
 

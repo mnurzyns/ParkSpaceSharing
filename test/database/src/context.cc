@@ -35,7 +35,7 @@ TEST(Database, Context)
 
 TEST(Database, Select)
 {
-    db::context ctx{"db.sqlite3"};
+    db::context ctx{"build/src/database/database.db"};
 
     auto user = ctx.select_one<User>();
 
