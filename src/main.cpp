@@ -1,8 +1,9 @@
 #include <iostream>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "core/core.hpp"
-#include "database/include/database/context.hh"
+#include "database/context.hh"
+#include "core.hpp"
+#include "database.hh"
 
 int main(int argc, char *argv[])
 {
