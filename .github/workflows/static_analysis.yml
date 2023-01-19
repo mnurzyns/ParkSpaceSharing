@@ -1,0 +1,69 @@
+name: 'Static Analysis'
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+env:
+  # Conan cache environment variables
+  CONAN_SYSREQUIRES_MODE: enabled
+  CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
+  CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+
+jobs:
+  analysis:
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
+    name: 'Static Analysis'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Cache
+        uses: ./.github/actions/setup_cache
+        with:
+          compiler: gcc-12
+          build_type: "Release"
+          generator: "Ninja Multi-Config"
+
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: gcc-12
+          cmake: true
+          ninja: true
+          conan: true
+          vcpkg: false
+          ccache: true
+          clangtidy: false
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: 5.15.2
+          cache: true
+
+      - name: Cleanup Conan system packages (they are not properly cached)
+        run: |
+          conan remove -f '*/system'
+
+      - name: Configure CMake
+        run: |
+          cmake -S "${{github.workspace}}" -B ${{github.workspace}}/build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING="Release" -DCONAN:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
+
+      - uses: cpp-linter/cpp-linter-action@v2
+        id: cpp_linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          style: ''
+          tidy-checks: ''
+          version: 14
+          thread-comments: true
+          database: ${{ github.workspace }}/build
+
+      - name: Check results
+        if: steps.cpp_linter.outputs.checks-failed > 0
+        run: exit 1
