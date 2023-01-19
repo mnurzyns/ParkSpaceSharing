@@ -1,6 +1,11 @@
 name: CI
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
   push:
     branches:
       - main
@@ -14,6 +19,7 @@ env:
 
 jobs:
   CI:
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
