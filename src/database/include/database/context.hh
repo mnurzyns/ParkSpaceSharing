@@ -1,5 +1,6 @@
 #pragma once
 
+#include "database/detail/prepare_insert.hh"
 #include "database/insert_descriptor.hh"
 #include "database/statement.hh"
 
@@ -70,59 +71,11 @@ public:
     db::statement
     prepare_insert(Type&& value)
     {
-        // remember: transactions for vectors
+        auto str = detail::prepare_insert_string<Type>();
+        auto statement = this->prepare_statement(str.c_str());
 
-        using type_t = std::decay_t<Type>;
-        using desc_t = db::insert_descriptor<type_t>;
-        static constexpr auto COLUMNS =
-            []<class... Args>(std::tuple<Args...> const& tup) consteval
-            {
-                std::array<char const*, sizeof...(Args)> columns{};
-                std::size_t columns_i=0;
-
-                std::apply([&](auto&&... args) {
-                (..., [&](auto&& arg){
-                    columns[columns_i++] = arg.second;
-                }(args));
-                }, tup);
-
-                return columns;
-            }(desc_t::COLUMNS);
-
-        // Build query
-
-        std::stringstream sstr{};
-        sstr
-            << "INSERT INTO "
-            << '`' << desc_t::TABLE << '`'
-            << " (";
-        for(bool first = true; auto name : COLUMNS) {
-            if(!first) { sstr << ','; }
-            first = false;
-            sstr << '`' << name << '`';
-        }
-        sstr << ')';
-
-        // INSERT INTO `table` (`column0`, ...)
-
-        sstr << " VALUES (";
-        for(std::size_t i=0;i<COLUMNS.size();++i) {
-            if(i != 0) { sstr << ','; }
-            sstr << '?';
-        }
-        sstr << ");";
-
-        // INSERT INTO `table` (`column0`, ...) VALUES (?, ...);
-
-        auto statement = this->prepare_statement(sstr.str().c_str());
-
-        std::apply([&](auto&&... args){
-            bool first = true;
-            int arg_i = 1;
-            (..., [&](auto&& arg){
-                if(!first) { sstr << ','; first = false; }
-                statement.bind(arg_i++, value.*arg.first);
-            }(args)); }, desc_t::COLUMNS);
+        int arg_i = 1;
+        detail::prepare_insert_bind(statement, arg_i, std::forward<Type>(value));
 
         return statement;
     }
