@@ -5,6 +5,7 @@
 #include "database/statement.hh"
 
 #include <filesystem>
+#include <ranges>
 #include <utility>
 
 #include <sqlite3.h>
@@ -13,6 +14,21 @@
 
 namespace db
 {
+
+namespace detail
+{
+
+template<class Type>
+concept insert_array =
+requires(Type&& type)
+{
+    { type.begin() };
+    { type.end()   };
+    { type.size()  };
+    { typename std::decay_t<Type>::value_type{} };
+};
+
+} // namespace detail
 
 /**
  * @brief Callback for sqlite3 queries
@@ -66,16 +82,47 @@ public:
     db::statement
     prepare_statement(char const* str) noexcept;
 
+    /**
+     * @brief Prepare an INSERT statement.
+     *
+     * @param value Structure described with <i>db::insert_descriptor</i>
+     * @see db::insert_descriptor
+     */
     template<class Type>
     [[nodiscard]]
     db::statement
     prepare_insert(Type&& value)
     {
-        auto str = detail::prepare_insert_string<Type>();
+        auto str = detail::prepare_insert_string<Type>(1);
         auto statement = this->prepare_statement(str.c_str());
 
         int arg_i = 1;
         detail::prepare_insert_bind(statement, arg_i, std::forward<Type>(value));
+
+        return statement;
+    }
+
+    /**
+     * @brief Prepare an INSERT statement.
+     *
+     * @param value Container with structures described with <i>db::insert_descriptor</i>
+     * @see db::insert_descriptor
+     */
+    template<class Type>
+    requires(detail::insert_array<Type>)
+    [[nodiscard]]
+    db::statement
+    prepare_insert(Type&& container)
+    {
+        using value_t = typename std::decay_t<Type>::value_type;
+
+        auto insert_string = detail::prepare_insert_string<value_t>(container.size());
+        auto statement = this->prepare_statement(insert_string.c_str());
+
+        int arg_i = 1;
+        for(std::size_t i=0;i<container.size();++i) {
+            detail::prepare_insert_bind(statement, arg_i, container[i]);
+        }
 
         return statement;
     }

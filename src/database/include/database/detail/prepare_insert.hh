@@ -14,7 +14,7 @@ namespace db::detail
 template<class Type>
 [[nodiscard]]
 std::string
-prepare_insert_string()
+prepare_insert_string(std::size_t count)
 {
     using type_t = std::decay_t<Type>;
     using desc_t = db::insert_descriptor<type_t>;
@@ -49,14 +49,20 @@ prepare_insert_string()
 
     // INSERT INTO `table` (`column0`, ...)
 
-    sstr << " VALUES (";
-    for(std::size_t i=0;i<COLUMNS.size();++i) {
-        if(i != 0) { sstr << ','; }
-        sstr << '?';
-    }
-    sstr << ");";
+    sstr << " VALUES ";
 
-    // INSERT INTO `table` (`column0`, ...) VALUES (?, ...);
+    for(std::size_t value_i=0;value_i<count;++value_i) {
+        if(value_i != 0) { sstr << ','; }
+        sstr << "(";
+        for(std::size_t i=0;i<COLUMNS.size();++i) {
+            if(i != 0) { sstr << ','; }
+            sstr << '?';
+        }
+        sstr << ")";
+    }
+    sstr << ';';
+
+    // INSERT INTO `table` (`column0`, ...) VALUES (?, ...), ...;
 
     return sstr.str();
 }

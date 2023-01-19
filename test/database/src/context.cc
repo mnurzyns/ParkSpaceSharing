@@ -153,4 +153,31 @@ TEST(Database, QueryInsertOne)
     EXPECT_EQ(json["password"][0], "pass");
 }
 
+TEST(Database, QueryInsertArray)
+{
+    db::context ctx{":memory:"};
+
+    ctx.prepare_statement(
+        "CREATE TABLE `user` (`id` integer primary key, `name` text not null, `password` text not null);"
+    ).exec();
+
+    std::array array{
+        user_test{0, "abc0", "pass0"},
+        user_test{1, "abc1", "pass1"},
+    };
+
+    ctx
+        .prepare_insert(array)
+        .exec();
+
+    auto json = ctx
+        .prepare_statement("SELECT * FROM `user`;")
+        .exec_json();
+
+    EXPECT_EQ(json["name"][0],     "abc0");
+    EXPECT_EQ(json["password"][0], "pass0");
+    EXPECT_EQ(json["name"][1],     "abc1");
+    EXPECT_EQ(json["password"][1], "pass1");
+}
+
 }  // namespace
