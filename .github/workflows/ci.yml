@@ -18,8 +18,26 @@ env:
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
 
 jobs:
-  CI:
-    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
+  changes:
+    name: Check for changes
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: read
+    outputs:
+      cxx: ${{ steps.changes.outputs.cxx }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: .github/filters.yaml
+
+  ci:
+    name: CI
+    needs: changes
+    if: ${{ needs.changes.outputs.cxx == 'true' && ( github.event_name == 'push' || !github.event.pull_request.draft ) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
