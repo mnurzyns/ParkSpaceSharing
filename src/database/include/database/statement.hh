@@ -1,11 +1,24 @@
 #pragma once
 
+#include <string>
+
 #include <sqlite3.h>
 
 #include <nlohmann/json.hpp>
 
 namespace db
 {
+
+namespace detail
+{
+
+template<class Type>
+concept has_c_str = requires(Type&& type)
+{
+    { type.c_str() } -> std::same_as<char const*>;
+};
+
+};
 
 class context;
 
@@ -35,8 +48,16 @@ public:
      * @param index Index of the parameter, left most = 1
      */
     template<class T>
+    requires(!detail::has_c_str<T>)
     void
     bind(int index, T value) noexcept;
+
+    template<detail::has_c_str T>
+    void
+    bind(int index, T const& value) noexcept
+    {
+        ::sqlite3_bind_text(handle_, index, value.c_str(), -1, nullptr);
+    }
 
     /**
      * @brief Execute the statement(s), ignore output.

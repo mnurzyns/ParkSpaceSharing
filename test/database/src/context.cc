@@ -5,6 +5,31 @@
 #include "database/context.hh"
 #include "database/exceptions.hh"
 
+struct user_test
+{
+    int id;
+    std::string name;
+    std::string password;
+};
+
+template<>
+struct db::insert_descriptor<user_test>
+{
+    static
+    constexpr
+    char const*
+    TABLE{"user"};
+
+    static
+    constexpr
+    std::tuple
+    COLUMNS
+    {
+        std::pair{&user_test::name, "name"},
+        std::pair{&user_test::password, "password"},
+    };
+};
+
 namespace
 {
 
@@ -70,6 +95,18 @@ TEST(Database, QueryBindText)
     EXPECT_EQ(json["two"][0].get<int>(), 7);
 }
 
+TEST(Database, QueryBindCStr)
+{
+    db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
+
+    std::string str{"pierogi z miesem"};
+    auto query = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
+    query.bind(1, str);
+
+    auto json = query.exec_json();
+    EXPECT_EQ(json["two"][0].get<int>(), 7);
+}
+
 TEST(Database, QueryBindMisuse)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
@@ -94,6 +131,26 @@ TEST(Database, QueryReset)
 
     json = query.exec_json();
     EXPECT_EQ(json["two"][0].get<int>(), 10);
+}
+
+TEST(Database, QueryInsertOne)
+{
+    db::context ctx{":memory:"};
+
+    ctx.prepare_statement(
+        "CREATE TABLE `user` (`id` integer primary key, `name` text not null, `password` text not null);"
+    ).exec();
+
+    user_test user{0, "abc", "pass"};
+    auto statement = ctx.prepare_insert(user);
+    statement.exec();
+
+    auto json = ctx
+        .prepare_statement("SELECT * FROM `user`;")
+        .exec_json();
+
+    EXPECT_EQ(json["name"][0], "abc");
+    EXPECT_EQ(json["password"][0], "pass");
 }
 
 }  // namespace
