@@ -5,7 +5,6 @@
 #include "database/statement.hh"
 
 #include <filesystem>
-#include <ranges>
 #include <utility>
 
 #include <sqlite3.h>

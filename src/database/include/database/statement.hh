@@ -23,7 +23,7 @@ concept has_c_str = requires(Type&& type)
 class context;
 
 /**
- * @brief Represents a query statement(s).
+ * @brief Represents a query statement.
  */
 class statement
 {

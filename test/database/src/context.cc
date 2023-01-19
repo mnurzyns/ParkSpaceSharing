@@ -62,78 +62,81 @@ TEST(Database, Context)
     );
 }
 
-TEST(Database, Query)
+TEST(Database, Statement)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
-    auto query = ctx.prepare_statement("SELECT * FROM test_context;");
-    auto json = query.exec_json();
+    auto json = ctx
+        .prepare_statement("SELECT * FROM test_context;")
+        .exec_json();
 
     EXPECT_EQ(json["one"][0].get<::std::string>(), "pierogi ruskie");
     EXPECT_EQ(json["two"][1].get<int>(), 7);
 }
 
-TEST(Database, QueryBindInt)
+TEST(Database, StatementBindInt)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
-    auto query = ctx.prepare_statement("SELECT * FROM test_context WHERE two=?;");
-    query.bind(1, 7);
+    auto statement = ctx.prepare_statement("SELECT * FROM test_context WHERE two=?;");
+    statement.bind(1, 7);
 
-    auto json = query.exec_json();
+    auto json = statement.exec_json();
+
     EXPECT_EQ(json["one"][0].get<std::string>(), "pierogi z miesem");
 }
 
-TEST(Database, QueryBindText)
+TEST(Database, StatementBindText)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
-    auto query = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
-    query.bind(1, "pierogi z miesem");
+    auto statement = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
+    statement.bind(1, "pierogi z miesem");
 
-    auto json = query.exec_json();
+    auto json = statement.exec_json();
     EXPECT_EQ(json["two"][0].get<int>(), 7);
 }
 
-TEST(Database, QueryBindCStr)
+TEST(Database, StatementBindCStr)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
     std::string str{"pierogi z miesem"};
-    auto query = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
-    query.bind(1, str);
+    auto statement = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
+    statement.bind(1, str);
 
-    auto json = query.exec_json();
+    auto json = statement.exec_json();
     EXPECT_EQ(json["two"][0].get<int>(), 7);
 }
 
-TEST(Database, QueryBindMisuse)
+TEST(Database, StatementBindMisuse)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
-    auto query = ctx.prepare_statement("SELECT * FROM ?;");
-    query.bind(1, "test_context");
-    EXPECT_THROW(query.exec(), db::database_misuse);
+    auto statement = ctx.prepare_statement("SELECT * FROM ?;");
+    statement.bind(1, "test_context");
+
+    EXPECT_THROW(statement.exec(), db::database_misuse);
 }
 
-TEST(Database, QueryReset)
+TEST(Database, StatementReset)
 {
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
-    auto query = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
-    query.bind(1, "pierogi z miesem");
+    auto statement = ctx.prepare_statement("SELECT * FROM test_context WHERE one LIKE ?;");
+    statement.bind(1, "pierogi z miesem");
 
-    auto json = query.exec_json();
+    auto json = statement.exec_json();
     EXPECT_EQ(json["two"][0].get<int>(), 7);
 
-    query.reset();
-    query.bind(1, "pierogi ruskie");
+    statement.reset();
+    statement.bind(1, "pierogi ruskie");
 
-    json = query.exec_json();
+    json = statement.exec_json();
     EXPECT_EQ(json["two"][0].get<int>(), 10);
 }
 
-TEST(Database, QueryInsertOne)
+TEST(Database, StatementInsertOne)
 {
     db::context ctx{":memory:"};
 
@@ -142,8 +145,9 @@ TEST(Database, QueryInsertOne)
     ).exec();
 
     user_test user{0, "abc", "pass"};
-    auto statement = ctx.prepare_insert(user);
-    statement.exec();
+    ctx
+        .prepare_insert(user)
+        .exec();
 
     auto json = ctx
         .prepare_statement("SELECT * FROM `user`;")
@@ -153,7 +157,7 @@ TEST(Database, QueryInsertOne)
     EXPECT_EQ(json["password"][0], "pass");
 }
 
-TEST(Database, QueryInsertArray)
+TEST(Database, StatementInsertArray)
 {
     db::context ctx{":memory:"};
 

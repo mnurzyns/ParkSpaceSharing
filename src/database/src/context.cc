@@ -45,35 +45,6 @@ context::~context()
     ::sqlite3_close_v2(handle_);
 }
 
-// TODO remove
-//[[nodiscard]]
-//nlohmann::json
-//context::query(char const* query)
-//{
-//    nlohmann::json ret{};
-//
-//    this->raw_query(
-//        query,
-//        [](void* user_data, int col_count, char** col_text, char** col_name){
-//            nlohmann::json& json = *static_cast<nlohmann::json*>(user_data);
-//            for(int col_i=0;col_i<col_count;++col_i) {
-//                // Check if number
-//                char* endptr = nullptr;
-//                auto ret = std::strtol(col_text[col_i], &endptr, 10);
-//                if(endptr == col_text[col_i]) {
-//                    json[col_name[col_i]].push_back(col_text[col_i]);
-//                } else {
-//                    json[col_name[col_i]].push_back(ret);
-//                }
-//            }
-//            return SQLITE_OK;
-//        },
-//        static_cast<void*>(&ret)
-//    );
-//
-//    return ret;
-//}
-
 [[nodiscard]]
 db::statement
 context::prepare_statement(char const* str) noexcept
