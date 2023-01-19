@@ -11,7 +11,16 @@ namespace db
 context::context(std::filesystem::path const& path) :
     handle_{nullptr}
 {
-    auto res = sqlite3_open_v2(path.c_str(), &handle_, SQLITE_OPEN_READWRITE, nullptr);
+    auto res = sqlite3_open_v2(
+#ifdef _MSC_VER
+        path.string().c_str(),
+#else
+        path.c_str(),
+#endif
+        &handle_,
+        SQLITE_OPEN_READWRITE,
+        nullptr
+    );
     if(res != SQLITE_OK) {
         std::cerr << ::sqlite3_errmsg(handle_) << '\n';
         throw db::database_open_error{};

@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "proxy/proxy.hpp"
 
 namespace {
 
 using namespace ::testing;
-    
+
 TEST(testfunction_pass, Pass)
 {
     proxy::Proxy t;
