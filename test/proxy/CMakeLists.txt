@@ -1,3 +1,3 @@
 cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 
-add_ut(NAME Example SOURCES example.cpp)
+add_ut(NAME Proxy SOURCES proxytest.cpp)

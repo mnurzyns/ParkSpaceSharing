@@ -16,16 +16,16 @@ TEST(Database, Context)
 
     ctx.raw_query(
         "select * from test_context where two=10;",
-        []([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
-            EXPECT_EQ(std::strcmp(argv[0], "pierogi ruskie"), 0);
+        []([[maybe_unused]] void* user_data, [[maybe_unused]] int col_count, char** col_text, [[maybe_unused]] char** col_name) -> int {
+            EXPECT_EQ(std::strcmp(col_text[0], "pierogi ruskie"), 0);
             return 0;
         }
     );
 
     ctx.raw_query(
         "select * from test_context where two=7;",
-        []([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
-            EXPECT_EQ(std::strcmp(argv[0], "pierogi z miesem"), 0);
+        []([[maybe_unused]] void* user_data, [[maybe_unused]] int col_count, char** col_text, [[maybe_unused]] char** col_name) -> int {
+            EXPECT_EQ(std::strcmp(col_text[0], "pierogi z miesem"), 0);
             return 0;
         }
     );

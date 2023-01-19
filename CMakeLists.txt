@@ -5,6 +5,13 @@ option(CONAN "Use conan package manager" OFF)
 
 project(ParkingSpaceSharing LANGUAGES CXX VERSION 0.0.1)
 
+add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options (-fsanitize=address,leak,undefined)
+    add_link_options    (-fsanitize=address,leak,undefined)
+endif()
+
 if(CONAN)
     include(cmake/conan.cmake)
 endif()
