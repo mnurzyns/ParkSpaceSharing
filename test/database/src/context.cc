@@ -33,10 +33,8 @@ struct db::insert_descriptor<user_test>
 namespace
 {
 
-static
 constexpr
-int
-OPEN_FLAGS {SQLITE_OPEN_READONLY};
+int OPEN_FLAGS {SQLITE_OPEN_READONLY};
 
 TEST(Database, Context)
 {
@@ -47,16 +45,18 @@ TEST(Database, Context)
 
     ctx.raw_query(
         "select * from test_context where two=10;",
+        //NOLINTNEXTLINE
         []([[maybe_unused]] void* user_data, [[maybe_unused]] int col_count, char** col_text, [[maybe_unused]] char** col_name) -> int {
-            EXPECT_EQ(std::strcmp(col_text[0], "pierogi ruskie"), 0);
+            EXPECT_EQ(std::strcmp(col_text[0], "pierogi ruskie"), 0); //NOLINT
             return 0;
         }
     );
 
     ctx.raw_query(
         "select * from test_context where two=7;",
+        //NOLINTNEXTLINE
         []([[maybe_unused]] void* user_data, [[maybe_unused]] int col_count, char** col_text, [[maybe_unused]] char** col_name) -> int {
-            EXPECT_EQ(std::strcmp(col_text[0], "pierogi z miesem"), 0);
+            EXPECT_EQ(std::strcmp(col_text[0], "pierogi z miesem"), 0); //NOLINT
             return 0;
         }
     );
@@ -79,7 +79,7 @@ TEST(Database, StatementBindInt)
     db::context ctx{DATABASE_DIR "/context.sqlite", OPEN_FLAGS};
 
     auto statement = ctx.prepare_statement("SELECT * FROM test_context WHERE two=?;");
-    statement.bind(1, 7);
+    statement.bind(1, 7); //NOLINT
 
     auto json = statement.exec_json();
 

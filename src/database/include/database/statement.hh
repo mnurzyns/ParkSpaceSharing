@@ -98,6 +98,7 @@ private:
     ::sqlite3_stmt* handle_;
 };
 
+//NOLINTNEXTLINE
 #define INST(TYPE) \
     template<> \
     void \

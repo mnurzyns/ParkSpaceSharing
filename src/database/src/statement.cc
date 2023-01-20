@@ -62,6 +62,7 @@ statement::exec_json()
                         .push_back("*NULL*");
                 } else if(col_type == SQLITE_TEXT) {
                     json[::sqlite3_column_name(handle_, col_i)]
+                        //NOLINTNEXTLINE
                         .push_back(reinterpret_cast<char const*>(::sqlite3_column_text(handle_, col_i)));
                 }
             }
