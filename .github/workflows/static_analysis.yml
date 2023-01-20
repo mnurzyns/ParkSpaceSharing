@@ -70,7 +70,8 @@ jobs:
         run: |
           cmake -S "${{github.workspace}}" -B ${{github.workspace}}/build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING="Release" -DCONAN:BOOL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON
 
-      - uses: cpp-linter/cpp-linter-action@v2
+      - name: Run linter
+        uses: cpp-linter/cpp-linter-action@v2
         id: cpp_linter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -80,6 +81,7 @@ jobs:
           version: 14
           thread-comments: true
           database: ${{ github.workspace }}/build
+          ignore: ".github|cmake|build"
 
       - name: Check results
         if: steps.cpp_linter.outputs.checks-failed > 0
