@@ -20,6 +20,20 @@ int main(int argc, char *argv[])
     engine.load(url);
 
     
+    db::context ctx{"build/src/database/database.db"};
+
+    ctx.raw_query("INSERT INTO user (username, password) VALUES (\"Kmicic\", \"maslo\");",
+    []([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
+            printf("%s",argv[0]);
+            return 0;
+        });
+
+    auto user = ctx.select_one<User>();
+
+    std::cout << user.id << '\n';
+    std::cout << user.password << '\n';
+    std::cout << user.username << '\n';
+
 
     return app.exec();
 }

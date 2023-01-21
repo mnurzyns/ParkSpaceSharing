@@ -31,6 +31,18 @@ TEST(Database, Context)
             return 0;
         }
     );
+
+        ctx.raw_query(
+        "select * from test_context;",
+        []([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
+            printf("%s",argv[0]);
+            printf(",\n");
+            return 0;
+        }
+    );
+
+
+
 }
 
 TEST(Database, Select)
