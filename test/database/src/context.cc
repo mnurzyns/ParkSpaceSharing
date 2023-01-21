@@ -47,13 +47,20 @@ TEST(Database, Context)
 
 TEST(Database, Select)
 {
-    db::context ctx{"build/src/database/database.db"};
+    //printf("\n %s \n\n\n",Database_PATH+"");
+
+    db::context ctx{Database_PATH};
+
+        ctx.raw_query("Insert Into user (username, password) Values (\"Kmicic\", \"maslo\");",[]([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
+            printf("%s",argv[0]);
+            printf(",\n");
+            return 0;
+        });
 
     auto user = ctx.select_one<User>();
 
-    std::cout << user.id << '\n';
-    std::cout << user.password << '\n';
-    std::cout << user.username << '\n';
+    EXPECT_EQ(user.username,"Kmicic");
+    EXPECT_EQ(user.password,"maslo");
 }
 
 }  // namespace

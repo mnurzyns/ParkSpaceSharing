@@ -9,16 +9,9 @@ add_executable(${CMAKE_PROJECT_NAME} ${PROJECT_SOURCES})
 
 target_link_libraries(
     ${CMAKE_PROJECT_NAME} PRIVATE
-    database
-    CoreLib
-
-    Threads::Threads
     ${QtLib}
 )
 
-add_subdirectory(proxy/source)
-add_subdirectory(core)
-add_subdirectory(database)
 
 
 add_custom_target(${CMAKE_PROJECT_NAME}-run
