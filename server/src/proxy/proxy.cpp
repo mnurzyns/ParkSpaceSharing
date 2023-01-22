@@ -1,4 +1,5 @@
 #include "proxy.hpp"
+#include "core.hpp"
 
 namespace poxy
 {  

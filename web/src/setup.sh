@@ -6,7 +6,7 @@ if ! [ -x "$(command -v node)" ]; then
     read -p "Dp you want to install it? <y/N> " prompt
     if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
         curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&
-            udo apt-get install -y nodejs
+            sudo apt-get install -y nodejs
         echo "Node installed ✔️"
     else
         exit 0
