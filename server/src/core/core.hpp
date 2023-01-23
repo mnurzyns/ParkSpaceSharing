@@ -10,14 +10,14 @@ void AddRentOffer();
 
 
 struct ParkingSpace{
-    const unsigned id;
-    const unsigned owner_id;
+    unsigned id;
+    unsigned owner_id;
     std::string location;
 };
 
 struct Offer{
-    const unsigned id;
-    const unsigned user_id;
+    unsigned id;
+    unsigned user_id;
     std::string description;
 };
 
