@@ -47,8 +47,7 @@ set(QtLib Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-add_subdirectory(app/src)
-add_subdirectory(server/src)
+add_subdirectory(src)
 
 include(CTest)
 include(GoogleTest)
