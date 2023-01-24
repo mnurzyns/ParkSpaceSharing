@@ -1,11 +1,33 @@
 #pragma once
 
+#include "database/detail/prepare_insert.hh"
+#include "database/insert_descriptor.hh"
+#include "database/statement.hh"
+
 #include <filesystem>
+#include <utility>
 
 #include <sqlite3.h>
 
+#include <nlohmann/json.hpp>
+
 namespace db
 {
+
+namespace detail
+{
+
+template<class Type>
+concept insert_array =
+requires(Type&& type)
+{
+    { type.begin() };
+    { type.end()   };
+    { type.size()  };
+    { typename std::decay_t<Type>::value_type{} };
+};
+
+} // namespace detail
 
 /**
  * @brief Callback for sqlite3 queries
@@ -33,7 +55,7 @@ public:
      */
     [[nodiscard]]
     explicit
-    context(std::filesystem::path const& path);
+    context(std::filesystem::path const& path, int flags = DEFAULT_OPEN_FLAGS);
 
     ~context();
 
@@ -50,6 +72,61 @@ public:
     operator=(context&&) noexcept;
 
     /**
+     * @brief Prepares a statement.
+     * A statement is used to execute databasee queries.
+     *
+     * @param str Query string
+     */
+    [[nodiscard]]
+    db::statement
+    prepare_statement(char const* str) noexcept;
+
+    /**
+     * @brief Prepare an INSERT statement.
+     *
+     * @param value Structure described with <i>db::insert_descriptor</i>
+     * @see db::insert_descriptor
+     */
+    template<class Type>
+    [[nodiscard]]
+    db::statement
+    prepare_insert(Type&& value)
+    {
+        auto str = detail::prepare_insert_string<Type>(1);
+        auto statement = this->prepare_statement(str.c_str());
+
+        int arg_i = 1;
+        detail::prepare_insert_bind(statement, arg_i, std::forward<Type>(value));
+
+        return statement;
+    }
+
+    /**
+     * @brief Prepare an INSERT statement.
+     *
+     * @param value Container with structures described with <i>db::insert_descriptor</i>
+     * @see db::insert_descriptor
+     */
+    template<class Type>
+    requires(detail::insert_array<Type>)
+    [[nodiscard]]
+    db::statement
+    prepare_insert(Type&& container)
+    {
+        using value_t = typename std::decay_t<Type>::value_type;
+
+        auto insert_string = detail::prepare_insert_string<value_t>(container.size());
+        auto statement = this->prepare_statement(insert_string.c_str());
+
+        int arg_i = 1;
+        for(std::size_t i=0;i<container.size();++i) {
+            detail::prepare_insert_bind(statement, arg_i, container[i]);
+        }
+
+        return statement;
+    }
+
+    /**
      * @brief Executes a raw query.
      *
      * @attention Failed query is considered a bug and should not happen.
@@ -61,6 +138,11 @@ public:
         query_cb callback,
         void* user_data = nullptr
     );
+
+    static
+    constexpr
+    int
+    DEFAULT_OPEN_FLAGS {SQLITE_OPEN_READWRITE};
 
 private:
     ::sqlite3* handle_;

@@ -1,6 +1,7 @@
 #include "database/context.hh"
 #include "database/exceptions.hh"
 
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <utility>
@@ -8,7 +9,7 @@
 namespace db
 {
 
-context::context(std::filesystem::path const& path) :
+context::context(std::filesystem::path const& path, int flags) :
     handle_{nullptr}
 {
     auto res = sqlite3_open_v2(
@@ -18,7 +19,7 @@ context::context(std::filesystem::path const& path) :
         path.c_str(),
 #endif
         &handle_,
-        SQLITE_OPEN_READWRITE,
+        flags,
         nullptr
     );
     if(res != SQLITE_OK) {
@@ -42,6 +43,13 @@ context::~context()
     // Calling this function with a
     // nullptr is a valid no-op
     ::sqlite3_close_v2(handle_);
+}
+
+[[nodiscard]]
+db::statement
+context::prepare_statement(char const* str) noexcept
+{
+    return db::statement{handle_, str};
 }
 
 void
