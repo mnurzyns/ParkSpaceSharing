@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include "core/core.hpp"
+#include <gmock/gmock.h>
+#include "core.hpp"
 
 TEST(AddUser,Adduser)
 {

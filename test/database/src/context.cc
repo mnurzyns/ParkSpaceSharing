@@ -3,32 +3,8 @@
 #include <cstring>
 
 #include "database/context.hh"
-#include "database/exceptions.hh"
-
-struct user_test
-{
-    int id;
-    std::string name;
-    std::string password;
-};
-
-template<>
-struct db::insert_descriptor<user_test>
-{
-    static
-    constexpr
-    char const*
-    TABLE{"user"};
-
-    static
-    constexpr
-    std::tuple
-    COLUMNS
-    {
-        std::pair{&user_test::name, "name"},
-        std::pair{&user_test::password, "password"},
-    };
-};
+#include "core.hpp"
+#include "database.hh"
 
 namespace
 {
@@ -60,6 +36,36 @@ TEST(Database, Context)
             return 0;
         }
     );
+
+        ctx.raw_query(
+        "select * from test_context;",
+        []([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
+            printf("%s",argv[0]);
+            printf(",\n");
+            return 0;
+        }
+    );
+
+
+
+}
+
+TEST(Database, Select)
+{
+    //printf("\n %s \n\n\n",Database_PATH+"");
+
+    db::context ctx{Database_PATH};
+
+        ctx.raw_query("Insert Into user (username, password) Values (\"Kmicic\", \"maslo\");",[]([[maybe_unused]] void* user_data, int argc, char** argv, char** col_name) -> int {
+            printf("%s",argv[0]);
+            printf(",\n");
+            return 0;
+        });
+
+    auto user = ctx.select_one<User>();
+
+    EXPECT_EQ(user.username,"Kmicic");
+    EXPECT_EQ(user.password,"maslo");
 }
 
 TEST(Database, Statement)

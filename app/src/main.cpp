@@ -1,3 +1,4 @@
+#include <iostream>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
@@ -14,6 +15,11 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
     engine.load(url);
+
+    while (false)
+    {
+
+    }    
 
     return app.exec();
 }
