@@ -1,3 +1,14 @@
-cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
+add_executable(ProxyTest)
 
-add_ut(NAME Proxy SOURCES proxytest.cpp)
+target_sources(
+    ProxyTest PRIVATE
+    src/test.cc
+)
+
+target_link_libraries(
+    ProxyTest PRIVATE
+    proxy
+    GTest::gtest_main
+)
+
+gtest_discover_tests(ProxyTest)

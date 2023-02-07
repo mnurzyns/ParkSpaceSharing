@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 
-add_library(ProxyLib proxy.cpp)
-target_include_directories(ProxyLib PRIVATE ${INCLUDE_DIR})
+add_library(proxy)
+
+target_sources(
+    proxy PRIVATE
+    src/test.cc
+)
+
+target_include_directories(proxy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
