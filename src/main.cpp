@@ -1,19 +1,21 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QTableView>
+#include <QStandardItemModel>
+#include <qstandarditemmodel.h>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
-    QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    QApplication app{argc, argv};
 
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        }, Qt::QueuedConnection);
-    engine.load(url);
+    QTableView view{};
+    QStandardItemModel model{};
+    model.setHeaderData(0, Qt::Vertical, QObject::tr("ID"));
+    model.setHeaderData(1, Qt::Vertical, QObject::tr("Location"));
+    model.setHeaderData(2, Qt::Vertical, QObject::tr("User ID"));
 
-    return app.exec();
+    view.setModel(&model);
+    view.show();
+
+    return QApplication::exec();
 }
