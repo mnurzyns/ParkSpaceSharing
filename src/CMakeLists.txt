@@ -10,6 +10,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${PROJECT_SOURCES})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     Threads::Threads
     Qt5::Widgets
+    nlohmann_json::nlohmann_json
     ${QtLib}
 )
 
