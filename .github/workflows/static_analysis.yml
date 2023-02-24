@@ -51,7 +51,7 @@ jobs:
           compiler: gcc-12
           cmake: true
           ninja: true
-          conan: true
+          conan: "1.59.0"
           vcpkg: false
           ccache: true
           clangtidy: false
