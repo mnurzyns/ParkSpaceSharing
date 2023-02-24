@@ -10,11 +10,12 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 conan_cmake_configure(
     REQUIRES
-        gtest/cci.20210126
-        sqlite3/3.40.1
-        nlohmann_json/3.11.2
+        oatpp/1.3.0
+        oatpp-swagger/1.3.0
+        oatpp-sqlite/1.3.0
 
     GENERATORS
+        cmake_paths
         cmake_find_package
 )
 
