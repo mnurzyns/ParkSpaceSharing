@@ -8,10 +8,10 @@ namespace server::dto
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class status :
+class status_dto :
     public ::oatpp::DTO
 {
-    DTO_INIT(status, DTO)
+    DTO_INIT(status_dto, DTO)
 
     DTO_FIELD_INFO(status)
     {

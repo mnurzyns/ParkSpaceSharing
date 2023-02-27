@@ -6,7 +6,7 @@
 #include <oatpp/web/protocol/http/outgoing/Response.hpp>
 #include <oatpp/web/protocol/http/outgoing/ResponseFactory.hpp>
 
-#include "dto/status.hh"
+#include "dto/status_dto.hh"
 
 namespace server
 {
@@ -17,7 +17,7 @@ error_handler::error_handler(::std::shared_ptr<::oatpp::data::mapping::ObjectMap
 ::std::shared_ptr<::oatpp::web::protocol::http::outgoing::Response>
 error_handler::handleError(::oatpp::web::protocol::http::Status const& status, ::oatpp::String const& message, ::oatpp::web::protocol::http::Headers const& headers)
 {
-    auto status_dto = ::server::dto::status::createShared();
+    auto status_dto = ::server::dto::status_dto::createShared();
     status_dto->status = "ERROR";
     status_dto->code = status.code;
     status_dto->message = message;

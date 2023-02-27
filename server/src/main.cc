@@ -10,20 +10,22 @@
 #include <oatpp/web/server/api/Endpoint.hpp>
 #include <oatpp-swagger/Controller.hpp>
 
-#include "component/app.hh"
-#include "controller/parking_space_sharing.hh"
+#include "component/app_component.hh"
+#include "controller/user_controller.hh"
+#include "controller/offer_controller.hh"
 
 int
 main()
 {
     ::oatpp::base::Environment::init();
 
-    ::server::component::app app_component{};
+    ::server::component::app_component const app_component{};
 
     OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
 
     ::oatpp::web::server::api::Endpoints endpoints{};
-    endpoints.append(router->addController(::server::controller::parking_space_sharing::create_shared())->getEndpoints());
+    endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
+    endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
 
     router->addController(::oatpp::swagger::Controller::createShared(endpoints));
 

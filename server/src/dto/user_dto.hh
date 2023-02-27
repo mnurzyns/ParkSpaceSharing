@@ -9,20 +9,14 @@ namespace server::dto
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class parking_space :
+class user_dto :
     public ::oatpp::DTO
 {
-    DTO_INIT(parking_space, DTO)
+    DTO_INIT(user_dto, DTO)
 
     DTO_FIELD(UInt32, id);
-
-    DTO_FIELD_INFO(user_id)
-    {
-        info->description = "user_id of the owner";
-    }
-    DTO_FIELD(UInt32, user_id);
-
-    DTO_FIELD(String, location);
+    DTO_FIELD(String, name, "username");
+    DTO_FIELD(String, password, "password");
 };
 
 #include OATPP_CODEGEN_END(DTO)

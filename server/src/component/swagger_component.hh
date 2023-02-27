@@ -10,7 +10,7 @@
 namespace server::component
 {
 
-class swagger
+class swagger_component
 {
 public:
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::swagger::DocumentInfo>, swagger_document_info)([]{

@@ -14,17 +14,17 @@
 
 #include "error_handler.hh"
 
-#include "component/database.hh"
-#include "component/swagger.hh"
+#include "component/database_component.hh"
+#include "component/swagger_component.hh"
 
 namespace server::component
 {
 
-class app
+class app_component
 {
 public:
-    ::server::component::database database_component;
-    ::server::component::swagger swagger_component;
+    ::server::component::database_component database_component;
+    ::server::component::swagger_component swagger_component;
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::data::mapping::ObjectMapper>, api_object_mapper)([]{
         auto object_mapper = ::oatpp::parser::json::mapping::ObjectMapper::createShared();

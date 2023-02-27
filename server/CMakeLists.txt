@@ -5,7 +5,8 @@ target_sources(
 
     src/main.cc
     src/error_handler.cc
-    src/service/parking_space_sharing.cc
+    src/service/user_service.cc
+    src/service/offer_service.cc
 )
 
 target_include_directories(

@@ -9,20 +9,20 @@
 
 #include <oatpp-sqlite/orm.hpp>
 
-#include "dto/user.hh"
+#include "dto/user_dto.hh"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 namespace server::database
 {
 
-class parking_space_sharing :
+class pss_db :
     public ::oatpp::orm::DbClient
 {
 public:
     [[nodiscard]]
     explicit
-    parking_space_sharing(::std::shared_ptr<::oatpp::orm::Executor> const& executor)
+    pss_db(::std::shared_ptr<::oatpp::orm::Executor> const& executor)
         : ::oatpp::orm::DbClient{executor}
     {
         ::oatpp::orm::SchemaMigration migration{executor};
@@ -46,12 +46,12 @@ public:
     QUERY(
         create_user,
         "INSERT INTO user(username, password) VALUES(:user.username, :user.password);",
-        PARAM(::oatpp::Object<::server::dto::user>, user)
+        PARAM(::oatpp::Object<::server::dto::user_dto>, user)
     )
 
     QUERY(
-        get_parking_spaces,
-        "SELECT * FROM parking_space;"
+        get_offers,
+        "SELECT * FROM offer;"
     )
 };
 

@@ -9,14 +9,20 @@ namespace server::dto
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class user :
+class offer_dto :
     public ::oatpp::DTO
 {
-    DTO_INIT(user, DTO)
+    DTO_INIT(offer_dto, DTO)
 
     DTO_FIELD(UInt32, id);
-    DTO_FIELD(String, name, "username");
-    DTO_FIELD(String, password, "password");
+
+    DTO_FIELD_INFO(user_id)
+    {
+        info->description = "id of the offer's owner";
+    }
+    DTO_FIELD(UInt32, user_id);
+
+    DTO_FIELD(String, location);
 };
 
 #include OATPP_CODEGEN_END(DTO)
