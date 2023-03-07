@@ -7,7 +7,7 @@ Project created by trainees of Bakcyl Programowania in 2022/2023.
  - `C++20` Compiler e.g. `GCC`
  - `CMake`
  - `CMake` supported generator e.g. `Ninja`
- - [`Conan`](https://conan.io/) < 2.0 or [install dependencies manually](#install-conan-dependencies-manually)
+ - [`Conan`](https://conan.io/) **< 2.0** or [install dependencies manually](#install-conan-dependencies-manually)
 
 #### Debian / Ubuntu
 ```bash
@@ -36,22 +36,16 @@ cmake --build build
 
 ### Run
 ```bash
-./build/bin/ParkingSpaceSharing
+# server
+./build/bin/server
+
+# client
+./build/bin/client
 ```
 
 ### Install conan dependencies manually
 Required dependencies:
- - `GTest`
- - `SQLite3`
- - `Nlohmann JSON`
+ - [`oatpp`](https://github.com/oatpp/oatpp)
+ - [`oatpp-swagger`](https://github.com/oatpp/oatpp-swagger)
+ - [`oatpp-sqlite`](https://github.com/oatpp/oatpp-sqlite)
 
-#### Debian / Ubuntu
-```bash
-sudo apt-get install -y libgtest-dev sqlite3 libsqlite3-dev nlohmann-json3-dev
-```
-
-#### Alpine
-```bash
-apk add gtest-dev sqlite sqlite-dev nlohmann-json
-```
-`nlohmann-json` is only available on edge branch, but can be [built from source](https://github.com/nlohmann/json).

@@ -1,7 +1,7 @@
 set(CMAKE_REQUIRED_VERSION 3.14)
 cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 
-option(CONAN "Use conan package manager" OFF)
+option(CONAN "Use conan package manager" ON)
 
 project(ParkingSpaceSharing LANGUAGES CXX VERSION 0.0.1)
 
@@ -20,36 +20,23 @@ if(CONAN)
     include(cmake/conan.cmake)
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# In case you have QtLib installed and cmake is not able to find it
-# set(CMAKE_PREFIX_PATH "{PATH-TO-YOUR-LIB}/Qt/5.15.2/gcc_64")
-
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-
-find_package(GTest REQUIRED)
-find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 find_package(Threads REQUIRED)
-find_package(SQLite3 REQUIRED)
-find_package(nlohmann_json 3.7 REQUIRED)
 
-set(INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
-set(TEST_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/test)
-set(CMAKE_BASE_LIST_DIR ${CMAKE_CURRENT_LIST_DIR})
-set(QtLib Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
+find_package(oatpp         1.3.0 REQUIRED)
+find_package(oatpp-swagger 1.3.0 REQUIRED)
+find_package(oatpp-sqlite  1.3.0 REQUIRED)
+
+#find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
+#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-add_subdirectory(src)
+add_subdirectory(server)
 
-include(CTest)
-include(GoogleTest)
-enable_testing()
-add_subdirectory(test)
+#include(CTest)
+#enable_testing()
+
