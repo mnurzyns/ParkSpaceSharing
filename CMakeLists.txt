@@ -29,12 +29,10 @@ find_package(Threads REQUIRED)
 find_package(oatpp         1.3.0 REQUIRED)
 find_package(oatpp-swagger 1.3.0 REQUIRED)
 find_package(oatpp-sqlite  1.3.0 REQUIRED)
-find_package(oatpp-openssl  1.2.0 REQUIRED)
+find_package(oatpp-openssl 1.3.0 REQUIRED)
 
-find_package(openssl 3.0.5 REQUIRED)
-find_package(jwt-cpp  0.6.0 REQUIRED)
-
-
+find_package(OpenSSL 3.0.5 REQUIRED)
+find_package(jwt-cpp 0.6.0 REQUIRED)
 
 #find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)

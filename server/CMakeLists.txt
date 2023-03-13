@@ -31,5 +31,6 @@ target_link_libraries(
     PUBLIC oatpp::oatpp-swagger
     PUBLIC oatpp::oatpp-sqlite
     PUBLIC oatpp::oatpp-openssl
+    PUBLIC jwt-cpp::jwt-cpp
 )
 
