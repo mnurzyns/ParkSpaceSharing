@@ -48,4 +48,4 @@ Required dependencies:
  - [`oatpp`](https://github.com/oatpp/oatpp)
  - [`oatpp-swagger`](https://github.com/oatpp/oatpp-swagger)
  - [`oatpp-sqlite`](https://github.com/oatpp/oatpp-sqlite)
-
+ - [`oatpp-openssl`](https://github.com/oatpp/oatpp-openssl)

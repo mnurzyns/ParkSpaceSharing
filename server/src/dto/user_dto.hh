@@ -17,6 +17,8 @@ class user_dto :
     DTO_FIELD(UInt32, id);
     DTO_FIELD(String, name, "username");
     DTO_FIELD(String, password, "password");
+    DTO_FIELD(String, token, "token");
+    DTO_FIELD(Boolean, admin, "admin");
 };
 
 #include OATPP_CODEGEN_END(DTO)

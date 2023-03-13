@@ -10,6 +10,9 @@
 #include <oatpp-sqlite/orm.hpp>
 
 #include "dto/user_dto.hh"
+#include "dto/signIn_dto.hh"
+#include "dto/signUp_dto.hh"
+#include "dto/auth_dto.hh"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
@@ -44,14 +47,39 @@ public:
     )
 
     QUERY(
+        auth_user,
+        "SELECT * FROM user WHERE token = :token;",
+        PARAM(::oatpp::String, token)
+    )
+
+    QUERY(
+        signIn_auth,
+        "SELECT token FROM user WHERE username = :form.username ,password = :form.password;",
+        PARAM(::oatpp::Object<::server::dto::signIn_dto>, form)
+    )
+
+    QUERY(
+        signUp,
+        "INSERT INTO user(username, password, token) VALUES(:form.username, :form.password, :token);",
+        PARAM(::oatpp::Object<::server::dto::signUp_dto>, form),
+        PARAM(::oatpp::String, token)
+    )
+
+    QUERY(
         create_user,
-        "INSERT INTO user(username, password) VALUES(:user.username, :user.password);",
+        "INSERT INTO user(username, password, token, admin) VALUES(:user.username, :user.password, :user.token, :user.admin);",
         PARAM(::oatpp::Object<::server::dto::user_dto>, user)
     )
 
     QUERY(
         get_offers,
         "SELECT * FROM offer;"
+    )
+
+    //na potrzeby testowania
+    QUERY(
+        delete_users,
+        "DELETE FROM user;"
     )
 };
 

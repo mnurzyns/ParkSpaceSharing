@@ -7,6 +7,7 @@ target_sources(
     src/error_handler.cc
     src/service/user_service.cc
     src/service/offer_service.cc
+    src/service/auth_service.cc
 )
 
 target_include_directories(
@@ -29,5 +30,6 @@ target_link_libraries(
     PUBLIC oatpp::oatpp
     PUBLIC oatpp::oatpp-swagger
     PUBLIC oatpp::oatpp-sqlite
+    PUBLIC oatpp::oatpp-openssl
 )
 

@@ -13,6 +13,7 @@
 #include "component/app_component.hh"
 #include "controller/user_controller.hh"
 #include "controller/offer_controller.hh"
+#include "controller/auth_controller.hh"
 
 int
 main()

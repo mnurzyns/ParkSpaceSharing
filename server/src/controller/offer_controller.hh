@@ -32,7 +32,7 @@ public:
     {
         return ::std::make_shared<::server::controller::offer_controller>(object_mapper);
     }
-
+    
     ENDPOINT_INFO(get_offers)
     {
         info->summary = "Get page_dto parking spaces";

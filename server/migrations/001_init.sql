@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS `user`(
-    `id`       INTEGER PRIMARY KEY,
-    `username` TEXT    NOT NULL,
-    `password` TEXT    NOT NULL
+    `id`       INTEGER  PRIMARY KEY,
+    `username` TEXT     NOT NULL,
+    `password` TEXT     NOT NULL,
+    `token`    CHAR(50) NOT NULL,
+    `admin`    BOOLEAN  NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS `parking_space`(
@@ -27,4 +29,3 @@ CREATE INDEX IF NOT EXISTS `idx_parking_space_user_id`
 
 CREATE INDEX IF NOT EXISTS `idx_offer_parking_space_id`
     ON `offer`(`parking_space_id`);
-
