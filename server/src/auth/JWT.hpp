@@ -4,12 +4,14 @@
 
 #include <jwt-cpp/jwt.h>
 
+/*
+
 class JWT {
 public:
 
     struct Payload : public oatpp::web::server::handler::AuthorizationObject {
 
-        atpp::String userId;
+        oatpp::String userId;
 
     };
 
@@ -27,3 +29,5 @@ public:
     std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String& token);
 
 };
+
+*/

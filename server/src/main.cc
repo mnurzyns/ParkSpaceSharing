@@ -25,6 +25,7 @@ main()
     OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
 
     ::oatpp::web::server::api::Endpoints endpoints{};
+    endpoints.append(router->addController(::server::controller::auth_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
 

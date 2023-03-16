@@ -12,7 +12,7 @@ class signIn_dto : public oatpp::DTO {
 
   DTO_INIT(signIn_dto, DTO)
 
-  DTO_FIELD(String, username, "username");
+  DTO_FIELD(String, email, "email");
   DTO_FIELD(String, password, "password");
 
 };

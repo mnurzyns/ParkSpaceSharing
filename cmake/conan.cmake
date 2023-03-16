@@ -15,7 +15,7 @@ conan_cmake_configure(
         oatpp-sqlite/1.3.0
         oatpp-openssl/1.3.0
         jwt-cpp/0.6.0
-        openssl/3.0.5
+        openssl/3.0.8
 
     GENERATORS
         cmake_paths

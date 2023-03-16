@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `user`(
     `id`       INTEGER  PRIMARY KEY,
     `username` TEXT     NOT NULL,
+    `email`    TEXT     NOT NULL,
     `password` TEXT     NOT NULL,
     `token`    CHAR(50) NOT NULL,
     `admin`    BOOLEAN  NOT NULL DEFAULT 0

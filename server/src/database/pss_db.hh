@@ -48,26 +48,26 @@ public:
 
     QUERY(
         auth_user,
-        "SELECT * FROM user WHERE token = :token;",
+        "SELECT admin FROM user WHERE token = :token;",
         PARAM(::oatpp::String, token)
     )
 
     QUERY(
         signIn_auth,
-        "SELECT token FROM user WHERE username = :form.username ,password = :form.password;",
+        "SELECT token FROM user WHERE email = :form.email AND password = :form.password;",
         PARAM(::oatpp::Object<::server::dto::signIn_dto>, form)
     )
 
     QUERY(
         signUp,
-        "INSERT INTO user(username, password, token) VALUES(:form.username, :form.password, :token);",
+        "INSERT INTO user(username, email, password, token) VALUES(:form.username, :form.email, :form.password, :token);",
         PARAM(::oatpp::Object<::server::dto::signUp_dto>, form),
         PARAM(::oatpp::String, token)
     )
 
     QUERY(
         create_user,
-        "INSERT INTO user(username, password, token, admin) VALUES(:user.username, :user.password, :user.token, :user.admin);",
+        "INSERT INTO user(username, email, password, token, admin) VALUES(:user.username, :user.email, :user.password, :user.token, :user.admin);",
         PARAM(::oatpp::Object<::server::dto::user_dto>, user)
     )
 

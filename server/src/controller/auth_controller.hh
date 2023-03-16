@@ -38,6 +38,7 @@ public:
 
     ENDPOINT_INFO(signUp) {
         info->summary = "Sign up";
+        info->tags.emplace_back("auth-controller");
 
         info->addConsumes<Object<::server::dto::signUp_dto>> ("application/json");
 
@@ -52,6 +53,7 @@ public:
 
     ENDPOINT_INFO(signIn) {
         info->summary = "sign in";
+        info->tags.emplace_back("auth-controller");
 
         info->addConsumes<Object<::server::dto::signIn_dto>> ("application/json");
 
