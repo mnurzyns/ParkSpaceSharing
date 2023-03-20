@@ -18,7 +18,7 @@ public:
 private:
     oatpp::String m_secret;
     oatpp::String m_issuer;
-    jwt::verifier<jwt::default_clock, jwt::picojson_traits> m_verifier;
+    zjwt::verifier<jwt::default_clock, jwt::picojson_traits> m_verifier;
 public:
 
     JWT(const oatpp::String& secret,
@@ -29,5 +29,4 @@ public:
     std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String& token);
 
 };
-
 */

@@ -33,6 +33,6 @@ target_link_libraries(
     PUBLIC oatpp::oatpp-openssl
     PUBLIC jwt-cpp::jwt-cpp
     PUBLIC OpenSSL::SSL
-    PUBLIC OpenSSL::Crypto
+    #PUBLIC OpenSSL::Cryptozz
 )
 

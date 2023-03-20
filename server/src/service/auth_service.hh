@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <oatpp-sqlite/Utils.hpp>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/protocol/http/Http.hpp>
