@@ -46,18 +46,18 @@ public:
         return createDtoResponse(Status::CODE_200, service_.get_users());
     }
 
-    ENDPOINT_INFO(get_myUser)
+    ENDPOINT_INFO(get_user_byId)
     {
-        info->summary = "Get user by token";
+        info->summary = "Get user by id";
         info->tags.emplace_back("user-controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "user/{user_token}", get_myUser, PATH(oatpp::String, user_token))
+    ENDPOINT("GET", "users/{user_id}", get_user_byId, PATH(oatpp::UInt32, user_id))
     {
-        return createDtoResponse(Status::CODE_200, service_.get_myUser(user_token));
+        return createDtoResponse(Status::CODE_200, service_.get_user_byId(user_id));
     }
 
     ENDPOINT_INFO(create_user)

@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS `user`(
     `username` TEXT     NOT NULL,
     `email`    TEXT     NOT NULL,
     `password` TEXT     NOT NULL,
-    `token`    CHAR(50) NOT NULL,
     `admin`    BOOLEAN  NOT NULL DEFAULT 0
 );
 
@@ -32,4 +31,4 @@ CREATE INDEX IF NOT EXISTS `idx_offer_parking_space_id`
     ON `offer`(`parking_space_id`);
 
 
-INSERT INTO user(username, email, password, token, admin) VALUES("admin", "admin@admin", "admin", "admin", 1);
+INSERT INTO user(username, email, password, admin) VALUES("admin", "admin@admin", "admin", 1);

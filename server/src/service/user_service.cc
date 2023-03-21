@@ -22,22 +22,9 @@ user_service::get_users()
 }
 
 ::oatpp::Object<::server::dto::user_dto>
-user_service::get_user(oatpp::UInt32 const& user_id)
+user_service::get_user_byId(oatpp::UInt32 const& user_id)
 {
-    auto res = database_->get_user(user_id);
-    OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-    OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "User not found");
-
-    auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::user_dto>>>();
-    OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
-
-    return fetch[0];
-}
-
-::oatpp::Object<::server::dto::user_dto>
-user_service::get_myUser(oatpp::String const& user_token)
-{
-    auto res = database_->get_myUser(user_token);
+    auto res = database_->get_user_byId(user_id);
     OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
     OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "User not found");
 
@@ -54,7 +41,7 @@ user_service::create_user(::oatpp::Object<::server::dto::user_dto> const& dto)
     OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
     auto user_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
-    return get_user(static_cast<v_uint32>(user_id));
+    return get_user_byId(static_cast<v_uint32>(user_id));
 }
 
 } // namespace server::service

@@ -11,12 +11,12 @@ class JWT {
 public:
 
     struct Payload : public oatpp::web::server::handler::AuthorizationObject {
-        oatpp::String userId;
+        oatpp::UInt32 userId;
     };
 
 private:
-    oatpp::String m_secret;
-    oatpp::String m_issuer;
+    oatpp::String m_secret = "secret";
+    oatpp::String m_issuer = "issuer";
     jwt::verifier<jwt::default_clock, jwt::traits::nlohmann_json> m_verifier;
 public:
 

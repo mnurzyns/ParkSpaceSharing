@@ -1,8 +1,7 @@
-#pragma once
-
 #include "dto/page_dto.hh"
 #include "dto/offer_dto.hh"
 #include "dto/status_dto.hh"
+#include "database/pss_db.hh"
 #include "service/offer_service.hh"
 
 #include <memory>
@@ -36,7 +35,7 @@ public:
     ENDPOINT_INFO(get_offers)
     {
         info->summary = "Get page_dto parking spaces";
-        info->tags.emplace_back("offer-controller");
+        info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::offer_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
@@ -45,6 +44,34 @@ public:
     ENDPOINT("GET", "offers", get_offers)
     {
         return createDtoResponse(Status::CODE_200, service_.get_offers());
+    }
+
+    ENDPOINT_INFO(get_offer_byId)
+    {
+        info->summary = "Get offer of parking space by its id";
+        info->tags.emplace_back("parkingSpace_controller");
+
+        //info->addResponse<::oatpp::Object<::server::dto::offer_dto>>(Status::CODE_200, "application/json");
+        //info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
+        //info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
+    }
+    ENDPOINT("GET", "offers/{offer_id}", get_offer_byId, PATH(oatpp::UInt32, offer_id))
+    {
+        return createDtoResponse(Status::CODE_200, service_.get_offer_byId(offer_id));
+    }
+
+    ENDPOINT_INFO(create_offer)
+    {
+        info->summary = "Get page_dto parking spaces";
+        info->tags.emplace_back("parkingSpace_controller");
+
+        info->addResponse<::oatpp::Object<::server::dto::offer_dto>>(Status::CODE_200, "application/json");
+        //info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
+        //info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
+    }
+    ENDPOINT("POST", "offers", create_offer, BODY_DTO(Object<::server::dto::offer_dto>, offer_dto))
+    {
+        return createDtoResponse(Status::CODE_200, service_.create_offer(offer_dto));
     }
 
 private:

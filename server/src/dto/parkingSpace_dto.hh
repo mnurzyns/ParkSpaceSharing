@@ -9,13 +9,12 @@ namespace server::dto
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class signUp_dto : public oatpp::DTO {
+class parkingSpace_dto : public oatpp::DTO {
 
-  DTO_INIT(signUp_dto, DTO)
+  DTO_INIT(parkingSpace_dto, DTO)
 
-  DTO_FIELD(String, username, "username");
-  DTO_FIELD(String, password, "password");
-  DTO_FIELD(String, email,    "email");
+  DTO_FIELD(UInt32, user_id,  "owner_id");
+  DTO_FIELD(String, location, "location");
 
 };
 

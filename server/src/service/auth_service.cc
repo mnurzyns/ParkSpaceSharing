@@ -16,18 +16,18 @@ namespace server::service
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::auth_dto>>>();//powinno być UInt32
         OATPP_ASSERT_HTTP(fetch->size() == 0, Status::CODE_409, "User already exists");
     
-        //Generating tokn
-        //auto payload = std::make_shared<JWT::Payload>();
-        //payload->userId = dto->password;
-
-        auto auth = ::server::dto::auth_dto::createShared();
-        auth->token = "token";//jwt_->createToken(payload);
-
-
         //Adding user to database
-        res = database_->signUp(dto,auth->token);
+        res = database_->signUp(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "User not Created");
+
+        //Generating tokn
+        auto payload = std::make_shared<JWT::Payload>();
+        auto user_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
+
+        payload->userId = (static_cast<v_uint32>(user_id));
+        auto auth = ::server::dto::auth_dto::createShared();
+        auth->token = jwt_->createToken(payload);
 
         return auth;
     }
@@ -38,10 +38,16 @@ namespace server::service
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "User not found");
 
-        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::auth_dto>>>();
+        auto fetch = res->fetch<::oatpp::Vector<oatpp::UInt32>>();
         OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
 
-        return fetch[0];
+        //Generating tokn
+        auto payload = std::make_shared<JWT::Payload>();
+        payload->userId = fetch[0];
+        auto auth = ::server::dto::auth_dto::createShared();
+        auth->token = jwt_->createToken(payload);
+
+        return auth;
     }
 
 } // namespace server::service

@@ -14,6 +14,7 @@
 #include "controller/user_controller.hh"
 #include "controller/offer_controller.hh"
 #include "controller/auth_controller.hh"
+//#include "controller/parkingSpace_controller.hh"
 
 int
 main()
@@ -28,6 +29,8 @@ main()
     endpoints.append(router->addController(::server::controller::auth_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
+    //endpoints.append(router->addController(::server::controller::parkingSpace_controller::create_shared())->getEndpoints());
+
 
     router->addController(::oatpp::swagger::Controller::createShared(endpoints));
 

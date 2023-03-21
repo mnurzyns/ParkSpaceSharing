@@ -4,12 +4,12 @@
 
 
 JWT::JWT(const oatpp::String& secret,
-         const oatpp::String& issuer)
+  const oatpp::String& issuer)
   : m_secret(secret)
   , m_issuer(issuer)
   , m_verifier(jwt::verify()
-               .allow_algorithm(jwt::algorithm::hs256{ secret })
-               .with_issuer(issuer))
+  .allow_algorithm(jwt::algorithm::hs256{ secret })
+  .with_issuer(issuer))
 {}
 
 oatpp::String JWT::createToken(const std::shared_ptr<Payload>& payload) {

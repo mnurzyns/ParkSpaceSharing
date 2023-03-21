@@ -1,18 +1,13 @@
 #pragma once
 
-#include "dto/page_dto.hh"
-#include "dto/status_dto.hh"
-#include "dto/signIn_dto.hh"
-#include "dto/signUp_dto.hh"
-#include "dto/auth_dto.hh"
-#include "service/auth_service.hh"
-
 #include <memory>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
+
+#include "service/auth_service.hh"
 
 namespace server::controller
 {

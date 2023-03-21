@@ -18,7 +18,6 @@ class user_dto :
     DTO_FIELD(String,  name,     "username");
     DTO_FIELD(String,  email,    "email");
     DTO_FIELD(String,  password, "password");
-    DTO_FIELD(String,  token,    "token");
     DTO_FIELD(Boolean, admin,    "admin");
 };
 

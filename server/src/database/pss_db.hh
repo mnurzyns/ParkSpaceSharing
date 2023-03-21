@@ -13,6 +13,7 @@
 #include "dto/signIn_dto.hh"
 #include "dto/signUp_dto.hh"
 #include "dto/auth_dto.hh"
+#include "dto/offer_dto.hh"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
@@ -38,13 +39,13 @@ public:
 
     QUERY(
         auth_user,
-        "SELECT admin FROM user WHERE token = :token;",
-        PARAM(::oatpp::String, token)
+        "SELECT admin FROM user WHERE id = :id;",
+        PARAM(::oatpp::UInt32, id)
     )
 
     QUERY(
         signIn_auth,
-        "SELECT token FROM user WHERE email = :form.email AND password = :form.password;",
+        "SELECT id FROM user WHERE email = :form.email AND password = :form.password;",
         PARAM(::oatpp::Object<::server::dto::signIn_dto>, form)
     )
 
@@ -56,10 +57,15 @@ public:
     )
 
     QUERY(
+        is_offer_exist,
+        "SELECT id FROM offer WHERE parking_space_id = :id_parking_space;",
+        PARAM(oatpp::UInt32, id_parking_space)
+    )
+
+    QUERY(
         signUp,
-        "INSERT INTO user(username, email, password, token) VALUES(:form.username, :form.email, :form.password, :token);",
-        PARAM(::oatpp::Object<::server::dto::signUp_dto>, form),
-        PARAM(::oatpp::String, token)
+        "INSERT INTO user(username, email, password) VALUES(:form.username, :form.email, :form.password);",
+        PARAM(::oatpp::Object<::server::dto::signUp_dto>, form)
     )
 
     QUERY(
@@ -68,15 +74,9 @@ public:
     )
 
     QUERY(
-        get_user,
+        get_user_byId,
         "SELECT * FROM user WHERE id=:id;",
-        PARAM(::oatpp::UInt32, id)
-    )
-
-    QUERY(
-        get_myUser,
-        "SELECT * FROM user WHERE token=:token;",
-        PARAM(::oatpp::String, token)
+        PARAM(oatpp::UInt32, id)
     )
 
     QUERY(
@@ -88,6 +88,18 @@ public:
     QUERY(
         get_offers,
         "SELECT * FROM offer;"
+    )
+
+    QUERY(
+        get_offer_byId,
+        "SELECT * FROM offer WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
+    )    
+
+    QUERY(
+        create_offer,
+        "INSERT INTO offer(parking_space_id, description) VALUES(:offer.id_parkingSpace, :offer.description);",
+        PARAM(::oatpp::Object<::server::dto::offer_dto>, offer)
     )
 
     //na potrzeby testowania
