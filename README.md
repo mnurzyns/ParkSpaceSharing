@@ -1,6 +1,12 @@
 # ParkSpaceSharing
 Project created by trainees of Bakcyl Programowania in 2022/2023.
 
+## Run server using docker-compose
+
+```bash
+docker-compose up
+```
+
 ## Build from source
 
 ### Prerequisites

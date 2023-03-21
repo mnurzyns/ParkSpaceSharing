@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  server:
+    container_name: server
+    image: pss/server
+    ports:
+      - "8000:8000/tcp"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
