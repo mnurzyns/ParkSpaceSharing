@@ -21,9 +21,8 @@ namespace server::service
         //payload->userId = dto->password;
 
         auto auth = ::server::dto::auth_dto::createShared();
-        //auth->token = jwt_->createToken(payload);
+        auth->token = "token";//jwt_->createToken(payload);
 
-        auth->token = "token";
 
         //Adding user to database
         res = database_->signUp(dto,auth->token);

@@ -3,22 +3,21 @@
 #include "oatpp/core/Types.hpp"
 
 #include <jwt-cpp/jwt.h>
+#include "jwt-cpp/traits/nlohmann-json/traits.h"
 
-/*
+
 
 class JWT {
 public:
 
     struct Payload : public oatpp::web::server::handler::AuthorizationObject {
-
         oatpp::String userId;
-
     };
 
 private:
     oatpp::String m_secret;
     oatpp::String m_issuer;
-    zjwt::verifier<jwt::default_clock, jwt::picojson_traits> m_verifier;
+    jwt::verifier<jwt::default_clock, jwt::traits::nlohmann_json> m_verifier;
 public:
 
     JWT(const oatpp::String& secret,
@@ -29,4 +28,3 @@ public:
     std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String& token);
 
 };
-*/

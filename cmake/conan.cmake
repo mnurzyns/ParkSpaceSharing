@@ -14,7 +14,7 @@ conan_cmake_configure(
         oatpp-swagger/1.3.0
         oatpp-sqlite/1.3.0
         oatpp-openssl/1.3.0
-        jwt-cpp/0.6.0
+        cpp-jwt/1.4
         openssl/3.0.8
 
     GENERATORS

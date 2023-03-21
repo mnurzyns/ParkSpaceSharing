@@ -35,6 +35,19 @@ user_service::get_user(oatpp::UInt32 const& user_id)
 }
 
 ::oatpp::Object<::server::dto::user_dto>
+user_service::get_myUser(oatpp::String const& user_token)
+{
+    auto res = database_->get_myUser(user_token);
+    OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+    OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "User not found");
+
+    auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::user_dto>>>();
+    OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
+
+    return fetch[0];
+}
+
+::oatpp::Object<::server::dto::user_dto>
 user_service::create_user(::oatpp::Object<::server::dto::user_dto> const& dto)
 {
     auto res = database_->create_user(dto);

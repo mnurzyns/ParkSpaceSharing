@@ -35,16 +35,6 @@ public:
         OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
     }
 
-    QUERY(
-        get_users,
-        "SELECT * FROM user;"
-    )
-
-    QUERY(
-        get_user,
-        "SELECT * FROM user WHERE id=:id;",
-        PARAM(::oatpp::UInt32, id)
-    )
 
     QUERY(
         auth_user,
@@ -69,6 +59,23 @@ public:
         signUp,
         "INSERT INTO user(username, email, password, token) VALUES(:form.username, :form.email, :form.password, :token);",
         PARAM(::oatpp::Object<::server::dto::signUp_dto>, form),
+        PARAM(::oatpp::String, token)
+    )
+
+    QUERY(
+        get_users,
+        "SELECT * FROM user;"
+    )
+
+    QUERY(
+        get_user,
+        "SELECT * FROM user WHERE id=:id;",
+        PARAM(::oatpp::UInt32, id)
+    )
+
+    QUERY(
+        get_myUser,
+        "SELECT * FROM user WHERE token=:token;",
         PARAM(::oatpp::String, token)
     )
 

@@ -27,6 +27,9 @@ public:
     get_user(oatpp::UInt32 const& user_id);
 
     ::oatpp::Object<::server::dto::user_dto>
+    get_myUser(oatpp::String const& user_token);
+
+    ::oatpp::Object<::server::dto::user_dto>
     create_user(::oatpp::Object<::server::dto::user_dto> const& dto);
 };
 

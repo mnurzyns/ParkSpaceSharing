@@ -52,7 +52,7 @@ public:
 
 
     ENDPOINT_INFO(signIn) {
-        info->summary = "sign in";
+        info->summary = "Sign in";
         info->tags.emplace_back("auth-controller");
 
         info->addConsumes<Object<::server::dto::signIn_dto>> ("application/json");

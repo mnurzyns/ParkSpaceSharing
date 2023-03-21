@@ -23,7 +23,7 @@ class auth_service
 {
 private:
     OATPP_COMPONENT(::std::shared_ptr<::server::database::pss_db>, database_);
-    //OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_);
+    OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_);
 
 public:
     oatpp::Object<::server::dto::auth_dto>

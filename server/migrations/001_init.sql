@@ -30,3 +30,6 @@ CREATE INDEX IF NOT EXISTS `idx_parking_space_user_id`
 
 CREATE INDEX IF NOT EXISTS `idx_offer_parking_space_id`
     ON `offer`(`parking_space_id`);
+
+
+INSERT INTO user(username, email, password, token, admin) VALUES("admin", "admin@admin", "admin", "admin", 1);

@@ -1,7 +1,7 @@
 
 #include "JWT.hpp"
 
-/*
+
 
 JWT::JWT(const oatpp::String& secret,
          const oatpp::String& issuer)
@@ -36,4 +36,3 @@ std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token
 }
 
 
-*/
