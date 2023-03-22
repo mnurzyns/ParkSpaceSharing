@@ -11,6 +11,7 @@
 #include "dto/page_dto.hh"
 #include "dto/user_dto.hh"
 #include "dto/auth_dto.hh"
+#include "dto/status_dto.hh"
 #include "auth/JWT.hpp"
 
 namespace server::service

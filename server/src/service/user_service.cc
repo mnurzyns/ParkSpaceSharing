@@ -1,7 +1,5 @@
 #include "service/user_service.hh"
-#include "dto/offer_dto.hh"
-#include <oatpp-sqlite/Utils.hpp>
-#include <oatpp/web/protocol/http/Http.hpp>
+
 
 //NOLINTNEXTLINE
 using Status = ::oatpp::web::protocol::http::Status;

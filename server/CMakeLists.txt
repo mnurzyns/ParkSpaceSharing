@@ -34,6 +34,6 @@ target_link_libraries(
     PUBLIC jwt-cpp::jwt-cpp
     PUBLIC OpenSSL::SSL
     PUBLIC OpenSSL::Crypto
-    PUBLIC nlohmann_json::nlohmann_json
+    PUBLIC nlohmann_json::nlohmann_json   
 )
 

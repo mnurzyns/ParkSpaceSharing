@@ -1,6 +1,4 @@
-
-#include "JWT.hpp"
-
+#include "auth/JWT.hpp"
 
 
 JWT::JWT(const oatpp::String& secret,
@@ -12,7 +10,7 @@ JWT::JWT(const oatpp::String& secret,
   .with_issuer(issuer))
 {}
 
-oatpp::String JWT::createToken(const std::shared_ptr<Payload>& payload) {
+::oatpp::String JWT::createToken(const std::shared_ptr<Payload>& payload) {
   auto token = jwt::create()
     .set_issuer(m_issuer)
     .set_type("JWS")

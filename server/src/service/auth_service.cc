@@ -1,6 +1,5 @@
 #include "service/auth_service.hh"
 
-
 //NOLINTNEXTLINE
 using Status = ::oatpp::web::protocol::http::Status;
 
@@ -13,7 +12,7 @@ namespace server::service
         auto res = database_->is_exist(dto->email,dto->username);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         
-        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::auth_dto>>>();//powinno być UInt32
+        auto fetch = res->fetch<::oatpp::Vector<::oatpp::UInt32>>();
         OATPP_ASSERT_HTTP(fetch->size() == 0, Status::CODE_409, "User already exists");
     
         //Adding user to database
@@ -24,7 +23,6 @@ namespace server::service
         //Generating tokn
         auto payload = std::make_shared<JWT::Payload>();
         auto user_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
-
         payload->userId = (static_cast<v_uint32>(user_id));
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);

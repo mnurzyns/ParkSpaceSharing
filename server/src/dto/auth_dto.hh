@@ -13,8 +13,7 @@ class auth_dto : public oatpp::DTO {
 
   DTO_INIT(auth_dto, DTO)
 
-  DTO_FIELD(::oatpp::String, token);
-  //DTO_FIELD(String, expire_date);
+  DTO_FIELD(::oatpp::String, token, "token");
 
 };
 

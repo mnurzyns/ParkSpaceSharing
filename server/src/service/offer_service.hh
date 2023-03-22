@@ -10,6 +10,7 @@
 #include "database/pss_db.hh"
 #include "dto/page_dto.hh"
 #include "dto/offer_dto.hh"
+#include "dto/status_dto.hh"
 
 namespace server::service
 {

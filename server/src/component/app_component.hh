@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <oatpp/core/data/mapping/ObjectMapper.hpp>
+#include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/network/Address.hpp>
 #include <oatpp/network/ConnectionHandler.hpp>
@@ -13,6 +14,8 @@
 #include <oatpp/web/server/HttpRouter.hpp>
 
 #include "error_handler.hh"
+
+#include "interceptor/AuthInterceptor.hpp"
 
 #include "component/database_component.hh"
 #include "component/swagger_component.hh"
@@ -25,6 +28,10 @@ class app_component
 public:
     ::server::component::database_component database_component;
     ::server::component::swagger_component swagger_component;
+
+    OATPP_CREATE_COMPONENT(::std::shared_ptr<JWT>, jwt_)([]{
+    return ::std::make_shared<JWT>("secret", "issuer");
+    }());
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::data::mapping::ObjectMapper>, api_object_mapper)([]{
         auto object_mapper = ::oatpp::parser::json::mapping::ObjectMapper::createShared();
@@ -42,11 +49,17 @@ public:
     }());
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::network::ConnectionHandler>, server_connection_handler)([]{
+
+        OATPP_COMPONENT(::std::shared_ptr<JWT>, jwt_m);
         OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
         OATPP_COMPONENT(::std::shared_ptr<::oatpp::data::mapping::ObjectMapper>, object_mapper);
 
         auto connection_handler = ::oatpp::web::server::HttpConnectionHandler::createShared(router);
         connection_handler->setErrorHandler(::std::make_shared<::server::error_handler>(object_mapper));
+
+        connection_handler->addRequestInterceptor(::std::make_shared<oatpp::web::server::interceptor::AllowOptionsGlobal>());
+        connection_handler->addRequestInterceptor(::std::make_shared<AuthInterceptor>(jwt_m));
+        connection_handler->addResponseInterceptor(::std::make_shared<oatpp::web::server::interceptor::AllowCorsGlobal>());
 
         return connection_handler;
     }());

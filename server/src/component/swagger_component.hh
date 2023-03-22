@@ -18,7 +18,7 @@ public:
             ::oatpp::swagger::DocumentInfo::Builder{}
                 .setTitle("Parking space sharing")
                 .setDescription("Project created by trainees of Bakcyl Programowania in 2022/2023.")
-                .setVersion("0.0.3")
+                .setVersion("0.1.0")
                 .addServer("http://localhost:8000", "server on localhost")
                 .build();
     }());
