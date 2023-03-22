@@ -33,7 +33,11 @@ main()
     OATPP_COMPONENT(::std::shared_ptr<::oatpp::network::ConnectionHandler>, connection_handler);
 
     ::oatpp::network::Server server{server_connection_provider, connection_handler};
-    OATPP_LOGD("Server", "Server running on port %s", server_connection_provider->getProperty("port").toString()->c_str());
+    OATPP_LOGD(
+            "Server",
+            "Server running on %s:%s",
+            server_connection_provider->getProperty("host").toString()->c_str(),
+            server_connection_provider->getProperty("port").toString()->c_str());
 
     server.run();
 
