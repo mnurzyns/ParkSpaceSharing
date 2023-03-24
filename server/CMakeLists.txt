@@ -8,6 +8,8 @@ target_sources(
     src/service/user_service.cc
     src/service/offer_service.cc
     src/service/auth_service.cc
+    src/auth/AuthHandler.cpp
+    src/auth/JWT.cpp
 )
 
 target_include_directories(
@@ -34,6 +36,6 @@ target_link_libraries(
     PUBLIC jwt-cpp::jwt-cpp
     PUBLIC OpenSSL::SSL
     PUBLIC OpenSSL::Crypto
-    PUBLIC nlohmann_json::nlohmann_json   
+    PUBLIC nlohmann_json::nlohmann_json
 )
 
