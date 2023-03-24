@@ -2,23 +2,22 @@
 
 #include <memory>
 
-#include <oatpp/core/data/mapping/ObjectMapper.hpp>
-#include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
-#include <oatpp/core/macro/component.hpp>
-#include <oatpp/network/Address.hpp>
-#include <oatpp/network/ConnectionHandler.hpp>
-#include <oatpp/network/ConnectionProvider.hpp>
-#include <oatpp/network/tcp/server/ConnectionProvider.hpp>
-#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
-#include <oatpp/web/server/HttpConnectionHandler.hpp>
-#include <oatpp/web/server/HttpRouter.hpp>
+#include "component/database_component.hh"
+#include "component/swagger_component.hh"
+#include "interceptor/AuthInterceptor.hpp"
 
 #include "error_handler.hh"
 
-#include "interceptor/AuthInterceptor.hpp"
+#include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
 
-#include "component/database_component.hh"
-#include "component/swagger_component.hh"
+#include <oatpp/web/server/HttpConnectionHandler.hpp>
+#include <oatpp/web/server/HttpRouter.hpp>
+#include <oatpp/network/tcp/server/ConnectionProvider.hpp>
+#include <oatpp/core/Types.hpp>
+
+#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
+
+#include <oatpp/core/macro/component.hpp>
 
 namespace server::component
 {
@@ -50,15 +49,16 @@ public:
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::network::ConnectionHandler>, server_connection_handler)([]{
 
-        OATPP_COMPONENT(::std::shared_ptr<JWT>, jwt_m);
+        OATPP_COMPONENT(::std::shared_ptr<JWT>, jwt_n);
         OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
         OATPP_COMPONENT(::std::shared_ptr<::oatpp::data::mapping::ObjectMapper>, object_mapper);
 
         auto connection_handler = ::oatpp::web::server::HttpConnectionHandler::createShared(router);
+
         connection_handler->setErrorHandler(::std::make_shared<::server::error_handler>(object_mapper));
 
         connection_handler->addRequestInterceptor(::std::make_shared<oatpp::web::server::interceptor::AllowOptionsGlobal>());
-        connection_handler->addRequestInterceptor(::std::make_shared<AuthInterceptor>(jwt_m));
+        connection_handler->addRequestInterceptor(::std::make_shared<AuthInterceptor>(jwt_n));
         connection_handler->addResponseInterceptor(::std::make_shared<oatpp::web::server::interceptor::AllowCorsGlobal>());
 
         return connection_handler;

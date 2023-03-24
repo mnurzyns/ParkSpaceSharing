@@ -1,13 +1,14 @@
-#pragma once
 
-#include <memory>
-#include <oatpp/core/Types.hpp>
-#include <oatpp/core/macro/codegen.hpp>
-#include <oatpp/core/macro/component.hpp>
-#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
-#include <oatpp/web/server/api/ApiController.hpp>
+#ifndef EXAMPLE_JWT_AUTHCONTROLLER_HPP
+#define EXAMPLE_JWT_AUTHCONTROLLER_HPP
 
 #include "service/auth_service.hh"
+
+#include <memory>
+#include <oatpp/web/server/api/ApiController.hpp>
+#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
+#include <oatpp/core/macro/codegen.hpp>
+
 
 namespace server::controller
 {
@@ -20,14 +21,13 @@ class auth_controller :
 public:
     [[nodiscard]]
     explicit
-    auth_controller(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper)) :
-        ::oatpp::web::server::api::ApiController{object_mapper} {}
+    auth_controller(const std::shared_ptr<ObjectMapper>& objectMapper)
+    : oatpp::web::server::api::ApiController(objectMapper){}
 
-    static
-    ::std::shared_ptr<auth_controller>
-    create_shared(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper))
-    {
-        return ::std::make_shared<::server::controller::auth_controller>(object_mapper);
+    static std::shared_ptr<auth_controller> create_shared(
+    OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
+    ){
+        return std::make_shared<auth_controller>(objectMapper);
     }
 
 
@@ -60,7 +60,6 @@ public:
         return createDtoResponse(Status::CODE_200, service_.signIn(dto));
     }
 
-
 private:
     ::server::service::auth_service service_;
 };
@@ -69,3 +68,5 @@ private:
 
 } // namespace server::controller
 
+
+#endif //EXAMPLE_JWT_AUTHCONTROLLER_HPP

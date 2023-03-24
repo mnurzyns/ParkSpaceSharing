@@ -1,14 +1,12 @@
+
 #include <memory>
 
-#include <oatpp/core/base/Environment.hpp>
-#include <oatpp/core/macro/component.hpp>
-#include <oatpp/core/provider/Provider.hpp>
-#include <oatpp/network/ConnectionHandler.hpp>
-#include <oatpp/network/ConnectionProvider.hpp>
-#include <oatpp/network/Server.hpp>
-#include <oatpp/web/server/HttpRouter.hpp>
-#include <oatpp/web/server/api/Endpoint.hpp>
+#include <iostream>
 #include <oatpp-swagger/Controller.hpp>
+#include <oatpp/network/Server.hpp>
+
+#include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
+#include "interceptor/AuthInterceptor.hpp"
 
 #include "component/app_component.hh"
 #include "controller/user_controller.hh"
@@ -21,11 +19,12 @@ main()
 {
     ::oatpp::base::Environment::init();
 
-    ::server::component::app_component const app_component{};
+    ::server::component::app_component app_component;
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
+    auto router = app_component.http_router.getObject();
 
-    ::oatpp::web::server::api::Endpoints endpoints{};
+    ::oatpp::web::server::api::Endpoints endpoints;
+
     endpoints.append(router->addController(::server::controller::auth_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
     endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
@@ -34,11 +33,13 @@ main()
 
     router->addController(::oatpp::swagger::Controller::createShared(endpoints));
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::network::ServerConnectionProvider>, server_connection_provider);
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::network::ConnectionHandler>, connection_handler);
+    oatpp::network::Server server(
+        app_component.server_connection_provider.getObject(),
+        app_component.server_connection_handler.getObject()
+    );
 
-    ::oatpp::network::Server server{server_connection_provider, connection_handler};
-    OATPP_LOGD("Server", "Server running on port %s", server_connection_provider->getProperty("port").toString()->c_str());
+
+    OATPP_LOGD("Server", "Running on port %s...", app_component.server_connection_provider.getObject()->getProperty("port").toString()->c_str());
 
     server.run();
 

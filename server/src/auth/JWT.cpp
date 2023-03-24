@@ -1,4 +1,4 @@
-#include "auth/JWT.hpp"
+#include "JWT.hpp"
 
 
 JWT::JWT(const oatpp::String& secret,
@@ -14,10 +14,9 @@ JWT::JWT(const oatpp::String& secret,
   auto token = jwt::create()
     .set_issuer(m_issuer)
     .set_type("JWS")
-
     .set_payload_claim("userId", jwt::claim(payload->userId))
-
     .sign(jwt::algorithm::hs256{m_secret});
+
   return token;
 }
 
@@ -27,10 +26,9 @@ std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token
   m_verifier.verify(decoded);
 
   auto payload = std::make_shared<Payload>();
-  payload->userId = decoded.get_payload_claims().at("userId").as_string();
+  payload->userId = decoded.get_payload_claims().at("userId").as_int();
 
   return payload;
-
 }
 
 

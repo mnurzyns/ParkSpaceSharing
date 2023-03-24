@@ -4,9 +4,9 @@
 
 #include <oatpp/core/base/Environment.hpp>
 #include <oatpp/orm/DbClient.hpp>
+#include <oatpp-sqlite/Utils.hpp>
 #include <oatpp/orm/Executor.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
-
 #include <oatpp-sqlite/orm.hpp>
 
 #include "dto/user_dto.hh"

@@ -2,11 +2,11 @@
 #ifndef EXAMPLE_JWT_JWT_HPP
 #define EXAMPLE_JWT_JWT_HPP
 
-#include "oatpp/web/server/handler/AuthorizationHandler.hpp"
-#include "oatpp/core/Types.hpp"
+#include <oatpp/web/server/handler/AuthorizationHandler.hpp>
+#include <oatpp/core/Types.hpp>
 
 #include <jwt-cpp/jwt.h>
-#include "jwt-cpp/traits/nlohmann-json/traits.h"
+#include <jwt-cpp/traits/nlohmann-json/traits.h>
 
 
 class JWT {

@@ -73,6 +73,18 @@ public:
         return createDtoResponse(Status::CODE_200, service_.create_user(user_dto));
     }
 
+    /*ENDPOINT_INFO(deleteUser) {
+        info->summary = "Delete User";
+
+        info->addResponse<Object<StatusDto>>(Status::CODE_200, "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
+    }
+    ENDPOINT("DELETE", "users", deleteUser,BUNDLE(String, userId))
+    {
+        return createDtoResponse(Status::CODE_200, service_.deleteUserById(userId));
+    }
+    */
+
 private:
     ::server::service::user_service service_;
 };
