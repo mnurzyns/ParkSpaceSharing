@@ -1,7 +1,7 @@
 #ifndef EXAMPLE_JWT_AUTHHANDLER_HPP
 #define EXAMPLE_JWT_AUTHHANDLER_HPP
 
-#include "JWT.hpp"
+#include "auth/JWT.hpp"
 
 class AuthHandler : public oatpp::web::server::handler::BearerAuthorizationHandler {
 private:
