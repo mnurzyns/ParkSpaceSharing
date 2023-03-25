@@ -1,5 +1,5 @@
-#ifndef EXAMPLE_JWT_AUTHHANDLER_HPP
-#define EXAMPLE_JWT_AUTHHANDLER_HPP
+#ifndef AUTHHANDLER_HPP
+#define AUTHHANDLER_HPP
 
 #include "auth/JWT.hpp"
 

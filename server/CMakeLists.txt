@@ -10,6 +10,7 @@ target_sources(
     src/service/auth_service.cc
     src/auth/AuthHandler.cpp
     src/auth/JWT.cpp
+    src/interceptor/AuthInterceptor.cpp
 )
 
 target_include_directories(

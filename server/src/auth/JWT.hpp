@@ -1,6 +1,6 @@
 
-#ifndef EXAMPLE_JWT_JWT_HPP
-#define EXAMPLE_JWT_JWT_HPP
+#ifndef JWT_HPP
+#define JWT_HPP
 
 #include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 #include <oatpp/core/Types.hpp>
