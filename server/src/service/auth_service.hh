@@ -12,6 +12,7 @@
 #include <oatpp/web/protocol/http/Http.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/core/Types.hpp>
+#include <string>
 
 
 namespace server::service

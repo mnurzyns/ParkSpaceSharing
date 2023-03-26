@@ -36,12 +36,12 @@ namespace server::service
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "User not found");
 
-        auto fetch = res->fetch<::oatpp::Vector<oatpp::UInt32>>();
+        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::user_dto>>>();
         OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
 
         //Generating tokn
         auto payload = std::make_shared<JWT::Payload>();
-        payload->userId = fetch[0];
+        payload->userId = fetch[0]->id;
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);
 

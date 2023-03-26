@@ -67,6 +67,10 @@
         "__functional_base": "cpp",
         "__functional_base_03": "cpp",
         "__hash_table": "cpp",
-        "__tuple": "cpp"
+        "__tuple": "cpp",
+        "bitset": "cpp",
+        "optional": "cpp",
+        "cfenv": "cpp",
+        "__nullptr": "cpp"
     }
 }

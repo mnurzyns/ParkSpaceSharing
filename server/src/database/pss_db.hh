@@ -38,7 +38,7 @@ public:
 
 
     QUERY(
-        auth_user,
+        admin_user,
         "SELECT admin FROM user WHERE id = :id;",
         PARAM(::oatpp::UInt32, id)
     )
@@ -102,10 +102,10 @@ public:
         PARAM(::oatpp::Object<::server::dto::offer_dto>, offer)
     )
 
-    //na potrzeby testowania
     QUERY(
-        delete_users,
-        "DELETE FROM user;"
+        delete_user_byId,
+        "DELETE FROM user WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
     )
 };
 

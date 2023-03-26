@@ -35,7 +35,7 @@ public:
 
     ENDPOINT_INFO(get_users)
     {
-        info->summary = "Get users (functon only for testing purposes)";
+        info->summary = "Get users (function for admin)";
         info->tags.emplace_back("user-controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_page_dto>>(Status::CODE_200, "application/json");
@@ -48,7 +48,7 @@ public:
 
     ENDPOINT_INFO(get_user_byId)
     {
-        info->summary = "Get user by id";
+        info->summary = "Get user by id (function for admin)";
         info->tags.emplace_back("user-controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
@@ -62,7 +62,7 @@ public:
 
     ENDPOINT_INFO(create_user)
     {
-        info->summary = "Create a user (functon only for testing purposes)";
+        info->summary = "Create a user (function for admin)";
         info->tags.emplace_back("user-controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
@@ -73,17 +73,19 @@ public:
         return createDtoResponse(Status::CODE_200, service_.create_user(user_dto));
     }
 
-    /*ENDPOINT_INFO(deleteUser) {
-        info->summary = "Delete User";
+    ENDPOINT_INFO(deleteUser) {
+        info->summary = "Delete User (function for admin)";
 
-        info->addResponse<Object<StatusDto>>(Status::CODE_200, "application/json");
-        info->addResponse<Object<StatusDto>>(Status::CODE_500, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
+
     }
-    ENDPOINT("DELETE", "users", deleteUser,BUNDLE(String, userId))
+    ENDPOINT("DELETE", "users/{user_id}", deleteUser, PATH(oatpp::UInt32, userId))
     {
-        return createDtoResponse(Status::CODE_200, service_.deleteUserById(userId));
+        return createDtoResponse(Status::CODE_200, service_.delete_user_byId(userId));
     }
-    */
+
+
+    
 
 private:
     ::server::service::user_service service_;

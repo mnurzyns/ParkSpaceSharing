@@ -26,6 +26,9 @@ namespace server::service
         ::oatpp::Object<::server::dto::user_dto>
         get_user_byId(oatpp::UInt32 const& user_id);
 
+        oatpp::Void
+        delete_user_byId(oatpp::UInt32 const& user_id);
+
         ::oatpp::Object<::server::dto::user_dto>
         create_user(::oatpp::Object<::server::dto::user_dto> const& dto);
     };

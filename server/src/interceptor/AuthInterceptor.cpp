@@ -7,6 +7,8 @@ AuthInterceptor::AuthInterceptor(const std::shared_ptr<JWT>& jwt)
   authEndpoints.route("POST", "users/signup", false);
   authEndpoints.route("POST", "users/signin", false);
 
+
+  authEndpoints.route("GET", "offers", false);
   authEndpoints.route("GET", "swagger/*", false);
   authEndpoints.route("GET", "api-docs/oas-3.0.0.json", false);
 }
@@ -17,6 +19,8 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
   if(r && !r.getEndpoint()) {
     return nullptr; // Continue without Authorization
   }
+
+  
 
   auto authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
 
