@@ -29,7 +29,7 @@ std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token
   m_verifier.verify(decoded);
 
   auto payload = std::make_shared<Payload>();
-  payload->userId = decoded.get_payload_claims().at("userId").as_int();
+  payload->userId = stoi(decoded.get_payload_claims().at("userId").as_string());
 
   return payload;
 }

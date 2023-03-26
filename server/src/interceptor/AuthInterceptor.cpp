@@ -20,8 +20,6 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
     return nullptr; // Continue without Authorization
   }
 
-  
-
   auto authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
 
   auto authObject = std::static_pointer_cast<JWT::Payload>(m_authHandler.handleAuthorization(authHeader));
