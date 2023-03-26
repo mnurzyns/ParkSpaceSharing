@@ -75,6 +75,7 @@ public:
 
     ENDPOINT_INFO(deleteUser) {
         info->summary = "Delete User (function for admin)";
+        info->tags.emplace_back("user-controller");
 
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
 
