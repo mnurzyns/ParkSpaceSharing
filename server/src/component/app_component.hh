@@ -12,6 +12,7 @@
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
 #include <oatpp/web/server/HttpRouter.hpp>
 
+#include "config.hh"
 #include "error_handler.hh"
 
 #include "component/database_component.hh"
@@ -34,7 +35,8 @@ public:
     }());
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::network::ServerConnectionProvider>, server_connection_provider)([]{
-        return ::oatpp::network::tcp::server::ConnectionProvider::createShared({"0.0.0.0", 8000, ::oatpp::network::Address::IP_4});
+        auto const& config = ::server::config::get_instance();
+        return ::oatpp::network::tcp::server::ConnectionProvider::createShared({config.bind, config.port, ::oatpp::network::Address::IP_4});
     }());
 
     OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, http_router)([]{

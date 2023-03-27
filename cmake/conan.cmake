@@ -13,6 +13,7 @@ conan_cmake_configure(
         oatpp/1.3.0
         oatpp-swagger/1.3.0
         oatpp-sqlite/1.3.0
+        toml11/3.7.1
 
     GENERATORS
         cmake_paths
