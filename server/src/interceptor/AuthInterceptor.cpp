@@ -24,7 +24,8 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
 
   auto authObject = std::static_pointer_cast<JWT::Payload>(m_authHandler.handleAuthorization(authHeader));
   if(authObject) {
-    request->putBundleData("userId", authObject->userId);
+    request->putBundleData("user", authObject->user);
+    
     return nullptr; // Continue - token is valid.
   }
 

@@ -36,17 +36,11 @@ public:
         OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
     }
 
-
     QUERY(
-        admin_user,
-        "SELECT admin FROM user WHERE id = :id;",
-        PARAM(::oatpp::UInt32, id)
-    )
-
-    QUERY(
-        signIn_auth,
-        "SELECT id FROM user WHERE email = :form.email AND password = :form.password;",
-        PARAM(::oatpp::Object<::server::dto::signIn_dto>, form)
+        signIn,
+        "SELECT id FROM user WHERE email = :email AND password = :password;",
+        PARAM(::oatpp::String, email),
+        PARAM(::oatpp::String, password)
     )
 
     QUERY(

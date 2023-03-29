@@ -15,10 +15,10 @@ JWT::JWT(const oatpp::String& secret,
     .set_issuer(m_issuer)
     .set_type("JWS")
 
-    .set_payload_claim("userId", jwt::basic_claim<traits>(std::to_string(payload->userId)))
+    .set_payload_claim("user", jwt::basic_claim<traits>(std::string{m_mapper.writeToString(payload->user)}))
     
     .sign(jwt::algorithm::hs256{m_secret}
-    );
+  );
 
   return token;
 }
@@ -29,7 +29,7 @@ std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token
   m_verifier.verify(decoded);
 
   auto payload = std::make_shared<Payload>();
-  payload->userId = stoi(decoded.get_payload_claims().at("userId").as_string());
+  payload->user = m_mapper.readFromString<::oatpp::Object<::server::dto::user_dto>>(decoded.get_payload_claims().at("user").as_string());
 
   return payload;
 }
