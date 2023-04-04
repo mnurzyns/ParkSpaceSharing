@@ -22,6 +22,21 @@ namespace server::service
         return all;
     }
 
+    ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
+    offer_service::get_myOffers(oatpp::UInt32 const& user_id) {
+        auto res = database_->get_myOffers(user_id);
+        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+
+        auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>::createShared();
+
+        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
+        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No offers found");
+
+        all->items = fetch;
+
+        return all;
+    }
+
     ::oatpp::Object<::server::dto::offer_dto> 
     offer_service::get_offer_byId(oatpp::UInt32 const& offer_id){
 

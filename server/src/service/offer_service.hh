@@ -24,6 +24,9 @@ namespace server::service
         ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
         get_offers();
 
+        ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
+        get_myOffers(oatpp::UInt32 const& user_id);
+
         ::oatpp::Object<::server::dto::offer_dto> 
         get_offer_byId(oatpp::UInt32 const& offer_id);
 

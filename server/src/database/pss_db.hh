@@ -85,6 +85,13 @@ public:
     )
 
     QUERY(
+        get_myOffers,
+        "SELECT * FROM offer WHERE id = :id ;",
+        //SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.user_id = :id;
+        PARAM(oatpp::UInt32, id)
+    )
+
+    QUERY(
         get_offer_byId,
         "SELECT * FROM offer WHERE id = :id;",
         PARAM(oatpp::UInt32, id)

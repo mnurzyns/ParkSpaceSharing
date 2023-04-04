@@ -45,7 +45,21 @@ public:
     {
         return createDtoResponse(Status::CODE_200, service_.get_offers());
     }
+/*
+    ENDPOINT_INFO(get_myOffers)
+    {
+        info->summary = "Get page_dto of my offerts";
+        info->tags.emplace_back("parkingSpace_controller");
 
+        info->addResponse<::oatpp::Object<::server::dto::offer_dto>>(Status::CODE_200, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
+    }
+    ENDPOINT("GET", "offers", get_myOffers, BOUNDLE(oatpp::UInt32, "us"))
+    {
+        return createDtoResponse(Status::CODE_200, service_.get_myOffers());
+    }
+*/
     ENDPOINT_INFO(get_offer_byId)
     {
         info->summary = "Get offer of parking space by its id";
@@ -69,7 +83,7 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("POST", "offers", create_offer, BODY_DTO(Object<::server::dto::offer_dto>, offer_dto))
+    ENDPOINT("POST", "offers", create_offer, BODY_DTO(Object<::server::dto::offer_dto>, offer_dto)) 
     {
         return createDtoResponse(Status::CODE_200, service_.create_offer(offer_dto));
     }

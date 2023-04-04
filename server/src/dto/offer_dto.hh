@@ -25,6 +25,7 @@ class offer_dto :
     }
 };
 
+
 #include OATPP_CODEGEN_END(DTO)
 
 } // namespace server::dto
