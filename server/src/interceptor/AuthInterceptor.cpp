@@ -1,8 +1,9 @@
 
 #include "AuthInterceptor.hpp"
+#include "auth/JWT.hpp"
 
 AuthInterceptor::AuthInterceptor(const std::shared_ptr<JWT>& jwt)
-  : m_authHandler(jwt)
+  : m_auth_handler(jwt)
 {
   // endpoints without token authentication
   authEndpoints.route("POST", "users/signup", false);
@@ -26,14 +27,15 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
   }
 
   auto authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
-  auto authObject = std::static_pointer_cast<JWT::Payload>(m_authHandler.handleAuthorization(authHeader));
+  auto authObject = std::static_pointer_cast<JWT::payload>(m_auth_handler.handleAuthorization(authHeader));
   auto admin_r = adminEndpoints.getRoute(request->getStartingLine().method, request->getStartingLine().path);
 
   if(authObject) {
-    request->putBundleData("user", authObject->user);
+    request->putBundleData("userId", authObject->userId);
+
 
     if(admin_r && !admin_r.getEndpoint()) {
-      if(authObject->user->admin){
+      if(authObject->isAdmin){
         return nullptr;
       }
     } else {

@@ -28,8 +28,10 @@ namespace server::service
         OATPP_ASSERT_HTTP(fetch_user->size() == 1, Status::CODE_500, "Unknown error");
 
         //Generating tokn
-        auto payload = std::make_shared<JWT::Payload>();
-        payload->user = fetch_user[0];
+        auto payload = std::make_shared<JWT::payload>();
+        payload->userId =  int(fetch_user[0]->id);
+        payload->isAdmin = fetch_user[0]->admin;
+
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);
 
@@ -46,8 +48,10 @@ namespace server::service
         OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
 
         //Generating tokn
-        auto payload = std::make_shared<JWT::Payload>();
-        payload->user = fetch[0];
+        auto payload = std::make_shared<JWT::payload>();
+        payload->userId =  int(fetch[0]->id);
+        payload->isAdmin = fetch[0]->admin;
+
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);
 

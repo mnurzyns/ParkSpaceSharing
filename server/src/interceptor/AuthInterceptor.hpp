@@ -1,7 +1,7 @@
 #ifndef AUTHINTERCEPTOR_HPP
 #define AUTHINTERCEPTOR_HPP
 
-#include "auth/AuthHandler.hpp"
+#include "auth/auth_handler.hpp"
 
 #include <oatpp/web/server/interceptor/RequestInterceptor.hpp>
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
@@ -10,7 +10,7 @@
 
 class AuthInterceptor : public oatpp::web::server::interceptor::RequestInterceptor {
 private:
-  AuthHandler m_authHandler;
+  auth_handler m_auth_handler;
   oatpp::web::server::HttpRouterTemplate<bool> authEndpoints;
   oatpp::web::server::HttpRouterTemplate<bool> adminEndpoints;
 public:

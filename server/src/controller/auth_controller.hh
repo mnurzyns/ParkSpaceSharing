@@ -8,6 +8,7 @@
 #include <oatpp/web/server/api/ApiController.hpp>
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 #include <oatpp/core/macro/codegen.hpp>
+#include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 
 
 namespace server::controller
@@ -22,15 +23,14 @@ public:
     [[nodiscard]]
     explicit
     auth_controller(const std::shared_ptr<ObjectMapper>& objectMapper)
-    : oatpp::web::server::api::ApiController(objectMapper){}
+    : oatpp::web::server::api::ApiController(objectMapper) {}
 
     static std::shared_ptr<auth_controller> create_shared(
-    OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
-    ){
+        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
+    ) {
         return std::make_shared<auth_controller>(objectMapper);
     }
-
-
+    
     ENDPOINT_INFO(signUp) {
         info->summary = "Sign up";
         info->tags.emplace_back("auth-controller");

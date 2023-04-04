@@ -1,37 +1,40 @@
 #include "auth/JWT.hpp"
+#include <cstdint>
+#include <jwt-cpp/jwt.h>
+#include <oatpp/core/Types.hpp>
 
 
 JWT::JWT(const oatpp::String& secret,
   const oatpp::String& issuer)
-  : m_secret(secret)
-  , m_issuer(issuer)
-  , m_verifier(jwt::verify<traits>()
-  .allow_algorithm(jwt::algorithm::hs256{ secret })
+  : m_secret_(secret)
+  , m_issuer_(issuer)
+  , m_verifier_(jwt::verify<traits>()
+  .allow_algorithm(jwt::algorithm::hs512{ secret })
   .with_issuer(issuer))
 {}
 
-::oatpp::String JWT::createToken(const std::shared_ptr<Payload>& payload) {
+::oatpp::String JWT::createToken(const std::shared_ptr<payload>& m_payload) {
   auto token = jwt::create<traits>()
-    .set_issuer(m_issuer)
+    .set_issuer(m_issuer_)
     .set_type("JWS")
+    .set_payload_claim("userId", jwt::basic_claim<traits>(traits::json::number_integer_t(m_payload->userId)))
+    .set_payload_claim("isAdmin", jwt::basic_claim<traits>(traits::json::boolean_t(m_payload->isAdmin)))
+    .sign(jwt::algorithm::hs512{ m_secret_ });
 
-    .set_payload_claim("user", jwt::basic_claim<traits>(std::string{m_mapper.writeToString(payload->user)}))
     
-    .sign(jwt::algorithm::hs256{m_secret}
-  );
-
   return token;
 }
 
-std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token) {
+std::shared_ptr<JWT::payload> JWT::readAndVerifyToken(const oatpp::String& token) {
 
   auto decoded = jwt::decode<traits>(token);
-  m_verifier.verify(decoded);
+  m_verifier_.verify(decoded);
 
-  auto payload = std::make_shared<Payload>();
-  payload->user = m_mapper.readFromString<::oatpp::Object<::server::dto::user_dto>>(decoded.get_payload_claims().at("user").as_string());
+  auto m_payload = std::make_shared<payload>();
+  m_payload->userId = decoded.get_payload_claims().at("userId").as_();
+  m_payload->isAdmin = decoded.get_payload_claims().at("isAdmin").as_bool();
 
-  return payload;
+  return m_payload;
 }
 
 

@@ -18,23 +18,23 @@ using traits = jwt::traits::nlohmann_json;
 class JWT {
 public:
 
-    struct Payload : public oatpp::web::server::handler::AuthorizationObject {
-        ::oatpp::Object<::server::dto::user_dto> user;
+    struct payload : public oatpp::web::server::handler::AuthorizationObject {
+        ::oatpp::Int32 userId;
+        ::oatpp::Boolean isAdmin;
     };
 
 private:
-    oatpp::String m_secret;
-    oatpp::String m_issuer;
-    jwt::verifier<jwt::default_clock, traits> m_verifier;
-    oatpp::parser::json::mapping::ObjectMapper m_mapper;
+    oatpp::String m_secret_;
+    oatpp::String m_issuer_;
+    jwt::verifier<jwt::default_clock, traits> m_verifier_;
 public:
 
     JWT(const oatpp::String& secret,
         const oatpp::String& issuer);
 
-    ::oatpp::String createToken(const std::shared_ptr<Payload>& payload);
+    ::oatpp::String createToken(const std::shared_ptr<payload>& m_payload);
 
-    std::shared_ptr<Payload> readAndVerifyToken(const ::oatpp::String& token);
+    std::shared_ptr<payload> readAndVerifyToken(const ::oatpp::String& token);
 
 };
 
