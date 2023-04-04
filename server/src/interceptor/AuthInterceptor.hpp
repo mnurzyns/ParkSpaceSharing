@@ -12,6 +12,7 @@ class AuthInterceptor : public oatpp::web::server::interceptor::RequestIntercept
 private:
   AuthHandler m_authHandler;
   oatpp::web::server::HttpRouterTemplate<bool> authEndpoints;
+  oatpp::web::server::HttpRouterTemplate<bool> adminEndpoints;
 public:
 
   AuthInterceptor(const std::shared_ptr<JWT>& jwt);

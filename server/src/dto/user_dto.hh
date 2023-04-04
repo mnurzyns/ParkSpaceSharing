@@ -15,7 +15,7 @@ class user_dto :
     DTO_INIT(user_dto, DTO)
 
     DTO_FIELD(UInt32,  id,       "id"       );
-    DTO_FIELD(String,  name,     "username" );
+    DTO_FIELD(String,  username, "username" );
     DTO_FIELD(String,  email,    "email"    );
     DTO_FIELD(String,  password, "password" );
     DTO_FIELD(Boolean, admin,    "admin"    );

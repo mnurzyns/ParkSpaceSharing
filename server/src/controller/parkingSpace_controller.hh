@@ -7,10 +7,8 @@
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
 
-#include "dto/page_dto.hh"
 #include "dto/parkingSpace_dto.hh"
-#include "dto/status_dto.hh"
-//#include "service/_service.hh"
+#include "service/parkingSpace_service.hh"
 
 namespace server::controller
 {
@@ -23,7 +21,7 @@ class parkingSpace_controller :
 public:
     [[nodiscard]]
     explicit
-    offer_controller(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper)) :
+    parkingSpace_controller(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper)) :
     ::oatpp::web::server::api::ApiController{object_mapper} {}
 
     static
@@ -36,7 +34,7 @@ public:
 
 
 private:
-    //::server::service::parkingSpace_service service_;
+    ::server::service::parkingSpace_service service_;
 };
 
 #include OATPP_CODEGEN_END(ApiController)

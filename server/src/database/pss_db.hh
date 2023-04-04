@@ -38,7 +38,7 @@ public:
 
     QUERY(
         signIn,
-        "SELECT id FROM user WHERE email = :email AND password = :password;",
+        "SELECT * FROM user WHERE email = :email AND password = :password;",
         PARAM(::oatpp::String, email),
         PARAM(::oatpp::String, password)
     )

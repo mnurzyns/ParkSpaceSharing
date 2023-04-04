@@ -71,6 +71,9 @@
         "bitset": "cpp",
         "optional": "cpp",
         "cfenv": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "any": "cpp",
+        "variant": "cpp",
+        "filesystem": "cpp"
     }
 }
