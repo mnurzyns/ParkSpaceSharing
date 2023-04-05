@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `user`(
 
 CREATE TABLE IF NOT EXISTS `parking_space`(
     `id`       INTEGER PRIMARY KEY,
-    `user_id`  INTEGER NOT NULL, -- owner
+    `owner_id`  INTEGER NOT NULL,
     `location` TEXT    NOT NULL,
 
     FOREIGN KEY(`user_id`)

@@ -32,6 +32,9 @@ namespace server::service
 
         ::oatpp::Object<::server::dto::offer_dto>
         create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto);
+
+        oatpp::Void
+        delete_offer(oatpp::UInt32 const& user_id);
     };
 
 } // namespace server::service

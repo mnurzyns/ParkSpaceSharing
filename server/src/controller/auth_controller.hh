@@ -1,6 +1,4 @@
-
-#ifndef EXAMPLE_JWT_AUTHCONTROLLER_HPP
-#define EXAMPLE_JWT_AUTHCONTROLLER_HPP
+#pragma once
 
 #include "service/auth_service.hh"
 
@@ -67,6 +65,3 @@ private:
 #include OATPP_CODEGEN_END(ApiController)
 
 } // namespace server::controller
-
-
-#endif //EXAMPLE_JWT_AUTHCONTROLLER_HPP

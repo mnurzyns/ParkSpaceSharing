@@ -36,7 +36,7 @@ public:
     ENDPOINT_INFO(get_users)
     {
         info->summary = "Get users (function for admin)";
-        info->tags.emplace_back("user-controller");
+        info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_page_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
@@ -49,7 +49,7 @@ public:
     ENDPOINT_INFO(get_user_byId)
     {
         info->summary = "Get user by id (function for admin)";
-        info->tags.emplace_back("user-controller");
+        info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
@@ -63,7 +63,7 @@ public:
     ENDPOINT_INFO(create_user)
     {
         info->summary = "Create a user (function for admin)";
-        info->tags.emplace_back("user-controller");
+        info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
@@ -73,16 +73,16 @@ public:
         return createDtoResponse(Status::CODE_200, service_.create_user(user_dto));
     }
 
-    ENDPOINT_INFO(deleteUser) {
+    ENDPOINT_INFO(delete_user) {
         info->summary = "Delete User (function for admin)";
-        info->tags.emplace_back("user-controller");
+        info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
 
     }
-    ENDPOINT("DELETE", "users/{user_id}", deleteUser, PATH(oatpp::UInt32, userId))
+    ENDPOINT("DELETE", "users/{user_id}", delete_user, PATH(oatpp::UInt32, userId))
     {
-        return createDtoResponse(Status::CODE_200, service_.delete_user_byId(userId));
+        return createDtoResponse(Status::CODE_200, service_.delete_user(userId));
     }
 
 

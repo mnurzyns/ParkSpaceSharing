@@ -9,6 +9,7 @@
 #include <oatpp/orm/SchemaMigration.hpp>
 #include <oatpp-sqlite/orm.hpp>
 
+#include "dto/parkingSpace_dto.hh"
 #include "dto/user_dto.hh"
 #include "dto/signIn_dto.hh"
 #include "dto/signUp_dto.hh"
@@ -42,72 +43,95 @@ public:
         PARAM(::oatpp::String, email),
         PARAM(::oatpp::String, password)
     )
-
-    QUERY(
-        is_exist,
-        "SELECT id FROM user WHERE email = :email OR username = :username;",
-        PARAM(::oatpp::String, email),
-        PARAM(::oatpp::String, username)
-    )
-
-    QUERY(
-        is_offer_exist,
-        "SELECT id FROM offer WHERE parking_space_id = :id_parking_space;",
-        PARAM(oatpp::UInt32, id_parking_space)
-    )
-
     QUERY(
         signUp,
         "INSERT INTO user(username, email, password) VALUES(:form.username, :form.email, :form.password);",
         PARAM(::oatpp::Object<::server::dto::signUp_dto>, form)
     )
 
+
     QUERY(
         get_users,
         "SELECT * FROM user;"
     )
-
     QUERY(
         get_user_byId,
         "SELECT * FROM user WHERE id=:id;",
         PARAM(oatpp::UInt32, id)
     )
-
+    QUERY(
+        is_exist,
+        "SELECT id FROM user WHERE email = :email OR username = :username;",
+        PARAM(::oatpp::String, email),
+        PARAM(::oatpp::String, username)
+    )
     QUERY(
         create_user,
         "INSERT INTO user(username, email, password, token, admin) VALUES(:user.username, :user.email, :user.password, :user.token, :user.admin);",
         PARAM(::oatpp::Object<::server::dto::user_dto>, user)
+    )
+    QUERY(
+        delete_user,
+        "DELETE FROM user WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
     )
 
     QUERY(
         get_offers,
         "SELECT * FROM offer;"
     )
-
     QUERY(
         get_myOffers,
-        "SELECT * FROM offer WHERE id = :id ;",
-        //SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.user_id = :id;
+        "SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.user_id = :id;",
         PARAM(oatpp::UInt32, id)
     )
-
-    QUERY(
-        get_offer_byId,
-        "SELECT * FROM offer WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
-    )    
-
     QUERY(
         create_offer,
         "INSERT INTO offer(parking_space_id, description) VALUES(:offer.id_parkingSpace, :offer.description);",
         PARAM(::oatpp::Object<::server::dto::offer_dto>, offer)
     )
-
     QUERY(
-        delete_user_byId,
-        "DELETE FROM user WHERE id = :id;",
+        is_offer_exist,
+        "SELECT id FROM offer WHERE parking_space_id = :id_parking_space;",
+        PARAM(oatpp::UInt32, id_parking_space)
+    )
+    QUERY(
+        get_offer_byId,
+        "SELECT * FROM offer WHERE id = :id;",
         PARAM(oatpp::UInt32, id)
     )
+    QUERY(
+        delete_offer,
+        "DELETE FROM offer WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
+    )
+
+
+    QUERY(
+        get_parkingSpace,
+        "SELECT * FROM parking_space;"
+    )
+    QUERY(
+        get_myparkingSpace,
+        "SELECT * FROM parking_space WHERE user_id = :id;",
+        PARAM(oatpp::UInt32, id)
+    )
+    QUERY(
+        create_parkingSpace,
+        "INSERT INTO parkingSpace(owner_id, location) VALUES(:parkingSpace.owner_id, :parkingSpace.location);",
+        PARAM(::oatpp::Object<::server::dto::parkingSpace_dto>, parkingSpace)
+    )
+    QUERY(
+        get_parkingSpace_byId,
+        "SELECT * FROM parkingSpace WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
+    )
+    QUERY(
+        delete_parkingSpace,
+        "DELETE FROM parkingSpace WHERE id = :id;",
+        PARAM(oatpp::UInt32, id)
+    ) 
+
 };
 
 } // namespace server::database
