@@ -5,7 +5,7 @@
 
 class auth_handler : public oatpp::web::server::handler::BearerAuthorizationHandler {
 private:
-  std::shared_ptr<JWT> m_jwt_;
+  std::shared_ptr<JWT> jwt_;
 public:
 
   explicit auth_handler(std::shared_ptr<JWT> jwt);

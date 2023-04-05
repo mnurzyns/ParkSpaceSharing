@@ -31,7 +31,7 @@ std::shared_ptr<JWT::payload> JWT::readAndVerifyToken(const oatpp::String& token
   m_verifier_.verify(decoded);
 
   auto m_payload = std::make_shared<payload>();
-  m_payload->userId = decoded.get_payload_claims().at("userId").as_();
+  m_payload->userId = static_cast<::oatpp::Int32>(decoded.get_payload_claims().at("userId").as_int());
   m_payload->isAdmin = decoded.get_payload_claims().at("isAdmin").as_bool();
 
   return m_payload;
