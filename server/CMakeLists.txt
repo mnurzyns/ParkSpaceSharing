@@ -8,6 +8,7 @@ target_sources(
     src/service/user_service.cc
     src/service/offer_service.cc
     src/service/auth_service.cc
+    src/service/parkingSpace_service.cc
     src/auth/AuthHandler.cpp
     src/auth/JWT.cpp
     src/interceptor/AuthInterceptor.cpp

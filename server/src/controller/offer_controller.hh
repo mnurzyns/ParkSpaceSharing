@@ -6,6 +6,7 @@
 #include "database/pss_db.hh"
 #include "service/offer_service.hh"
 
+#include <cstddef>
 #include <memory>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
@@ -57,14 +58,14 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "user/offers", get_myOffers, BUNDLE(oatpp::UInt32, userId))
+    ENDPOINT("GET", "user/offers", get_myOffers, BUNDLE(::oatpp::Object<::server::dto::user_dto>, user))
     {
-        return createDtoResponse(Status::CODE_200, service_.get_myOffers(userId));
+        return createDtoResponse(Status::CODE_200, service_.get_myOffers(user->id));
     }
 
     ENDPOINT_INFO(get_offer_byId)
     {
-        info->summary = "Get offer of parking space by its id";
+        info->summary = "Get offer by id";
         info->tags.emplace_back("offer_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::offer_dto>>(Status::CODE_200, "application/json");
@@ -90,8 +91,20 @@ public:
         return createDtoResponse(Status::CODE_200, service_.create_offer(offer_dto));
     }
     
+    ENDPOINT_INFO(delete_myOffer) {
+        info->summary = "Delete myOffer";
+        info->tags.emplace_back("offer_controller");
+
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
+
+    }
+    ENDPOINT("DELETE", "user/offer/{offer_id}", delete_myOffer, PATH(oatpp::UInt32, offer_id), BUNDLE(::oatpp::Object<::server::dto::user_dto>, user) )
+    {
+        return createDtoResponse(Status::CODE_200, service_.delete_myOffer(offer_id,user->id));
+    }
+
     ENDPOINT_INFO(delete_offer) {
-        info->summary = "Delete offer";
+        info->summary = "Delete offer (for admin use)";
         info->tags.emplace_back("offer_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");

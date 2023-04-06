@@ -54,13 +54,9 @@ namespace server::service
     ::oatpp::Object<::server::dto::parkingSpace_dto> 
     parkingSpace_service::create_parkingSpace(::oatpp::Object<::server::dto::parkingSpace_dto> const& dto) {
 
-        auto res = database_->is_parkingSpace_exist(dto->id);
-        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        auto fetch = res->fetch<::oatpp::Vector<oatpp::UInt32>>();
-        OATPP_ASSERT_HTTP(fetch->empty(), Status::CODE_409, "parking space is already exists");
-    
-        //Adding user to database
-        res = database_->create_parkingSpace(dto);
+       
+        //Adding parkingSpace to database
+        auto res = database_->create_parkingSpace(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "parkingSpace not created");
 

@@ -59,7 +59,7 @@ namespace server::service
         auto fetch = res->fetch<::oatpp::Vector<oatpp::UInt32>>();
         OATPP_ASSERT_HTTP(fetch->empty(), Status::CODE_409, "parking space is already offered");
     
-        //Adding user to database
+        //Adding offer to database
         res = database_->create_offer(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "offer not created");
@@ -70,9 +70,18 @@ namespace server::service
     }
 
     oatpp::Void
-    offer_service::delete_offer(oatpp::UInt32 const& user_id)
+    offer_service::delete_myOffer(oatpp::UInt32 const& offer_id,oatpp::UInt32 const& user_id)
     {
-        auto res = database_->delete_offer(user_id);
+        auto res = database_->delete_myOffer(offer_id,user_id);
+        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+
+        return nullptr;
+    }
+
+    oatpp::Void
+    offer_service::delete_offer(oatpp::UInt32 const& offer_id)
+    {
+        auto res = database_->delete_offer(offer_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
         return nullptr;

@@ -36,7 +36,7 @@ public:
     
     ENDPOINT_INFO(get_parkingSpace)
     {
-        info->summary = "Get page_dto of all parkingSpace";
+        info->summary = "Get page_dto of all parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_page_dto>>(Status::CODE_200, "application/json");
@@ -64,7 +64,7 @@ public:
 
     ENDPOINT_INFO(get_parkingSpace_byId)
     {
-        info->summary = "Get offer of parking space by its id";
+        info->summary = "Get parkingSpace by id (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_dto>>(Status::CODE_200, "application/json");
@@ -78,7 +78,7 @@ public:
 
     ENDPOINT_INFO(create_parkingSpace)
     {
-        info->summary = "Create a new parkingSpace";
+        info->summary = "Create a new parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_dto>>(Status::CODE_200, "application/json");
@@ -92,7 +92,7 @@ public:
 
     
     ENDPOINT_INFO(delete_parkingSpace) {
-        info->summary = "Delete parkingSpace";
+        info->summary = "Delete parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");

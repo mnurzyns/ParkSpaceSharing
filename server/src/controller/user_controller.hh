@@ -35,7 +35,7 @@ public:
 
     ENDPOINT_INFO(get_users)
     {
-        info->summary = "Get users (function for admin)";
+        info->summary = "Get users (for admin use)";
         info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_page_dto>>(Status::CODE_200, "application/json");
@@ -48,7 +48,7 @@ public:
 
     ENDPOINT_INFO(get_user_byId)
     {
-        info->summary = "Get user by id (function for admin)";
+        info->summary = "Get user by id (for admin use)";
         info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
@@ -62,7 +62,7 @@ public:
 
     ENDPOINT_INFO(create_user)
     {
-        info->summary = "Create a user (function for admin)";
+        info->summary = "Create a user (for admin use)";
         info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
@@ -74,7 +74,7 @@ public:
     }
 
     ENDPOINT_INFO(delete_user) {
-        info->summary = "Delete User (function for admin)";
+        info->summary = "Delete User (for admin use)";
         info->tags.emplace_back("user_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");

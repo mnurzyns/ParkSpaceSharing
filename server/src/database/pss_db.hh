@@ -18,7 +18,7 @@
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
-namespace server::database
+namespace server { namespace database
 {
 
 class pss_db :
@@ -56,8 +56,8 @@ public:
     )
     QUERY(
         get_user_byId,
-        "SELECT * FROM user WHERE id=:id;",
-        PARAM(oatpp::UInt32, id)
+        "SELECT * FROM user WHERE id=:us_id;",
+        PARAM(oatpp::UInt32, us_id)
     )
     QUERY(
         is_exist,
@@ -72,8 +72,8 @@ public:
     )
     QUERY(
         delete_user,
-        "DELETE FROM user WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "DELETE FROM user WHERE id = :us_id;",
+        PARAM(oatpp::UInt32, us_id)
     )
 
     QUERY(
@@ -82,8 +82,8 @@ public:
     )
     QUERY(
         get_myOffers,
-        "SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.user_id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.owner_id = :us_id;",
+        PARAM(oatpp::UInt32, us_id)
     )
     QUERY(
         create_offer,
@@ -97,13 +97,19 @@ public:
     )
     QUERY(
         get_offer_byId,
-        "SELECT * FROM offer WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "SELECT * FROM offer WHERE id = :of_id;",
+        PARAM(oatpp::UInt32, of_id)
+    )
+    QUERY(
+        delete_myOffer,
+        "DELETE * FROM (SELECT offer.* FROM offer INNER JOIN parking_space ON offer.parking_space_id = parking_space.id AND parking_space.owner_id = :us_id) WHERE id = :of_id;",
+        PARAM(oatpp::UInt32, of_id),
+        PARAM(oatpp::UInt32, us_id)
     )
     QUERY(
         delete_offer,
-        "DELETE FROM offer WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "DELETE FROM offer WHERE id = :of_id;",
+        PARAM(oatpp::UInt32, of_id)
     )
 
 
@@ -113,8 +119,8 @@ public:
     )
     QUERY(
         get_myparkingSpace,
-        "SELECT * FROM parking_space WHERE user_id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "SELECT * FROM parking_space WHERE user_id = :ps_id;",
+        PARAM(oatpp::UInt32, ps_id)
     )
     QUERY(
         create_parkingSpace,
@@ -123,17 +129,17 @@ public:
     )
     QUERY(
         get_parkingSpace_byId,
-        "SELECT * FROM parkingSpace WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "SELECT * FROM parkingSpace WHERE id = :ps_id;",
+        PARAM(oatpp::UInt32, ps_id)
     )
     QUERY(
         delete_parkingSpace,
-        "DELETE FROM parkingSpace WHERE id = :id;",
-        PARAM(oatpp::UInt32, id)
+        "DELETE FROM parkingSpace WHERE id = :ps_id;",
+        PARAM(oatpp::UInt32, ps_id)
     ) 
 
 };
 
-} // namespace server::database
+} } // namespace server::database
 
 #include OATPP_CODEGEN_END(DbClient)

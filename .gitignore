@@ -31,4 +31,11 @@
 *.out
 *.app
 
+# Files and Directories
 build/*
+
+compile_commands.json
+
+run.sh
+
+.cache

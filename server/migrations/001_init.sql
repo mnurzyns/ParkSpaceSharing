@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `parking_space`(
     `owner_id`  INTEGER NOT NULL,
     `location` TEXT    NOT NULL,
 
-    FOREIGN KEY(`user_id`)
+    FOREIGN KEY(`owner_id`)
         REFERENCES users(`id`)
 );
 
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS `offer`(
         REFERENCES parking_spaces(`id`)
 );
 
-CREATE INDEX IF NOT EXISTS `idx_parking_space_user_id`
-    ON `parking_space`(`user_id`);
+CREATE INDEX IF NOT EXISTS `idx_parking_space_owner_id`
+    ON `parking_space`(`owner_id`);
 
 CREATE INDEX IF NOT EXISTS `idx_offer_parking_space_id`
     ON `offer`(`parking_space_id`);
