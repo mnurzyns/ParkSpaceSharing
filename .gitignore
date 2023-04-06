@@ -33,9 +33,9 @@
 
 # Files and Directories
 build/*
-
 .vscode/*
-
+.github/*
 .cache/*
 
 run.sh
+CMakeCache.txt
