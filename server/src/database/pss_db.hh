@@ -48,6 +48,12 @@ public:
         "INSERT INTO user(username, email, password) VALUES(:form.username, :form.email, :form.password);",
         PARAM(::oatpp::Object<::server::dto::signUp_dto>, form)
     )
+    QUERY(
+        is_exist,
+        "SELECT id FROM user WHERE email = :email OR username = :username;",
+        PARAM(::oatpp::String, email),
+        PARAM(::oatpp::String, username)
+    )
 
 
     QUERY(
@@ -58,12 +64,6 @@ public:
         get_user_byId,
         "SELECT * FROM user WHERE id=:us_id;",
         PARAM(oatpp::UInt32, us_id)
-    )
-    QUERY(
-        is_exist,
-        "SELECT id FROM user WHERE email = :email OR username = :username;",
-        PARAM(::oatpp::String, email),
-        PARAM(::oatpp::String, username)
     )
     QUERY(
         create_user,

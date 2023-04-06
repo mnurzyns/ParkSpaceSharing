@@ -34,8 +34,8 @@
 # Files and Directories
 build/*
 
-compile_commands.json
+.vscode/*
+
+.cache/*
 
 run.sh
-
-.cache

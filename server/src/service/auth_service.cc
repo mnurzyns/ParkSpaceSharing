@@ -1,4 +1,5 @@
 #include "service/auth_service.hh"
+#include <oatpp/core/Types.hpp>
 
 //NOLINTNEXTLINE
 using Status = ::oatpp::web::protocol::http::Status;
@@ -13,7 +14,7 @@ namespace server::service
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         
         auto fetch_exist = res->fetch<::oatpp::Vector<::oatpp::UInt32>>();
-        OATPP_ASSERT_HTTP(fetch_exist->size() == 0, Status::CODE_409, "User already exists");
+        OATPP_ASSERT_HTTP(fetch_exist->empty(), Status::CODE_409, "User already exists");
     
         //Adding user to database
         res = database_->signUp(dto);
