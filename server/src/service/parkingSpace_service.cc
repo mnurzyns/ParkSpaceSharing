@@ -24,7 +24,7 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>>
     parkingSpace_service::get_myParkingSpace(oatpp::UInt32 const& user_id) {
-        auto res = database_->get_myparkingSpace(user_id);
+        auto res = database_->get_myParkingSpace(user_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>::createShared();
