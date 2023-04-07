@@ -7,15 +7,19 @@ AuthInterceptor::AuthInterceptor(const std::shared_ptr<JWT>& jwt)
   // endpoints without token authentication
   authEndpoints.route("POST", "users/signup", false);
   authEndpoints.route("POST", "users/signin", false);
+
   authEndpoints.route("GET", "offers", false);
+  authEndpoints.route("GET", "offers/{offer_id}", false);
+
   authEndpoints.route("GET", "swagger/*", false);
   authEndpoints.route("GET", "api-docs/oas-3.0.0.json", false);
+
 
   // endpoints with for admin authentication
   adminEndpoints.route("GET", "users/*", false);
   adminEndpoints.route("POST", "users/*", false);
   adminEndpoints.route("DELETE", "users/*", false);
-  
+
 }
 
 std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(const std::shared_ptr<IncomingRequest>& request) {
