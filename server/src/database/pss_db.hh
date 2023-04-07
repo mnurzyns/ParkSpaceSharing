@@ -123,23 +123,23 @@ public:
     )
     QUERY(
         isHaveParkingSpace,
-        "SELECT * FROM parkingSpace WHERE id = :ps_id AND owner_id = :us_id;",
+        "SELECT * FROM parking_space WHERE id = :ps_id AND owner_id = :us_id;",
         PARAM(oatpp::UInt32, us_id),
         PARAM(oatpp::UInt32, ps_id)
     )
     QUERY(
         create_parkingSpace,
-        "INSERT INTO parkingSpace(owner_id, location) VALUES(:parkingSpace.owner_id, :parkingSpace.location);",
+        "INSERT INTO parking_space(owner_id, location) VALUES(:parkingSpace.owner_id, :parkingSpace.location);",
         PARAM(::oatpp::Object<::server::dto::parkingSpace_dto>, parkingSpace)
     )
     QUERY(
         get_parkingSpace_byId,
-        "SELECT * FROM parkingSpace WHERE id = :ps_id;",
+        "SELECT * FROM parking_space WHERE id = :ps_id;",
         PARAM(oatpp::UInt32, ps_id)
     )
     QUERY(
         delete_parkingSpace,
-        "DELETE FROM parkingSpace WHERE id = :ps_id;",
+        "DELETE FROM parking_space WHERE id = :ps_id;",
         PARAM(oatpp::UInt32, ps_id)
     ) 
 

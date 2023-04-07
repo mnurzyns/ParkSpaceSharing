@@ -31,7 +31,7 @@ namespace server::service
         get_offer_byId(oatpp::UInt32 const& offer_id);
 
         oatpp::Object<::server::dto::offer_dto>
-        create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto);
+        create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto,::oatpp::UInt32 const& user_id);
 
         oatpp::Void
         delete_myOffer(oatpp::UInt32 const& offer_id,oatpp::UInt32 const& user_id);

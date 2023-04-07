@@ -86,9 +86,9 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("POST", "offers", create_offer, BODY_DTO(Object<::server::dto::offer_dto>, offer_dto)) 
+    ENDPOINT("POST", "offers", create_offer, BODY_DTO(Object<::server::dto::offer_dto>, offer_dto), BUNDLE(::oatpp::Object<::server::dto::user_dto>, user)) 
     {
-        return createDtoResponse(Status::CODE_200, service_.create_offer(offer_dto));
+        return createDtoResponse(Status::CODE_200, service_.create_offer(offer_dto,user->id));
     }
     
     ENDPOINT_INFO(delete_myOffer) {
