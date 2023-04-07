@@ -33,7 +33,8 @@ namespace server::service
         payload->user = fetch_user[0];
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);
-
+        auth->admin = fetch_user[0]->admin;
+        
         return auth;
     }
 
@@ -51,6 +52,7 @@ namespace server::service
         payload->user = fetch[0];
         auto auth = ::server::dto::auth_dto::createShared();
         auth->token = jwt_->createToken(payload);
+        auth->admin = fetch[0]->admin;
 
         return auth;
     }
