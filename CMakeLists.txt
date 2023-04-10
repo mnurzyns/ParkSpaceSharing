@@ -13,7 +13,8 @@ if(NOT MSVC)
         add_link_options    (-fsanitize=address,leak,undefined)
     endif()
 else()
-    add_compile_options(/W4 /WX)
+    # 4996 - getenv unsafe
+    add_compile_options(/W4 /WX /wd4996)
 endif()
 
 if(CONAN)

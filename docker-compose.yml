@@ -6,6 +6,9 @@ services:
     image: pss/server
     ports:
       - "8000:8000/tcp"
+    # Uncomment if you want to access/modify the config file
+    #volumes:
+    #  - ./app_config:/app_config:rw
     build:
       context: .
       dockerfile: ./Dockerfile

@@ -32,4 +32,4 @@
 *.app
 
 build/*
-**/config.toml
+/app_config
