@@ -21,17 +21,23 @@ namespace server::service
         OATPP_COMPONENT(::std::shared_ptr<::server::database::pss_db>, database_);
 
     public:
-        ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
+        oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
         get_offers();
 
-        ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
+        oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
         get_myOffers(oatpp::UInt32 const& user_id);
 
-        ::oatpp::Object<::server::dto::offer_dto> 
+        oatpp::Object<::server::dto::offer_dto> 
         get_offer_byId(oatpp::UInt32 const& offer_id);
 
-        ::oatpp::Object<::server::dto::offer_dto>
-        create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto);
+        oatpp::Object<::server::dto::offer_dto>
+        create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto,::oatpp::UInt32 const& user_id);
+
+        oatpp::Void
+        delete_myOffer(oatpp::UInt32 const& offer_id,oatpp::UInt32 const& user_id);
+
+        oatpp::Void
+        delete_offer(oatpp::UInt32 const& offer_id);
     };
 
 } // namespace server::service

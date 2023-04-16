@@ -1,4 +1,4 @@
-#include "service/parkingSpace_service.hh"
+#include "parkingSpace_service.hh"
 
 
 //NOLINTNEXTLINE
@@ -9,13 +9,12 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>>
     parkingSpace_service::get_parkingSpace() {
-        auto res = database_->get_offers();
+        auto res = database_->get_parkingSpaces();
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No parkingSpaces in db found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::parkingSpace_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No offers found");
 
         all->items = fetch;
 
@@ -24,13 +23,12 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>>
     parkingSpace_service::get_myParkingSpace(oatpp::UInt32 const& user_id) {
-        auto res = database_->get_myOffers(user_id);
+        auto res = database_->get_myParkingSpaces(user_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No parkingSpaces found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::parkingSpace_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No offers found");
 
         all->items = fetch;
 
@@ -38,11 +36,11 @@ namespace server::service
     }
 
     ::oatpp::Object<::server::dto::parkingSpace_dto> 
-    parkingSpace_service::get_parkingSpace_byId(oatpp::UInt32 const& id){
+    parkingSpace_service::get_parkingSpace_byId(oatpp::UInt32 const& parkingSpace_id){
 
-        auto res = database_->get_offer_byId(id);
+        auto res = database_->get_parkingSpace_byId(parkingSpace_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "Offer not found");
+        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "parkingSpace not found");
 
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::parkingSpace_dto>>>();
         OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
@@ -54,19 +52,23 @@ namespace server::service
     ::oatpp::Object<::server::dto::parkingSpace_dto> 
     parkingSpace_service::create_parkingSpace(::oatpp::Object<::server::dto::parkingSpace_dto> const& dto) {
 
-        auto res = database_->is_offer_exist(dto->id_parking_space);
+       
+        //Adding parkingSpace to database
+        auto res = database_->create_parkingSpace(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        auto fetch = res->fetch<::oatpp::Vector<oatpp::UInt32>>();
-        OATPP_ASSERT_HTTP(fetch->size() == 0, Status::CODE_409, "parking space is already offered");
-    
-        //Adding user to database
-        res = database_->create_offer(dto);
+
+        auto ps_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
+
+        return get_parkingSpace_byId(static_cast<v_uint32>(ps_id));
+    }
+
+    oatpp::Void
+    parkingSpace_service::delete_parkingSpace(oatpp::UInt32 const& parkingSpace_id)
+    {
+        auto res = database_->delete_parkingSpace(parkingSpace_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "offer not created");
 
-        auto id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
-
-        return get_parkingSpace_byId(static_cast<v_uint32>(id));
+        return nullptr;
     }
 
 } // namespace server::service

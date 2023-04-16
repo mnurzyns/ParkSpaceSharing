@@ -14,6 +14,7 @@ class auth_dto : public oatpp::DTO {
   DTO_INIT(auth_dto, DTO)
 
   DTO_FIELD(::oatpp::String, token, "token");
+  DTO_FIELD(::oatpp::Boolean, admin, "admin");
 
 };
 

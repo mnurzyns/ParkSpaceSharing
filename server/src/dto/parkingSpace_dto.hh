@@ -13,7 +13,7 @@ class parkingSpace_dto : public oatpp::DTO {
 
   DTO_INIT(parkingSpace_dto, DTO)
 
-  DTO_FIELD(UInt32, user_id,  "owner_id");
+  DTO_FIELD(String, name,     "name");
   DTO_FIELD(String, location, "location");
 
 };

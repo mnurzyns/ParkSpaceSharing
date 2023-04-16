@@ -14,15 +14,9 @@ class offer_dto :
 {
     DTO_INIT(offer_dto, DTO)
 
-    DTO_FIELD(UInt32, id);
-    DTO_FIELD(UInt32, id_parking_space, "id_parkingSpace");
-    DTO_FIELD(String, description,      "description"    );
-    DTO_FIELD(UInt32, user_id ,         "user_id"        );
+    DTO_FIELD(String, parking_space_name, "parking_space_name");
+    DTO_FIELD(String, description,        "description"    );
 
-    DTO_FIELD_INFO(user_id)
-    {
-        info->description = "id of the offer's owner";
-    }
 };
 
 
