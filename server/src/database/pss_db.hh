@@ -113,13 +113,13 @@ public:
     )
 
     QUERY(
-        get_parkingSpace,
+        get_parkingSpaces,
         "SELECT * FROM parking_space;"
     )
     QUERY(
-        get_myParkingSpace,
-        "SELECT * FROM parking_space WHERE user_id = :ps_id;",
-        PARAM(oatpp::UInt32, ps_id)
+        get_myParkingSpaces,
+        "SELECT * FROM parking_space WHERE owner_id = :us_id;",
+        PARAM(oatpp::UInt32, us_id)
     )
     QUERY(
         isHaveParkingSpace,
