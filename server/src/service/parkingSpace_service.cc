@@ -9,13 +9,12 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>>
     parkingSpace_service::get_parkingSpace() {
-        auto res = database_->get_parkingSpace();
+        auto res = database_->get_parkingSpaces();
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No parkingSpaces in db found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::parkingSpace_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No parkingSpaces in db found");
 
         all->items = fetch;
 
@@ -24,13 +23,12 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>>
     parkingSpace_service::get_myParkingSpace(oatpp::UInt32 const& user_id) {
-        auto res = database_->get_myParkingSpace(user_id);
+        auto res = database_->get_myParkingSpaces(user_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No parkingSpaces found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::parkingSpace_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::parkingSpace_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No parkingSpaces found");
 
         all->items = fetch;
 
@@ -58,7 +56,6 @@ namespace server::service
         //Adding parkingSpace to database
         auto res = database_->create_parkingSpace(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "parkingSpace not created");
 
         auto ps_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
 

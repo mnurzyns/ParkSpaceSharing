@@ -17,7 +17,6 @@ namespace server::service
         //Adding user to database
         res = database_->signUp(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "User not Created");
         
         ::oatpp::Object<::server::dto::signIn_dto> user = std::make_shared<dto::signIn_dto>();
         user->password = dto->password;
