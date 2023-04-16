@@ -10,7 +10,7 @@
 
 class AuthInterceptor : public oatpp::web::server::interceptor::RequestInterceptor {
 private:
-  auth_handler m_auth_handler;
+  AuthHandler m_auth_handler;
   oatpp::web::server::HttpRouterTemplate<bool> authEndpoints;
   oatpp::web::server::HttpRouterTemplate<bool> adminEndpoints;
 public:

@@ -1,7 +1,6 @@
-#include "auth/JWT.hpp"
-#include <cstdint>
-#include <jwt-cpp/jwt.h>
 #include <oatpp/core/Types.hpp>
+#include <jwt-cpp/jwt.h>
+#include "JWT.hpp"
 
 
 JWT::JWT(const oatpp::String& secret,
@@ -13,7 +12,7 @@ JWT::JWT(const oatpp::String& secret,
   .with_issuer(issuer))
 {}
 
-::oatpp::String JWT::createToken(const std::shared_ptr<payload>& m_payload) {
+::oatpp::String JWT::createToken(const std::shared_ptr<Payload>& m_payload) {
   auto token = jwt::create<traits>()
     .set_issuer(m_issuer_)
     .set_type("JWS")
@@ -25,13 +24,13 @@ JWT::JWT(const oatpp::String& secret,
   return token;
 }
 
-std::shared_ptr<JWT::payload> JWT::readAndVerifyToken(const oatpp::String& token) {
+std::shared_ptr<JWT::Payload> JWT::readAndVerifyToken(const oatpp::String& token) {
 
   auto decoded = jwt::decode<traits>(token);
   m_verifier_.verify(decoded);
 
-  auto m_payload = std::make_shared<payload>();
-  m_payload->userId = static_cast<::oatpp::Int32>(decoded.get_payload_claims().at("userId").as_int());
+  auto m_payload = std::make_shared<Payload>();
+  m_payload->userId = static_cast<uint32_t>(decoded.get_payload_claims().at("userId").as_int());
   m_payload->isAdmin = decoded.get_payload_claims().at("isAdmin").as_bool();
 
   return m_payload;

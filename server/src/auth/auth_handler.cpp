@@ -1,11 +1,11 @@
 
-#include "auth/auth_handler.hpp"
+#include "auth_handler.hpp"
 
-auth_handler::auth_handler(std::shared_ptr<JWT> jwt)
+AuthHandler::AuthHandler(const std::shared_ptr<JWT>& jwt)
   : oatpp::web::server::handler::BearerAuthorizationHandler("API" /* Realm */)
-  , jwt_(std::move(jwt))
+  , jwt_(jwt)
 {}
 
-std::shared_ptr<auth_handler::AuthorizationObject> auth_handler::authorize(const oatpp::String& token) {
+std::shared_ptr<AuthHandler::AuthorizationObject> AuthHandler::authorize(const oatpp::String& token) {
   return jwt_->readAndVerifyToken(token);
 }

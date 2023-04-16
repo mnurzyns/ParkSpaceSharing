@@ -1,4 +1,3 @@
-
 #ifndef JWT_HPP
 #define JWT_HPP
 
@@ -15,12 +14,12 @@
 using traits = jwt::traits::nlohmann_json;
 //using claim = jwt::basic_claim<traits>;
 
-class JWT {
+class JWT{
 public:
 
-    struct payload : public oatpp::web::server::handler::AuthorizationObject {
-        ::oatpp::Int32 userId;
-        ::oatpp::Boolean isAdmin;
+    struct Payload : public oatpp::web::server::handler::AuthorizationObject {
+        oatpp::UInt32 userId;
+        oatpp::Boolean isAdmin;
     };
 
 private:
@@ -32,10 +31,10 @@ public:
     JWT(const oatpp::String& secret,
         const oatpp::String& issuer);
 
-    ::oatpp::String createToken(const std::shared_ptr<payload>& m_payload);
+    oatpp::String createToken(const std::shared_ptr<Payload>& m_payload);
 
-    std::shared_ptr<payload> readAndVerifyToken(const ::oatpp::String& token);
+    std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String& token);
 
 };
 
-#endif
+#endif // 

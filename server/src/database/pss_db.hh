@@ -28,9 +28,9 @@ public:
     [[nodiscard]]
     explicit
     pss_db(::std::shared_ptr<::oatpp::orm::Executor> const& executor)
-        : ::oatpp::orm::DbClient{executor}
+        : oatpp::orm::DbClient{executor}
     {
-        ::oatpp::orm::SchemaMigration migration{executor};
+        oatpp::orm::SchemaMigration migration{executor};
         migration.addFile(1, PSS_DATABASE_MIGRATIONS_PATH "/001_init.sql");
         migration.migrate();
 

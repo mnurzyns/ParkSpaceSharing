@@ -27,9 +27,9 @@ main()
     ::oatpp::web::server::api::Endpoints endpoints;
 
     endpoints.append(router->addController(::server::controller::auth_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::parkingSpace_controller::create_shared())->getEndpoints());
+    //endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
+    //endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
+    //endpoints.append(router->addController(::server::controller::parkingSpace_controller::create_shared())->getEndpoints());
 
 
     router->addController(::oatpp::swagger::Controller::createShared(endpoints));

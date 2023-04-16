@@ -14,8 +14,7 @@ class offer_dto :
 {
     DTO_INIT(offer_dto, DTO)
 
-    DTO_FIELD(String, parking_space_name, "parking_space_name");
-    DTO_FIELD(String, description,        "description"    );
+    DTO_FIELD(String, description,        "description");
 
 };
 

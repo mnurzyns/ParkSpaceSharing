@@ -31,7 +31,7 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
   }
 
   auto authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
-  auto authObject = std::static_pointer_cast<JWT::payload>(m_auth_handler.handleAuthorization(authHeader));
+  auto authObject = std::static_pointer_cast<JWT::Payload>(m_auth_handler.handleAuthorization(authHeader));
   auto admin_r = adminEndpoints.getRoute(request->getStartingLine().method, request->getStartingLine().path);
 
   if(authObject) {

@@ -25,16 +25,13 @@ class user_controller :
 public:
     [[nodiscard]]
     explicit
-    user_controller(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper)) :
-        ::oatpp::web::server::api::ApiController{object_mapper} {
-            setDefaultAuthorizationHandler(std::make_shared<auth_handler>("JWT Bearer Auth"));
-        }
+    user_controller(const std::shared_ptr<ObjectMapper>& objectMapper)
+    : oatpp::web::server::api::ApiController(objectMapper) {}
 
-    static
-    ::std::shared_ptr<user_controller>
-    create_shared(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper))
-    {
-        return ::std::make_shared<::server::controller::user_controller>(object_mapper);
+    static std::shared_ptr<user_controller> create_shared(
+        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
+    ) {
+        return std::make_shared<user_controller>(objectMapper);
     }
 
     ENDPOINT_INFO(get_users)
@@ -46,7 +43,7 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
     ENDPOINT("GET", "users", get_users,
-             AUTHORIZATION(std::shared_ptr<JWT::payload>, authObject))
+             AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
         OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
         return createDtoResponse(Status::CODE_200, service_.get_users());
@@ -62,7 +59,7 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
     ENDPOINT("GET", "users/{user_id}", get_user_byId, PATH(oatpp::UInt32, user_id),
-             AUTHORIZATION(std::shared_ptr<JWT::payload>, authObject))
+             AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
         OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
         return createDtoResponse(Status::CODE_200, service_.get_user_byId(user_id));
@@ -76,8 +73,8 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("POST", "users", create_user, BODY_DTO(Object<::server::dto::user_dto>, user_dto),
-             AUTHORIZATION(std::shared_ptr<JWT::payload>, authObject))
+    ENDPOINT("POST", "users", create_user, BODY_DTO(Object<::server::dto::user_dto>, user_dto),            
+            AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
         OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
         return createDtoResponse(Status::CODE_200, service_.create_user(user_dto));
