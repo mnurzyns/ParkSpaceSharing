@@ -26,11 +26,10 @@ namespace server::service
     offer_service::get_myOffers(oatpp::UInt32 const& user_id) {
         auto res = database_->get_myOffers(user_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "No offers found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No offers found");
 
         all->items = fetch;
 
@@ -56,15 +55,12 @@ namespace server::service
 
         auto res = database_->is_offer_exist(dto->id_parkingSpace);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        auto fetch = res->fetch<::oatpp::Vector<::oatpp::UInt32>>();
-        OATPP_ASSERT_HTTP(fetch->empty(), Status::CODE_409, "parking space is already offered");
+        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_409, "parking space is already offered");
 
         res = database_->isHaveParkingSpace(userId,dto->id_parkingSpace);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        fetch = res->fetch<::oatpp::Vector<::oatpp::UInt32>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_409, "parking space isnt ours");
+        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_409, "parking space isnt ours");
     
-
         //Adding offer to database
         res = database_->create_offer(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
