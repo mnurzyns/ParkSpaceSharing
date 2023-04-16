@@ -11,11 +11,10 @@ namespace server::service
     offer_service::get_offers() {
         auto res = database_->get_offers();
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_404, "No offers found");
 
         auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>::createShared();
-
         auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
-        OATPP_ASSERT_HTTP(!fetch->empty(), Status::CODE_404, "No offers found");
 
         all->items = fetch;
 
