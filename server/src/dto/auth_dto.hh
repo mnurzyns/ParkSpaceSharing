@@ -16,7 +16,6 @@ class auth_dto : public oatpp::DTO {
   DTO_FIELD(::oatpp::String, token, "token");
   DTO_FIELD(::oatpp::Boolean, admin, "admin");
 
-
 };
 
 #include OATPP_CODEGEN_END(DTO)

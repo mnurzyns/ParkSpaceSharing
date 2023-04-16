@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS `user`(
 
 CREATE TABLE IF NOT EXISTS `parking_space`(
     `id`       INTEGER PRIMARY KEY,
-    `owner_id`  INTEGER NOT NULL,
+    `name`     TEXT    NOT NULL, 
+    `owner_id` INTEGER NOT NULL,
     `location` TEXT    NOT NULL,
 
     FOREIGN KEY(`owner_id`)
@@ -25,10 +26,10 @@ CREATE TABLE IF NOT EXISTS `offer`(
 );
 
 CREATE INDEX IF NOT EXISTS `idx_parking_space_owner_id`
-    ON `parking_space`(`owner_id`);
+    ON parking_space(`owner_id`);
 
 CREATE INDEX IF NOT EXISTS `idx_offer_parking_space_id`
-    ON `offer`(`parking_space_id`);
+    ON offer(`parking_space_id`);
 
 
 -- Insert sample users

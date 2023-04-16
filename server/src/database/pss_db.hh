@@ -87,7 +87,7 @@ public:
     )
     QUERY(
         create_offer,
-        "INSERT INTO offer(parking_space_id, description) VALUES(:offer.id_parkingSpace, :offer.description);",
+        "INSERT INTO offer(parking_space_id, description) VALUES(:offer.parking_space_id, :offer.description);",
         PARAM(::oatpp::Object<::server::dto::offer_dto>, offer)
     )
     QUERY(
