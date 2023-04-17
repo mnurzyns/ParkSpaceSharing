@@ -42,7 +42,6 @@ std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(co
   if(authObject) {
     request->putBundleData("userId", authObject->userId);
 
-
     if(admin_r && !admin_r.getEndpoint()) {
       if(authObject->isAdmin){
         return nullptr;

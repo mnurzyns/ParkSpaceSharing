@@ -51,8 +51,11 @@ namespace server::service
 
     ::oatpp::Object<::server::dto::offer_dto> 
     offer_service::create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto, oatpp::UInt32 const& userId) {
+        
 
-        auto res = database_->is_offer_exist(dto->parking_space_id);
+        auto ok =  dto;
+        auto ok2 = userId;
+        /*auto res = database_->is_offer_exist(dto->parking_space_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_409, "parking space is already offered");
 
@@ -63,10 +66,10 @@ namespace server::service
         //Adding offer to database
         res = database_->create_offer(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-
         auto offer_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
 
-        return get_offer_byId(static_cast<v_uint32>(offer_id));
+        */
+        return nullptr; //get_offer_byId(static_cast<v_uint32>(offer_id));
     }
 
     oatpp::Void
