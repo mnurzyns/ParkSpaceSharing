@@ -33,6 +33,7 @@ public:
     {
         return ::std::make_shared<::server::controller::parkingSpace_controller>(object_mapper);
     }
+
     
     ENDPOINT_INFO(get_parkingSpace)
     {
@@ -47,6 +48,7 @@ public:
     {
         return createDtoResponse(Status::CODE_200, service_.get_parkingSpace());
     }
+
     ENDPOINT_INFO(get_myParkingSpace)
     {
         info->summary = "Get page_dto of my offerts";
@@ -56,9 +58,9 @@ public:
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "user/parkingSpace", get_myParkingSpace, BUNDLE(::oatpp::Object<::server::dto::user_dto>, user) )
+    ENDPOINT("GET", "user/parkingSpace", get_myParkingSpace, BUNDLE(::oatpp::UInt32, userId) )
     {
-        return createDtoResponse(Status::CODE_200, service_.get_myParkingSpace(user->id));
+        return createDtoResponse(Status::CODE_200, service_.get_myParkingSpace(userId));
     }
     
 
@@ -76,12 +78,14 @@ public:
         return createDtoResponse(Status::CODE_200, service_.get_parkingSpace_byId(parkingSpace_id));
     }
 
+
     ENDPOINT_INFO(create_parkingSpace)
     {
         info->summary = "Create a new parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_dto>>(Status::CODE_200, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
@@ -102,7 +106,6 @@ public:
     {
         return createDtoResponse(Status::CODE_200, service_.delete_parkingSpace(parkingSpace_id));
     }
-
 
 
 private:

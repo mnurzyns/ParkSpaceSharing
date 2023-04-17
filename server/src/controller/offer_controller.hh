@@ -49,6 +49,7 @@ public:
         return createDtoResponse(Status::CODE_200, service_.get_offers());
     }
 
+
     ENDPOINT_INFO(get_myOffers)
     {
         info->summary = "Get page_dto of my offerts";
