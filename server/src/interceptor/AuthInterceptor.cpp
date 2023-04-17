@@ -21,6 +21,11 @@ AuthInterceptor::AuthInterceptor(const std::shared_ptr<JWT>& jwt)
   adminEndpoints.route("POST", "users/*", false);
   adminEndpoints.route("DELETE", "users/*", false);
 
+  adminEndpoints.route("DELETE", "offers/{offer_id}", false);
+
+  adminEndpoints.route("POST", "parkingSpace", false);
+  adminEndpoints.route("DELETE", "parkingSpace/{parkingSpace_id}", false);
+
 }
 
 std::shared_ptr<AuthInterceptor::OutgoingResponse> AuthInterceptor::intercept(const std::shared_ptr<IncomingRequest>& request) {
