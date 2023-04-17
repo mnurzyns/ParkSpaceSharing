@@ -13,9 +13,9 @@ class signUp_dto : public oatpp::DTO {
 
   DTO_INIT(signUp_dto, DTO)
 
-  DTO_FIELD(String, username, "username");
-  DTO_FIELD(String, password, "password");
-  DTO_FIELD(String, email,    "email");
+  DTO_FIELD(oatpp::String, username, "username");
+  DTO_FIELD(oatpp::String, password, "password");
+  DTO_FIELD(oatpp::String, email,    "email");
 
 };
 

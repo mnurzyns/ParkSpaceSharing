@@ -13,7 +13,19 @@ class parkingSpace_dto : public oatpp::DTO {
 
   DTO_INIT(parkingSpace_dto, DTO)
 
-  DTO_FIELD(String, location, "location");
+  DTO_FIELD(oatpp::UInt32, owner_id, "owner_id");
+  DTO_FIELD(oatpp::String, location, "location");
+
+  DTO_FIELD_INFO(location)
+  {
+    info->description = "pole with client and server use to sent and read parkingSpace";
+  }
+
+  DTO_FIELD_INFO(owner_id)
+  {
+    info->description = "pole with client and server use to sent and read only in specific endpoits";
+  }   
+  
 
 };
 
