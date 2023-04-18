@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
 import {
@@ -7,10 +7,29 @@ import {
   SignInDto,
 } from "@/client";
 
+
 export const authOptions = {
-  session: {
-    strategy: "jwt",
+  callbacks: {
+    async jwt({ token, user }) {
+      /* Step 1: update the token based on the user object */
+      if (user) {
+        token.user = user;
+      }
+      console.log("jwt token:", token);
+      return token;
+    },
+    session({ session, token }) {
+      /* Step 2: update the session.user based on the token object */
+      if (token && session.user) {
+        session.user = token.user;
+      }
+      console.log("session", session);
+      return session;
+    },
   },
+  // session: {
+  //   strategy: "jwt",
+  // },
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     DiscordProvider({
@@ -32,7 +51,7 @@ export const authOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, req): Promise<User | null> {
         // You need to provide your own logic here that takes the credentials
         // submitted and returns either a object representing a user or value
         // that is false/null if the credentials are invalid.
@@ -45,31 +64,43 @@ export const authOptions = {
           email: credentials!.email,
           password: credentials!.password,
         };
+        const user: User = {
+          id: 1,
+          name: "usernameskfk",
+          email: "token.user.email",
+          admin: false,
+          token: "rawToken",
+        };
+        console.log("user", user);
+        return user;
         const res = await client.signIn(body).catch((err) => {
           console.log(err.response.data);
           console.error("Invalid credentials");
-          return 
-          return null;
-        });
 
-        var rawToken = res!.data.token;
-        var token = JSON.parse(
-          Buffer.from(res!.data.token!.split(".")[1], "base64").toString()
-        );
-        //   "iss": "issuer",
-        //   "user": "{\"id\":2,\"username\":null,\"email\":null,\"password\":null,\"admin\":null}"
-        // }
-        token.user = JSON.parse(token.user);
-        const user = {
-          id: token.user.id,
-          name: token.user.username,
-          email: token.user.email,
-          admin: token.user.admin,
-          token: rawToken,
-        };
-        console.log(token);
-        console.log(user);
-        return user;
+        });
+        console .log("res", res);
+        if (res === undefined) {
+
+          return null;
+        } else{
+          var rawToken = res!.data.token;
+          var token = JSON.parse(
+            Buffer.from(res!.data.token!.split(".")[1], "base64").toString()
+          );
+          //   "iss": "issuer",
+          //   "user": "{\"id\":2,\"username\":null,\"email\":null,\"password\":null,\"admin\":null}"
+          // }
+          token.user = JSON.parse(token.user);
+          const user = {
+            id: token.user.id,
+            name: token.user.username,
+            email: token.user.email,
+            admin: token.user.admin,
+            token: rawToken,
+          };
+          //return user;
+        }
+
       },
     }),
   ],
