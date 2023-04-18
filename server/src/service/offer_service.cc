@@ -60,30 +60,30 @@ namespace server::service
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_409, "parking space isnt ours");
     
-        //Adding offer to database
         res = database_->create_offer(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+
         auto offer_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
 
         return get_offer_byId(static_cast<v_uint32>(offer_id));
     }
 
-    oatpp::Void
+    oatpp::String
     offer_service::delete_myOffer(oatpp::UInt32 const& offer_id,oatpp::UInt32 const& user_id)
     {
         auto res = database_->delete_myOffer(offer_id,user_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
-        return nullptr;
+        return "OK";
     }
 
-    oatpp::Void
+    oatpp::String
     offer_service::delete_offer(oatpp::UInt32 const& offer_id)
     {
         auto res = database_->delete_offer(offer_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
-        return nullptr;
+        return "OK";
     }
 
 } // namespace server::service

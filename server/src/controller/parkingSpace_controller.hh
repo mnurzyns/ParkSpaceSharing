@@ -24,14 +24,17 @@ class parkingSpace_controller :
 public:
     [[nodiscard]]
     explicit
-    parkingSpace_controller(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper)) :
-    ::oatpp::web::server::api::ApiController{object_mapper} {}
-
-    static
-    ::std::shared_ptr<parkingSpace_controller>
-    create_shared(OATPP_COMPONENT(::std::shared_ptr<ObjectMapper>, object_mapper))
+    parkingSpace_controller(const std::shared_ptr<ObjectMapper>& objectMapper, const std::shared_ptr<JWT>& jwt_)
+    : oatpp::web::server::api::ApiController(objectMapper) 
     {
-        return ::std::make_shared<::server::controller::parkingSpace_controller>(object_mapper);
+        setDefaultAuthorizationHandler(std::make_shared<AuthHandler>(jwt_));    
+    }
+
+    static std::shared_ptr<parkingSpace_controller> create_shared(
+        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
+        OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_)
+    ) {
+        return std::make_shared<parkingSpace_controller>(objectMapper,jwt_);
     }
 
     
@@ -39,13 +42,16 @@ public:
     {
         info->summary = "Get page_dto of all parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
+        info->addSecurityRequirement("JWT Bearer Auth");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_page_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "parkingSpace", get_parkingSpace)
+    ENDPOINT("GET", "parkingSpace", get_parkingSpace,
+        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
+        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
         return createDtoResponse(Status::CODE_200, service_.get_parkingSpace());
     }
 
@@ -53,13 +59,17 @@ public:
     {
         info->summary = "Get page_dto of my offerts";
         info->tags.emplace_back("parkingSpace_controller");
+        info->addSecurityRequirement("JWT Bearer Auth");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_page_dto>>(Status::CODE_200, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "user/parkingSpace", get_myParkingSpace, BUNDLE(::oatpp::UInt32, userId) )
+    ENDPOINT("GET", "user/parkingSpace", get_myParkingSpace, BUNDLE(::oatpp::UInt32, userId),
+        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
+        authObject->userId;
         return createDtoResponse(Status::CODE_200, service_.get_myParkingSpace(userId));
     }
     
@@ -68,13 +78,17 @@ public:
     {
         info->summary = "Get parkingSpace by id (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
+        info->addSecurityRequirement("JWT Bearer Auth");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("GET", "parkingSpace/{parkingSpace_id}", get_parkingSpace_byId, PATH(oatpp::UInt32, parkingSpace_id))
+    ENDPOINT("GET", "parkingSpace/{parkingSpace_id}", get_parkingSpace_byId, 
+        PATH(oatpp::UInt32, parkingSpace_id),
+        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
+        authObject->userId;
         return createDtoResponse(Status::CODE_200, service_.get_parkingSpace_byId(parkingSpace_id));
     }
 
@@ -83,14 +97,18 @@ public:
     {
         info->summary = "Create a new parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
+        info->addSecurityRequirement("JWT Bearer Auth");
 
         info->addResponse<::oatpp::Object<::server::dto::parkingSpace_dto>>(Status::CODE_200, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
         info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("POST", "parkingSpace", create_parkingSpace, BODY_DTO(Object<::server::dto::parkingSpace_dto>, parkingSpace_dto)) 
+    ENDPOINT("POST", "parkingSpace", create_parkingSpace, 
+        BODY_DTO(Object<::server::dto::parkingSpace_dto>, parkingSpace_dto), 
+        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
+        authObject->userId;
         return createDtoResponse(Status::CODE_200, service_.create_parkingSpace(parkingSpace_dto));
     }  
 
@@ -98,12 +116,17 @@ public:
     ENDPOINT_INFO(delete_parkingSpace) {
         info->summary = "Delete parkingSpace (for admin use)";
         info->tags.emplace_back("parkingSpace_controller");
+        info->addSecurityRequirement("JWT Bearer Auth");
 
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
-
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
+        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
     }
-    ENDPOINT("DELETE", "parkingSpace/{parkingSpace_id}", delete_parkingSpace, PATH(oatpp::UInt32, parkingSpace_id))
+    ENDPOINT("DELETE", "parkingSpace/{parkingSpace_id}", delete_parkingSpace,
+        PATH(oatpp::UInt32, parkingSpace_id),
+        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
     {
+        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
         return createDtoResponse(Status::CODE_200, service_.delete_parkingSpace(parkingSpace_id));
     }
 
