@@ -52,8 +52,6 @@ namespace server::service
     ::oatpp::Object<::server::dto::parkingSpace_dto> 
     parkingSpace_service::create_parkingSpace(::oatpp::Object<::server::dto::parkingSpace_dto> const& dto) {
 
-       
-        //Adding parkingSpace to database
         auto res = database_->create_parkingSpace(dto);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
@@ -62,13 +60,13 @@ namespace server::service
         return get_parkingSpace_byId(static_cast<v_uint32>(ps_id));
     }
 
-    oatpp::Void
+    oatpp::String
     parkingSpace_service::delete_parkingSpace(oatpp::UInt32 const& parkingSpace_id)
     {
         auto res = database_->delete_parkingSpace(parkingSpace_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
-        return nullptr;
+        return "OK";
     }
 
 } // namespace server::service

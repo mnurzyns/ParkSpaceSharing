@@ -34,7 +34,7 @@ namespace server::service
         ::oatpp::Object<::server::dto::parkingSpace_dto>
         create_parkingSpace(::oatpp::Object<::server::dto::parkingSpace_dto> const& dto);
 
-        oatpp::Void
+        ::oatpp::String
         delete_parkingSpace(oatpp::UInt32 const& parkingSpace_id);
 
     };

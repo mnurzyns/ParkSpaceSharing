@@ -26,7 +26,7 @@ namespace server::service
         ::oatpp::Object<::server::dto::user_dto>
         get_user_byId(oatpp::UInt32 const& user_id);
 
-        oatpp::Void
+        ::oatpp::String
         delete_user(oatpp::UInt32 const& user_id);
 
         ::oatpp::Object<::server::dto::user_dto>

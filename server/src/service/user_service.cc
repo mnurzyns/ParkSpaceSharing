@@ -32,13 +32,13 @@ user_service::get_user_byId(oatpp::UInt32 const& user_id)
     return fetch[0];
 }
 
-oatpp::Void
+oatpp::String
 user_service::delete_user(oatpp::UInt32 const& user_id)
 {
     auto res = database_->delete_user(user_id);
     OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
 
-    return NULL;
+    return "OK";
 }
 
 ::oatpp::Object<::server::dto::user_dto>
