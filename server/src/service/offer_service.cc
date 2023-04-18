@@ -1,5 +1,6 @@
 #include "offer_service.hh"
-
+#include <oatpp-sqlite/ConnectionProvider.hpp>
+#include <oatpp/core/async/Coroutine.hpp>
 
 //NOLINTNEXTLINE
 using Status = ::oatpp::web::protocol::http::Status;
@@ -52,18 +53,21 @@ namespace server::service
     ::oatpp::Object<::server::dto::offer_dto> 
     offer_service::create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto, oatpp::UInt32 const& userId) {
 
+        auto res2 = database_->isHaveParkingSpace(userId,dto->parking_space_id);
+        OATPP_ASSERT_HTTP(res2->isSuccess(), Status::CODE_500, res2->getErrorMessage());
+        OATPP_ASSERT_HTTP(res2->hasMoreToFetch(), Status::CODE_409, "parking space isnt yours");
+
         auto res = database_->is_offer_exist(dto->parking_space_id);
         OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
         OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_409, "parking space is already offered");
 
-        res = database_->isHaveParkingSpace(userId,dto->parking_space_id);
-        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_409, "parking space isnt ours");
-    
-        res = database_->create_offer(dto);
-        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        res.reset();
+        res2.reset();
 
-        auto offer_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res->getConnection());
+        auto res3 = database_->create_offer(dto);
+        OATPP_ASSERT_HTTP(res3->isSuccess(), Status::CODE_500, res3->getErrorMessage());
+
+        auto offer_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res3->getConnection());
 
         return get_offer_byId(static_cast<v_uint32>(offer_id));
     }

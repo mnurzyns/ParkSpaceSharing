@@ -18,7 +18,7 @@
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
-namespace server { namespace database
+namespace server::database
 {
 
 class pss_db :
@@ -123,7 +123,7 @@ public:
     )
     QUERY(
         isHaveParkingSpace,
-        "SELECT * FROM parking_space WHERE id = :ps_id AND owner_id = :us_id;",
+        "SELECT id FROM parking_space WHERE id = :ps_id AND owner_id = :us_id;",
         PARAM(oatpp::UInt32, us_id),
         PARAM(oatpp::UInt32, ps_id)
     )
@@ -145,6 +145,6 @@ public:
 
 };
 
-} } // namespace server::database
+} // namespace server::database
 
 #include OATPP_CODEGEN_END(DbClient)
