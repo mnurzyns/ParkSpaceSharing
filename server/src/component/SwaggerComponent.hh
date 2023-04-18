@@ -1,21 +1,19 @@
 #pragma once
 
-#include <memory>
-
 #include <oatpp/core/macro/component.hpp>
-
 #include <oatpp-swagger/Model.hpp>
 #include <oatpp-swagger/Resources.hpp>
 
 namespace server::component
 {
 
-class swagger_component
+class SwaggerComponent
 {
+
 public:
-    OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::swagger::DocumentInfo>, swagger_document_info)([]{
+    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swagger_document_info)([]{
         return
-            ::oatpp::swagger::DocumentInfo::Builder{}
+            oatpp::swagger::DocumentInfo::Builder{}
                 .setTitle("Parking space sharing")
                 .setDescription("Project created by trainees of Bakcyl Programowania in 2022/2023.")
                 .setVersion("0.1.0")
@@ -24,8 +22,8 @@ public:
                 .build();
     }());
 
-    OATPP_CREATE_COMPONENT(::std::shared_ptr<::oatpp::swagger::Resources>, swagger_resources)([]{
-        return ::oatpp::swagger::Resources::loadResources(PSS_OATPP_SWAGGER_RES_PATH);
+    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::Resources>, swagger_resources)([]{
+        return oatpp::swagger::Resources::loadResources(PSS_OATPP_SWAGGER_RES_PATH);
     }());
 
 };

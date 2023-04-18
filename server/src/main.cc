@@ -1,52 +1,45 @@
-
-#include <memory>
-
-#include <iostream>
-#include <oatpp-swagger/Controller.hpp>
+#include <oatpp/core/base/Environment.hpp>
+#include <oatpp/web/server/api/Endpoint.hpp>
 #include <oatpp/network/Server.hpp>
+#include <oatpp-sqlite/Connection.hpp>
+#include <oatpp/core/macro/component.hpp>
+#include <oatpp-swagger/Controller.hpp>
 
-#include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
-#include "interceptor/AuthInterceptor.hpp"
-
-#include "component/app_component.hh"
-#include "controller/user_controller.hh"
-#include "controller/offer_controller.hh"
-#include "controller/auth_controller.hh"
-#include "controller/parkingSpace_controller.hh"
-
+#include "component/AppComponent.hh"
+#include "controller/TestController.hh"
+#include "controller/AuthController.hh"
 
 int
 main()
 {
-    ::oatpp::base::Environment::init();
+    oatpp::base::Environment::init();
 
-    ::server::component::app_component app_component;
+    server::component::AppComponent app_component;
 
-    auto router = app_component.http_router.getObject();
+    auto router = app_component.httpRouterComponent.getObject();
 
-    ::oatpp::web::server::api::Endpoints endpoints;
+    oatpp::web::server::api::Endpoints endpoints;
 
-    endpoints.append(router->addController(::server::controller::auth_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::parkingSpace_controller::create_shared())->getEndpoints());
+    endpoints.append(router->addController(server::controller::TestController::create_shared())->getEndpoints());
+    endpoints.append(router->addController(server::controller::AuthController::create_shared())->getEndpoints());
 
 
-    router->addController(::oatpp::swagger::Controller::createShared(endpoints));
+    router->addController(oatpp::swagger::Controller::createShared(endpoints));
 
     oatpp::network::Server server(
-        app_component.server_connection_provider.getObject(),
-        app_component.server_connection_handler.getObject()
+        app_component.serverConnectionProviderComponent.getObject(),
+        app_component.serverConnectionHandlerComponent.getObject()
     );
 
 
-    OATPP_LOGD("Server", "Running on port %s...", app_component.server_connection_provider.getObject()->getProperty("port").toString()->c_str());
+    OATPP_LOGD("Server", "Running on port %s...", app_component.serverConnectionProviderComponent.getObject()->getProperty("port").toString()->c_str());
 
     server.run();
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::provider::Provider<::oatpp::sqlite::Connection>>, database_connection_provider);
-    database_connection_provider->stop();
+    OATPP_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, databaseConnectionProvider);
 
-    ::oatpp::base::Environment::destroy();
+    databaseConnectionProvider->stop();
+
+    oatpp::base::Environment::destroy();
     return 0;
 }

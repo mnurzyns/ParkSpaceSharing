@@ -1,18 +1,16 @@
 #pragma once
 
-#include <oatpp/core/base/Environment.hpp>
 #include <oatpp/core/macro/codegen.hpp>
-#include <oatpp/core/Types.hpp>
+
+#include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace server::dto
 {
 
-#include OATPP_CODEGEN_BEGIN(DTO)
-
-class status_dto :
-    public ::oatpp::DTO
+class StatusDto :
+    public oatpp::DTO
 {
-    DTO_INIT(status_dto, DTO)
+    DTO_INIT(StatusDto, DTO)
 
     DTO_FIELD_INFO(status)
     {
@@ -33,7 +31,6 @@ class status_dto :
     DTO_FIELD(String, message);
 };
 
-#include OATPP_CODEGEN_END(DTO)
-
 } // namespace server::dto
 
+#include OATPP_CODEGEN_END(DTO)

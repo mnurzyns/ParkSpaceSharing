@@ -32,9 +32,9 @@ find_package(oatpp-swagger 1.3.0 REQUIRED)
 find_package(oatpp-sqlite  1.3.0 REQUIRED)
 find_package(oatpp-openssl 1.3.0 REQUIRED)
 
-find_package(OpenSSL 3.0.8 REQUIRED)
-find_package(jwt-cpp 0.6.0 REQUIRED)
-find_package(nlohmann_json 3.11 REQUIRED)
+find_package(OpenSSL  3.0.8  REQUIRED)
+find_package(jwt-cpp  0.6.0  REQUIRED)
+find_package(Boost    1.81.0 REQUIRED COMPONENTS json)
 
 #find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)

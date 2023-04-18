@@ -1,21 +1,20 @@
 #pragma once
 
-#include <oatpp/core/base/Environment.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/Types.hpp>
+
+#include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace server::dto
 {
 
-#include OATPP_CODEGEN_BEGIN(DTO)
+class SignUpDto : public oatpp::DTO {
 
-class signUp_dto : public oatpp::DTO {
-
-  DTO_INIT(signUp_dto, DTO)
+  DTO_INIT(SignUpDto, DTO)
 
   DTO_FIELD(oatpp::String, username, "username");
-  DTO_FIELD(oatpp::String, password, "password");
   DTO_FIELD(oatpp::String, email,    "email");
+  DTO_FIELD(oatpp::String, password, "password");
 
 };
 

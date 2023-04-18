@@ -4,16 +4,13 @@ target_sources(
     server PRIVATE
 
     src/main.cc
-    src/error_handler.cc
+    src/ErrorHandler.cc
 
-    src/service/auth_service.cc
-    src/service/user_service.cc
-    src/service/offer_service.cc
-    src/service/parkingSpace_service.cc
+    src/auth/AuthHandler.cc
+    src/auth/JWT.cc
 
-    src/auth/auth_handler.cpp
-    src/auth/JWT.cpp
-    src/interceptor/AuthInterceptor.cpp
+    src/service/AuthService.cc
+    src/service/UserService.cc
 )
 
 target_include_directories(
@@ -40,6 +37,6 @@ target_link_libraries(
     PUBLIC jwt-cpp::jwt-cpp
     PUBLIC OpenSSL::SSL
     PUBLIC OpenSSL::Crypto
-    PUBLIC nlohmann_json::nlohmann_json
+    PUBLIC Boost::json
 )
 

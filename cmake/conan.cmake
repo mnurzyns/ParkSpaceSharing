@@ -16,7 +16,7 @@ conan_cmake_configure(
         oatpp-openssl/1.3.0
         jwt-cpp/0.6.0
         openssl/3.0.8
-        nlohmann_json/3.11.2
+        boost/1.81.0
 
     GENERATORS
         cmake_paths
