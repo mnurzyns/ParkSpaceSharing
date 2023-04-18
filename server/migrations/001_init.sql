@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS `user`(
     `id`       INTEGER  PRIMARY KEY,
-    `username` TEXT     NOT NULL,
-    `email`    TEXT     NOT NULL,
+    `username` TEXT     NOT NULL UNIQUE,
+    `email`    TEXT     NOT NULL UNIQUE,
     `password` TEXT     NOT NULL,
-    `admin`    BOOLEAN  NOT NULL DEFAULT 0
+    `admin`    BOOLEAN  NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS `parking_space`(
