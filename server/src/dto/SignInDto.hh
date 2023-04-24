@@ -5,17 +5,15 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-namespace server::dto
-{
+namespace server::dto {
 
-class SignInDto : public oatpp::DTO {
+    class SignInDto : public oatpp::DTO {
+        DTO_INIT(SignInDto, DTO)
 
-  DTO_INIT(SignInDto, DTO)
+        DTO_FIELD(String, login, "login");
 
-  DTO_FIELD(String, login, "login");
-  DTO_FIELD(String, password, "password");
-
-};
+        DTO_FIELD(String, password, "password");
+    };
 
 #include OATPP_CODEGEN_END(DTO)
 

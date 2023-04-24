@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 
 option(CONAN "Use conan package manager" ON)
 
-set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Release)
 project(ParkingSpaceSharing LANGUAGES CXX VERSION 0.0.1)
 
 if(NOT MSVC)

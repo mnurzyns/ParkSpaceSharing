@@ -4,65 +4,131 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
 
-#include "model/UserModel.hh"
+#include "dto/UserDto.hh"
+#include "dto/PlaceDto.hh"
+#include "dto/OfferDto.hh"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 namespace server::database {
 
-class MainDatabase : public oatpp::orm::DbClient
-{
-public:
-    [[nodiscard]]
-    explicit
-    MainDatabase(std::shared_ptr<oatpp::orm::Executor> const& executor)
-    : oatpp::orm::DbClient { executor }
-    {
-      oatpp::orm::SchemaMigration migration{executor};
-      migration.addFile(1, PSS_DATABASE_MIGRATIONS_PATH "/001_init.sql");
-      migration.migrate();
+    class MainDatabase : public oatpp::orm::DbClient {
+    public:
+        [[nodiscard]]
+        explicit
+        MainDatabase(std::shared_ptr<oatpp::orm::Executor> const &executor)
+                : oatpp::orm::DbClient{executor} {
+            oatpp::orm::SchemaMigration migration{executor};
+            migration.addFile(1, PSS_DATABASE_MIGRATIONS_PATH "/001_init.sql");
+            migration.migrate();
 
-      OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
-    }
+            OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
+        }
 
+        // User
 
-    QUERY(getUser,
-          "SELECT * FROM user WHERE id = :userId;",
-          PARAM(oatpp::Int64, userId)
-    )
+        QUERY(createUser,
+              "INSERT INTO user"
+              "(username, email, password, role) VALUES "
+              "(:user.username, :user.email, :user.password, :user.role)"
+              "RETURNING id;",
+              PARAM(oatpp::Object<dto::UserDto>, user))
 
-    QUERY(getUserByEmail,
-          "SELECT * FROM user WHERE email = :email;",
-          PARAM(oatpp::String, email)
-    )
+        QUERY(getUser,
+              "SELECT * FROM user WHERE id=:userId;",
+              PARAM(oatpp::UInt64, userId))
 
-    QUERY(getUserByUsername,
-          "SELECT * FROM user WHERE username = :username;",
-          PARAM(oatpp::String, username)
-    )
+        QUERY(updateUser,
+              "UPDATE user "
+              "SET "
+              " email=:user.email, "
+              " username=:user.username, "
+              " password=:user.password, "
+              " role=:user.role "
+              "WHERE "
+              " id=:user.id"
+              "RETURNING *;",
+              PARAM(oatpp::Object<dto::UserDto>, user))
 
-    QUERY(getUserByLogin,
-          "SELECT * FROM user WHERE username = :login OR email = :login;",
-          PARAM(oatpp::String, login)
-    )
+        QUERY(deleteUser,
+              "DELETE FROM user WHERE id=:userId;",
+              PARAM(oatpp::UInt64, userId))
 
-    QUERY(searchUsers,
-          "SELECT * FROM user"
-          "WHERE username LIKE :query OR email LIKE :query"
-          "LIMIT :limit OFFSET :offset;",
-          PARAM(oatpp::String, query),
-          PARAM(oatpp::UInt64, limit),
-          PARAM(oatpp::UInt64, offset)
-    )
+        QUERY(deleteAllUsers, "DELETE FROM user;")
 
-  QUERY(createOneUser,
-          "INSERT INTO user (username, email, password, admin)"
-          "VALUES (:model.username, :model.email, :model.password, :model.admin)"
-          "RETURNING *;",
-          PARAM(oatpp::Object<model::UserModel>, model)
-    )
+        // For AuthService
 
-};
+        QUERY(getUserByUsername,
+              "SELECT * FROM user WHERE username=:username;",
+              PARAM(oatpp::String, username))
+
+        QUERY(getUserByEmail,
+              "SELECT * FROM user WHERE email=:email;",
+              PARAM(oatpp::String, email))
+
+        // Place
+
+        QUERY(createPlace,
+              "INSERT INTO place"
+              "(owner_id, address, latitude, longitude) VALUES "
+              "(:place.owner_id, :place.address, :place.latitude, :place.longitude)"
+              "RETURNING *;",
+              PARAM(oatpp::Object<dto::PlaceDto>, place))
+
+        QUERY(getPlace,
+              "SELECT * FROM place WHERE id=:placeId;",
+              PARAM(oatpp::UInt64, placeId))
+
+        QUERY(updatePlace,
+              "UPDATE place "
+              "SET "
+              " owner_id=:place.owner_id, "
+              " address=:place.address, "
+              " latitude=:place.latitude, "
+              " longitude=:place.longitude "
+              "WHERE "
+              " id=:place.id"
+              "RETURNING *;",
+              PARAM(oatpp::Object<dto::PlaceDto>, place))
+
+        QUERY(deletePlace,
+              "DELETE FROM place WHERE id=:placeId;",
+              PARAM(oatpp::UInt64, placeId))
+
+        QUERY(deleteAllPlaces, "DELETE FROM place;")
+
+        // Offer
+
+        QUERY(createOffer,
+              "INSERT INTO offer"
+              "(place_id, description, price, start_date, end_date) VALUES "
+              "(:offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
+              "RETURNING *;",
+              PARAM(oatpp::Object<dto::OfferDto>, offer))
+
+        QUERY(getOffer,
+              "SELECT * FROM offer WHERE id=:offerId;",
+              PARAM(oatpp::UInt64, offerId))
+
+        QUERY(updateOffer,
+              "UPDATE offer "
+              "SET "
+              " place_id=:offer.placeId, "
+              " description=:offer.description, "
+              " price=:offer.price, "
+              " start_date=:offer.startDate, "
+              " end_date=:offer.endDate "
+              "WHERE "
+              " id=:offer.id"
+              "RETURNING *;",
+              PARAM(oatpp::Object<dto::OfferDto>, offer))
+
+        QUERY(deleteOffer,
+              "DELETE FROM offer WHERE id=:offerId;",
+              PARAM(oatpp::UInt64, offerId))
+
+        QUERY(deleteAllOffers, "DELETE FROM offer;")
+    };
 
 } // namespace server::database
 

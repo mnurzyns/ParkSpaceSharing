@@ -10,7 +10,7 @@ target_sources(
     src/auth/JWT.cc
 
     src/service/AuthService.cc
-    src/service/UserService.cc
+    src/service/PlaceService.cc
 )
 
 target_include_directories(

@@ -6,33 +6,39 @@
 #include <oatpp-swagger/Controller.hpp>
 
 #include "component/AppComponent.hh"
-#include "controller/TestController.hh"
 #include "controller/AuthController.hh"
+//#include "controller/OfferController.hh"
+//#include "controller/UserController.hh"
+#include "controller/PlaceController.hh"
 
 int
-main()
-{
+main() {
     oatpp::base::Environment::init();
 
-    server::component::AppComponent app_component;
+    server::component::AppComponent appComponent;
 
-    auto router = app_component.httpRouterComponent.getObject();
+    auto router = appComponent.httpRouterComponent.getObject();
 
     oatpp::web::server::api::Endpoints endpoints;
 
-    endpoints.append(router->addController(server::controller::TestController::create_shared())->getEndpoints());
     endpoints.append(router->addController(server::controller::AuthController::create_shared())->getEndpoints());
+//    endpoints.append(router->addController(server::controller::OfferController::createShared())->getEndpoints());
+//    endpoints.append(router->addController(server::controller::UserController::createShared())->getEndpoints());
+    endpoints.append(router->addController(server::controller::PlaceController::createShared())->getEndpoints());
 
 
     router->addController(oatpp::swagger::Controller::createShared(endpoints));
 
     oatpp::network::Server server(
-        app_component.serverConnectionProviderComponent.getObject(),
-        app_component.serverConnectionHandlerComponent.getObject()
+            appComponent.serverConnectionProviderComponent.getObject(),
+            appComponent.serverConnectionHandlerComponent.getObject()
     );
 
 
-    OATPP_LOGD("Server", "Running on port %s...", app_component.serverConnectionProviderComponent.getObject()->getProperty("port").toString()->c_str());
+    OATPP_LOGD(
+    "Server", "Running on port %s...",
+    appComponent.serverConnectionProviderComponent.getObject()->getProperty("port").toString()->c_str()
+    );
 
     server.run();
 
