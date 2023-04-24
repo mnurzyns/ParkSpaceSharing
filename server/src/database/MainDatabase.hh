@@ -38,15 +38,10 @@ namespace server::database {
               "SELECT * FROM user WHERE id=:userId;",
               PARAM(oatpp::UInt64, userId))
 
-        QUERY(updateUser,
-              "UPDATE user "
-              "SET "
-              " email=:user.email, "
-              " username=:user.username, "
-              " password=:user.password, "
-              " role=:user.role "
-              "WHERE "
-              " id=:user.id"
+        QUERY(replaceUser,
+              "REPLACE INTO user"
+              "(id, username, email, password, role) VALUES "
+              "(:user.id, :user.username, :user.email, :user.password, :user.role)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::UserDto>, user))
 
@@ -79,15 +74,10 @@ namespace server::database {
               "SELECT * FROM place WHERE id=:placeId;",
               PARAM(oatpp::UInt64, placeId))
 
-        QUERY(updatePlace,
-              "UPDATE place "
-              "SET "
-              " owner_id=:place.owner_id, "
-              " address=:place.address, "
-              " latitude=:place.latitude, "
-              " longitude=:place.longitude "
-              "WHERE "
-              " id=:place.id"
+        QUERY(replacePlace,
+              "REPLACE INTO place"
+              "(id, owner_id, address, latitude, longitude) VALUES "
+              "(:place.id, :place.owner_id, :place.address, :place.latitude, :place.longitude)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::PlaceDto>, place))
 
@@ -110,16 +100,10 @@ namespace server::database {
               "SELECT * FROM offer WHERE id=:offerId;",
               PARAM(oatpp::UInt64, offerId))
 
-        QUERY(updateOffer,
-              "UPDATE offer "
-              "SET "
-              " place_id=:offer.placeId, "
-              " description=:offer.description, "
-              " price=:offer.price, "
-              " start_date=:offer.startDate, "
-              " end_date=:offer.endDate "
-              "WHERE "
-              " id=:offer.id"
+        QUERY(replaceOffer,
+              "REPLACE INTO offer"
+              "(id, place_id, description, price, start_date, end_date) VALUES "
+              "(:offer.id, :offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 

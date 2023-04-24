@@ -14,11 +14,14 @@ namespace server::service
         OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>, database_);
 
     public:
-        auto searchOffers(
-            oatpp::web::protocol::http::QueryParams const& queryParams,
-            oatpp::UInt64 const& limit = 20UL,
-            oatpp::UInt64 const& offset = 0UL
-        );
+//        TODO:
+//        auto searchOffers(
+//            oatpp::web::protocol::http::QueryParams const& queryParams,
+//            oatpp::UInt64 const& limit = 20UL,
+//            oatpp::UInt64 const& offset = 0UL
+//        );
+
+
     };
 
 } // namespace server::service

@@ -7,6 +7,7 @@
 #include "database/MainDatabase.hh"
 #include "dto/PageDto.hh"
 #include "dto/UserDto.hh"
+#include "dto/StatusDto.hh"
 
 using Status = oatpp::web::protocol::http::Status;
 
@@ -33,28 +34,28 @@ namespace server::service {
                 oatpp::UInt64 const &placeId
         );
 
+        //TODO:
         oatpp::Object<dto::PageDto<dto::PlaceDto>>
         search(
-                oatpp::String const &query = "",
+                oatpp::web::protocol::http::QueryParams const& queryParams,
                 oatpp::UInt64 const &limit = 20UL,
                 oatpp::UInt64 const &offset = 0UL
         );
 
         oatpp::Object<dto::PlaceDto>
-        updateOne(
-                oatpp::UInt64 const &placeId,
+        putOne(
                 oatpp::Object<dto::PlaceDto> const &dto
         );
 
         oatpp::Object<dto::PlaceDto>
         patchOne(
                 oatpp::UInt64 const &placeId,
-                oatpp::Object<dto::UserDto> const &dto
+                oatpp::Object<dto::PlaceDto> const &dto
         );
 
-        oatpp::Object<dto::PlaceDto>
+        oatpp::Object<dto::StatusDto>
         deleteOne(
-                oatpp::Int64 const &placeId
+                oatpp::UInt64 const &placeId
         );
     };
 

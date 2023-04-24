@@ -91,12 +91,19 @@ auto server::service::OfferService::searchOffers(
         const oatpp::UInt64 &limit,
         const oatpp::UInt64 &offset
 ) {
-    std::string query = "SELECT * FROM offer";
+    Key possibleParams[] = {"place.address"};
+    std::string query = "SELECT * FROM offer INNER JOIN place ON offer.place_id = place.id";
 
-    auto
+    for (param : possibleParams) {
+        if (auto value = queryParams.get("place.address")) {
+            query += " WHERE " + param + " LIKE " + queryParams.get(param);
+        }
+    }
 
-    if (queryParams.get("")) {
-        query += " WHERE parking_space_id = " + queryParams.get("parking_space_id");
+    }
+
+    if (queryParams.get("place.address")) {
+        query += " WHERE place.address LIKE " + queryParams.get("parking_space_id");
     }
 
     return nullptr;
