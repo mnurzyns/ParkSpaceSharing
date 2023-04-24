@@ -22,7 +22,6 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
-import { ReactNode } from 'react';
 
 /**
  * 
@@ -36,6 +35,12 @@ export interface AuthDto {
      * @memberof AuthDto
      */
     'token'?: string;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof AuthDto
+     */
+    'admin'?: boolean;
 }
 /**
  * 
@@ -43,31 +48,55 @@ export interface AuthDto {
  * @interface OfferDto
  */
 export interface OfferDto {
-    location: ReactNode;
     /**
-     * 
+     * pole with server use to sent and client read
      * @type {number}
      * @memberof OfferDto
      */
     'id'?: number;
     /**
-     * 
+     * pole with client use to sent and server read
      * @type {number}
      * @memberof OfferDto
      */
-    'id_parkingSpace'?: number;
+    'parking_space_id'?: number;
     /**
-     * 
+     * pole with client and server use to sent and read
      * @type {string}
      * @memberof OfferDto
      */
     'description'?: string;
     /**
-     * id of the offer\'s owner
-     * @type {number}
+     * pole with server use to sent and client read
+     * @type {string}
      * @memberof OfferDto
      */
-    'user_id'?: number;
+    'location'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface ParkingSpaceDto
+ */
+export interface ParkingSpaceDto {
+    /**
+     * pole with server use to sent and client read
+     * @type {number}
+     * @memberof ParkingSpaceDto
+     */
+    'id'?: number;
+    /**
+     * pole with client and server use to sent and read only in specific endpoits
+     * @type {number}
+     * @memberof ParkingSpaceDto
+     */
+    'owner_id'?: number;
+    /**
+     * pole with client and server use to sent and read parkingSpace
+     * @type {string}
+     * @memberof ParkingSpaceDto
+     */
+    'location'?: string;
 }
 /**
  * 
@@ -366,10 +395,10 @@ export class AuthControllerApi extends BaseAPI {
 
 
 /**
- * ParkingSpaceControllerApi - axios parameter creator
+ * OfferControllerApi - axios parameter creator
  * @export
  */
-export const ParkingSpaceControllerApiAxiosParamCreator = function (configuration?: Configuration) {
+export const OfferControllerApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
@@ -381,7 +410,7 @@ export const ParkingSpaceControllerApiAxiosParamCreator = function (configuratio
         createOffer: async (offerDto: OfferDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'offerDto' is not null or undefined
             assertParamExists('createOffer', 'offerDto', offerDto)
-            const localVarPath = `/offers`;
+            const localVarPath = `/offer`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -392,6 +421,10 @@ export const ParkingSpaceControllerApiAxiosParamCreator = function (configuratio
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -409,7 +442,117 @@ export const ParkingSpaceControllerApiAxiosParamCreator = function (configuratio
         },
         /**
          * 
-         * @summary Get offer of parking space by its id
+         * @summary Delete myOffer
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMyOffer: async (offerId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'offerId' is not null or undefined
+            assertParamExists('deleteMyOffer', 'offerId', offerId)
+            const localVarPath = `/user/offer/{offer_id}`
+                .replace(`{${"offer_id"}}`, encodeURIComponent(String(offerId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete offer (for admin use)
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteOffer: async (offerId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'offerId' is not null or undefined
+            assertParamExists('deleteOffer', 'offerId', offerId)
+            const localVarPath = `/offer/{offer_id}`
+                .replace(`{${"offer_id"}}`, encodeURIComponent(String(offerId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get page_dto of my offerts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMyOffers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user/offers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get offer by id
          * @param {number} offerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -443,7 +586,7 @@ export const ParkingSpaceControllerApiAxiosParamCreator = function (configuratio
         },
         /**
          * 
-         * @summary Get page_dto of offers
+         * @summary Get page_dto of all offers
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -475,11 +618,11 @@ export const ParkingSpaceControllerApiAxiosParamCreator = function (configuratio
 };
 
 /**
- * ParkingSpaceControllerApi - functional programming interface
+ * OfferControllerApi - functional programming interface
  * @export
  */
-export const ParkingSpaceControllerApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = ParkingSpaceControllerApiAxiosParamCreator(configuration)
+export const OfferControllerApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = OfferControllerApiAxiosParamCreator(configuration)
     return {
         /**
          * 
@@ -494,7 +637,39 @@ export const ParkingSpaceControllerApiFp = function(configuration?: Configuratio
         },
         /**
          * 
-         * @summary Get offer of parking space by its id
+         * @summary Delete myOffer
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteMyOffer(offerId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatusDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMyOffer(offerId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete offer (for admin use)
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteOffer(offerId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatusDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteOffer(offerId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get page_dto of my offerts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMyOffers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OfferDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMyOffers(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get offer by id
          * @param {number} offerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -505,12 +680,415 @@ export const ParkingSpaceControllerApiFp = function(configuration?: Configuratio
         },
         /**
          * 
-         * @summary Get page_dto of offers
+         * @summary Get page_dto of all offers
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async getOffers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OfferDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOffers(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * OfferControllerApi - factory interface
+ * @export
+ */
+export const OfferControllerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = OfferControllerApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new offer
+         * @param {OfferDto} offerDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createOffer(offerDto: OfferDto, options?: any): AxiosPromise<OfferDto> {
+            return localVarFp.createOffer(offerDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete myOffer
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMyOffer(offerId: number, options?: any): AxiosPromise<StatusDto> {
+            return localVarFp.deleteMyOffer(offerId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete offer (for admin use)
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteOffer(offerId: number, options?: any): AxiosPromise<StatusDto> {
+            return localVarFp.deleteOffer(offerId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get page_dto of my offerts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMyOffers(options?: any): AxiosPromise<OfferDto> {
+            return localVarFp.getMyOffers(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get offer by id
+         * @param {number} offerId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOfferById(offerId: number, options?: any): AxiosPromise<OfferDto> {
+            return localVarFp.getOfferById(offerId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get page_dto of all offers
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getOffers(options?: any): AxiosPromise<OfferDto> {
+            return localVarFp.getOffers(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * OfferControllerApi - object-oriented interface
+ * @export
+ * @class OfferControllerApi
+ * @extends {BaseAPI}
+ */
+export class OfferControllerApi extends BaseAPI {
+    /**
+     * 
+     * @summary Create a new offer
+     * @param {OfferDto} offerDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public createOffer(offerDto: OfferDto, options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).createOffer(offerDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete myOffer
+     * @param {number} offerId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public deleteMyOffer(offerId: number, options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).deleteMyOffer(offerId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete offer (for admin use)
+     * @param {number} offerId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public deleteOffer(offerId: number, options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).deleteOffer(offerId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get page_dto of my offerts
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public getMyOffers(options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).getMyOffers(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get offer by id
+     * @param {number} offerId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public getOfferById(offerId: number, options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).getOfferById(offerId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get page_dto of all offers
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OfferControllerApi
+     */
+    public getOffers(options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).getOffers(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * ParkingSpaceControllerApi - axios parameter creator
+ * @export
+ */
+export const ParkingSpaceControllerApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Create a new parkingSpace (for admin use)
+         * @param {ParkingSpaceDto} parkingSpaceDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createParkingSpace: async (parkingSpaceDto: ParkingSpaceDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'parkingSpaceDto' is not null or undefined
+            assertParamExists('createParkingSpace', 'parkingSpaceDto', parkingSpaceDto)
+            const localVarPath = `/parkingSpace`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(parkingSpaceDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete parkingSpace (for admin use)
+         * @param {number} parkingSpaceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteParkingSpace: async (parkingSpaceId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'parkingSpaceId' is not null or undefined
+            assertParamExists('deleteParkingSpace', 'parkingSpaceId', parkingSpaceId)
+            const localVarPath = `/parkingSpace/{parkingSpace_id}`
+                .replace(`{${"parkingSpace_id"}}`, encodeURIComponent(String(parkingSpaceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get page_dto of my offerts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMyParkingSpace: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user/parkingSpace`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get page_dto of all parkingSpace (for admin use)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getParkingSpace: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/parkingSpace`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get parkingSpace by id (for admin use)
+         * @param {number} parkingSpaceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getParkingSpaceById: async (parkingSpaceId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'parkingSpaceId' is not null or undefined
+            assertParamExists('getParkingSpaceById', 'parkingSpaceId', parkingSpaceId)
+            const localVarPath = `/parkingSpace/{parkingSpace_id}`
+                .replace(`{${"parkingSpace_id"}}`, encodeURIComponent(String(parkingSpaceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * ParkingSpaceControllerApi - functional programming interface
+ * @export
+ */
+export const ParkingSpaceControllerApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ParkingSpaceControllerApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Create a new parkingSpace (for admin use)
+         * @param {ParkingSpaceDto} parkingSpaceDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createParkingSpace(parkingSpaceDto: ParkingSpaceDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParkingSpaceDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createParkingSpace(parkingSpaceDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete parkingSpace (for admin use)
+         * @param {number} parkingSpaceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteParkingSpace(parkingSpaceId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteParkingSpace(parkingSpaceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get page_dto of my offerts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMyParkingSpace(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParkingSpaceDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMyParkingSpace(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get page_dto of all parkingSpace (for admin use)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getParkingSpace(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParkingSpaceDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getParkingSpace(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get parkingSpace by id (for admin use)
+         * @param {number} parkingSpaceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getParkingSpaceById(parkingSpaceId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ParkingSpaceDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getParkingSpaceById(parkingSpaceId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -525,32 +1103,51 @@ export const ParkingSpaceControllerApiFactory = function (configuration?: Config
     return {
         /**
          * 
-         * @summary Create a new offer
-         * @param {OfferDto} offerDto 
+         * @summary Create a new parkingSpace (for admin use)
+         * @param {ParkingSpaceDto} parkingSpaceDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createOffer(offerDto: OfferDto, options?: any): AxiosPromise<OfferDto> {
-            return localVarFp.createOffer(offerDto, options).then((request) => request(axios, basePath));
+        createParkingSpace(parkingSpaceDto: ParkingSpaceDto, options?: any): AxiosPromise<ParkingSpaceDto> {
+            return localVarFp.createParkingSpace(parkingSpaceDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get offer of parking space by its id
-         * @param {number} offerId 
+         * @summary Delete parkingSpace (for admin use)
+         * @param {number} parkingSpaceId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOfferById(offerId: number, options?: any): AxiosPromise<OfferDto> {
-            return localVarFp.getOfferById(offerId, options).then((request) => request(axios, basePath));
+        deleteParkingSpace(parkingSpaceId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteParkingSpace(parkingSpaceId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get page_dto of offers
+         * @summary Get page_dto of my offerts
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOffers(options?: any): AxiosPromise<OfferDto> {
-            return localVarFp.getOffers(options).then((request) => request(axios, basePath));
+        getMyParkingSpace(options?: any): AxiosPromise<ParkingSpaceDto> {
+            return localVarFp.getMyParkingSpace(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get page_dto of all parkingSpace (for admin use)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getParkingSpace(options?: any): AxiosPromise<ParkingSpaceDto> {
+            return localVarFp.getParkingSpace(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get parkingSpace by id (for admin use)
+         * @param {number} parkingSpaceId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getParkingSpaceById(parkingSpaceId: number, options?: any): AxiosPromise<ParkingSpaceDto> {
+            return localVarFp.getParkingSpaceById(parkingSpaceId, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -564,37 +1161,60 @@ export const ParkingSpaceControllerApiFactory = function (configuration?: Config
 export class ParkingSpaceControllerApi extends BaseAPI {
     /**
      * 
-     * @summary Create a new offer
-     * @param {OfferDto} offerDto 
+     * @summary Create a new parkingSpace (for admin use)
+     * @param {ParkingSpaceDto} parkingSpaceDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ParkingSpaceControllerApi
      */
-    public createOffer(offerDto: OfferDto, options?: AxiosRequestConfig) {
-        return ParkingSpaceControllerApiFp(this.configuration).createOffer(offerDto, options).then((request) => request(this.axios, this.basePath));
+    public createParkingSpace(parkingSpaceDto: ParkingSpaceDto, options?: AxiosRequestConfig) {
+        return ParkingSpaceControllerApiFp(this.configuration).createParkingSpace(parkingSpaceDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get offer of parking space by its id
-     * @param {number} offerId 
+     * @summary Delete parkingSpace (for admin use)
+     * @param {number} parkingSpaceId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ParkingSpaceControllerApi
      */
-    public getOfferById(offerId: number, options?: AxiosRequestConfig) {
-        return ParkingSpaceControllerApiFp(this.configuration).getOfferById(offerId, options).then((request) => request(this.axios, this.basePath));
+    public deleteParkingSpace(parkingSpaceId: number, options?: AxiosRequestConfig) {
+        return ParkingSpaceControllerApiFp(this.configuration).deleteParkingSpace(parkingSpaceId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get page_dto of offers
+     * @summary Get page_dto of my offerts
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ParkingSpaceControllerApi
      */
-    public getOffers(options?: AxiosRequestConfig) {
-        return ParkingSpaceControllerApiFp(this.configuration).getOffers(options).then((request) => request(this.axios, this.basePath));
+    public getMyParkingSpace(options?: AxiosRequestConfig) {
+        return ParkingSpaceControllerApiFp(this.configuration).getMyParkingSpace(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get page_dto of all parkingSpace (for admin use)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ParkingSpaceControllerApi
+     */
+    public getParkingSpace(options?: AxiosRequestConfig) {
+        return ParkingSpaceControllerApiFp(this.configuration).getParkingSpace(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get parkingSpace by id (for admin use)
+     * @param {number} parkingSpaceId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ParkingSpaceControllerApi
+     */
+    public getParkingSpaceById(parkingSpaceId: number, options?: AxiosRequestConfig) {
+        return ParkingSpaceControllerApiFp(this.configuration).getParkingSpaceById(parkingSpaceId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -607,7 +1227,7 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
     return {
         /**
          * 
-         * @summary Create a user (function for admin)
+         * @summary Create a user (for admin use)
          * @param {UserDto} userDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -627,6 +1247,10 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -643,7 +1267,7 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Delete User (function for admin)
+         * @summary Delete User (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -664,6 +1288,10 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -677,7 +1305,7 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Get user by id (function for admin)
+         * @summary Get user by id (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -698,6 +1326,10 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -711,7 +1343,7 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
         },
         /**
          * 
-         * @summary Get users (function for admin)
+         * @summary Get users (for admin use)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -727,6 +1359,10 @@ export const UserControllerApiAxiosParamCreator = function (configuration?: Conf
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication JWT Bearer Auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -751,7 +1387,7 @@ export const UserControllerApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Create a user (function for admin)
+         * @summary Create a user (for admin use)
          * @param {UserDto} userDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -762,7 +1398,7 @@ export const UserControllerApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Delete User (function for admin)
+         * @summary Delete User (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -773,7 +1409,7 @@ export const UserControllerApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get user by id (function for admin)
+         * @summary Get user by id (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -784,7 +1420,7 @@ export const UserControllerApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get users (function for admin)
+         * @summary Get users (for admin use)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -804,7 +1440,7 @@ export const UserControllerApiFactory = function (configuration?: Configuration,
     return {
         /**
          * 
-         * @summary Create a user (function for admin)
+         * @summary Create a user (for admin use)
          * @param {UserDto} userDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -814,7 +1450,7 @@ export const UserControllerApiFactory = function (configuration?: Configuration,
         },
         /**
          * 
-         * @summary Delete User (function for admin)
+         * @summary Delete User (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -824,7 +1460,7 @@ export const UserControllerApiFactory = function (configuration?: Configuration,
         },
         /**
          * 
-         * @summary Get user by id (function for admin)
+         * @summary Get user by id (for admin use)
          * @param {number} userId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -834,7 +1470,7 @@ export const UserControllerApiFactory = function (configuration?: Configuration,
         },
         /**
          * 
-         * @summary Get users (function for admin)
+         * @summary Get users (for admin use)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -853,7 +1489,7 @@ export const UserControllerApiFactory = function (configuration?: Configuration,
 export class UserControllerApi extends BaseAPI {
     /**
      * 
-     * @summary Create a user (function for admin)
+     * @summary Create a user (for admin use)
      * @param {UserDto} userDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -865,7 +1501,7 @@ export class UserControllerApi extends BaseAPI {
 
     /**
      * 
-     * @summary Delete User (function for admin)
+     * @summary Delete User (for admin use)
      * @param {number} userId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -877,7 +1513,7 @@ export class UserControllerApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get user by id (function for admin)
+     * @summary Get user by id (for admin use)
      * @param {number} userId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -889,7 +1525,7 @@ export class UserControllerApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get users (function for admin)
+     * @summary Get users (for admin use)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserControllerApi

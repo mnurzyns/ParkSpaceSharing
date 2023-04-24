@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import Navbar from "@/components/Navbar";
 import { BaseAPI } from "@/client/base";
-import { OfferDto, ParkingSpaceControllerApi } from "@/client/api";
+import { OfferControllerApi, OfferDto, ParkingSpaceControllerApi } from "@/client/api";
 import { useEffect, useState } from "react";
 import { off } from "process";
 
@@ -14,28 +14,30 @@ export default function Home() {
   const [offers, setOffers] = useState<OfferDto[]>([]);
 
   useEffect(() => {
-    const client: ParkingSpaceControllerApi = new ParkingSpaceControllerApi();
-    client
-      .getOffers()
+    const client: OfferControllerApi = new OfferControllerApi();
+    client.getOffers()
       .then((res) => {
-        console.log(res);
-        if (isOffer(res.data)) {
-          setOffers(res.data);
+        if (res.data.items[0] != null) {
+          console.log(res.data);
+          setOffers(res.data.items);
         }
       })
       .catch((err) => {
         console.log(err.response);
       });
-  });
+  },[]);
 
-  function isOffer(arg: any): arg is OfferDto[] {
-    return arg && arg.prop;
-  }
+  useEffect(() => {
+    console.log(offers);
+  }, [offers]);
+
+
+
 
   return (
     <div>
       <Navbar />
-      <div>
+      <div className="flex flex-wrap justify-around">
         <div className="card w-96 bg-primary shadow-xl">
           <div className="card-body">
             <h2 className="card-title">Test offer!</h2>
@@ -49,7 +51,7 @@ export default function Home() {
           <div key={index}>
             <div className="card w-96 bg-primary shadow-xl">
               <div className="card-body">
-                <h2 className="card-title">{offer.location}</h2>
+                <h2 className="card-title">{offer.parking_space_id}</h2>
                 <p>{offer.description}</p>
                 <div className="card-actions justify-end">
                   <button className="btn btn-primary">Buy Now</button>
