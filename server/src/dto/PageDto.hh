@@ -3,8 +3,6 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/Types.hpp>
 
-#include "UserDto.hh"
-
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace server::dto {

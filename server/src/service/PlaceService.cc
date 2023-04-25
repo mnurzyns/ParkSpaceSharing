@@ -34,6 +34,46 @@ namespace server::service {
         return fetchResult[0];
     }
 
+    oatpp::Object<dto::PlacePageDto>
+    PlaceService::search(
+            oatpp::String const &query,
+            oatpp::UInt64 const &limit,
+            oatpp::UInt64 const &offset
+    ) {
+        std::string const queryTableFts = " FROM place_fts";
+        std::string const queryFilters = query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
+
+        auto queryTotalResult = database->executeQuery(
+                "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
+                {{"query", oatpp::String(query)}}
+        );
+
+        OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(), Status::CODE_500, queryTotalResult->getErrorMessage())
+
+        auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
+
+        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "Not found")
+
+        auto queryResult = database->executeQuery(
+                "SELECT place.*" + queryTableFts +
+                " INNER JOIN place ON place.id = place_fts.place_id" + queryFilters +
+                " LIMIT :offset,:limit;", {
+                        {"query",  oatpp::String(query)},
+                        {"offset", oatpp::UInt64(offset)},
+                        {"limit",  oatpp::UInt64(limit)}
+                });
+
+        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::PlaceDto>>>();
+
+        auto page = dto::PlacePageDto::createShared();
+        page->items = fetchResult;
+        page->limit = limit;
+        page->offset = offset;
+        page->count = fetchTotalResult[0][0];
+
+        return page;
+    }
+
     oatpp::Object<dto::PlaceDto>
     PlaceService::putOne(
             oatpp::Object<dto::PlaceDto> const &dto

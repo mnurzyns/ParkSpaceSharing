@@ -22,7 +22,7 @@ namespace server::component {
         }());
 
         OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::Resources>, swagger_resources)([] {
-            return oatpp::swagger::Resources::loadResources(PSS_OATPP_SWAGGER_RES_PATH);
+            return oatpp::swagger::Resources::loadResources(OATPP_SWAGGER_RES_PATH);
         }());
 
     };

@@ -21,7 +21,7 @@ if(CONAN)
     include(cmake/conan.cmake)
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23) #Time for some fun :devilish_grin:
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

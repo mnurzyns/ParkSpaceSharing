@@ -35,9 +35,9 @@ namespace server::service {
         );
 
         //TODO:
-        oatpp::Object<dto::PageDto<dto::PlaceDto>>
+        oatpp::Object<dto::PlacePageDto>
         search(
-                oatpp::web::protocol::http::QueryParams const& queryParams,
+                oatpp::String const &query,
                 oatpp::UInt64 const &limit = 20UL,
                 oatpp::UInt64 const &offset = 0UL
         );

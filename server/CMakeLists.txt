@@ -21,10 +21,9 @@ target_include_directories(
 
 target_compile_definitions(
     server
-
-    PUBLIC -DPSS_OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
-    PUBLIC -DPSS_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
-    PUBLIC -DPSS_DATABASE_FILE="${CMAKE_CURRENT_BINARY_DIR}/database.sqlite3"
+    PUBLIC OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
+    PUBLIC MAIN_DATABASE_FILE="${CMAKE_CURRENT_BINARY_DIR}/main.db"
+    PUBLIC MAIN_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
 )
 
 target_link_libraries(

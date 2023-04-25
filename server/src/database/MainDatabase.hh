@@ -3,6 +3,9 @@
 #include <oatpp/orm/DbClient.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
+#include <filesystem>
+#include <ranges>
+#include <vector>
 
 #include "dto/UserDto.hh"
 #include "dto/PlaceDto.hh"
@@ -18,9 +21,18 @@ namespace server::database {
         explicit
         MainDatabase(std::shared_ptr<oatpp::orm::Executor> const &executor)
                 : oatpp::orm::DbClient{executor} {
-            oatpp::orm::SchemaMigration migration{executor};
-            migration.addFile(1, PSS_DATABASE_MIGRATIONS_PATH "/001_init.sql");
-            migration.migrate();
+            oatpp::orm::SchemaMigration migrator{executor};
+            auto migrations = std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}
+            | std::views::all | std::views::filter([](auto const& entry){
+                return entry.is_regular_file() && entry.path().extension() == ".sql";
+            }) | std::views::transform([](auto const& entry){
+                static auto i = 1L;
+                return std::make_pair(i++, entry);
+            });
+            for (auto const& [index, migration] : migrations) {
+                migrator.addFile(index, migration.path().string());
+            }
+            migrator.migrate();
 
             OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
         }
@@ -73,6 +85,12 @@ namespace server::database {
         QUERY(getPlace,
               "SELECT * FROM place WHERE id=:placeId;",
               PARAM(oatpp::UInt64, placeId))
+
+        QUERY(searchPlaces,
+              "SELECT * FROM place_fts WHERE place_fts :query LIMIT :offset, :limit;",
+                PARAM(oatpp::String, query),
+                PARAM(oatpp::UInt64, offset),
+                PARAM(oatpp::UInt64, limit))
 
         QUERY(replacePlace,
               "REPLACE INTO place"

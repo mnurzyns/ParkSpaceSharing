@@ -20,6 +20,9 @@ conan_cmake_configure(
     GENERATORS
         cmake_paths
         cmake_find_package
+
+    OPTIONS
+        sqlite3:enable_fts5=True
 )
 
 conan_cmake_autodetect(settings)

@@ -14,7 +14,7 @@ namespace server::component {
                 std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>,
                 databaseConnectionPoolComponent
         )([] {
-            auto tmp = std::make_shared<oatpp::sqlite::ConnectionProvider>(PSS_DATABASE_FILE);
+            auto tmp = std::make_shared<oatpp::sqlite::ConnectionProvider>(MAIN_DATABASE_FILE);
             return oatpp::sqlite::ConnectionPool::createShared(tmp, 10, std::chrono::seconds{5});
         }());
 
