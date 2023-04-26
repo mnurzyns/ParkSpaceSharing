@@ -47,8 +47,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::UserDto>, user))
 
         QUERY(getUser,
-              "SELECT * FROM user WHERE id=:userId;",
-              PARAM(oatpp::UInt64, userId))
+              "SELECT * FROM user WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(replaceUser,
               "REPLACE INTO user"
@@ -58,8 +58,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::UserDto>, user))
 
         QUERY(deleteUser,
-              "DELETE FROM user WHERE id=:userId;",
-              PARAM(oatpp::UInt64, userId))
+              "DELETE FROM user WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(deleteAllUsers, "DELETE FROM user;")
 
@@ -83,14 +83,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::PlaceDto>, place))
 
         QUERY(getPlace,
-              "SELECT * FROM place WHERE id=:placeId;",
-              PARAM(oatpp::UInt64, placeId))
-
-        QUERY(searchPlaces,
-              "SELECT * FROM place_fts WHERE place_fts :query LIMIT :offset, :limit;",
-                PARAM(oatpp::String, query),
-                PARAM(oatpp::UInt64, offset),
-                PARAM(oatpp::UInt64, limit))
+              "SELECT * FROM place WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(replacePlace,
               "REPLACE INTO place"
@@ -100,8 +94,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::PlaceDto>, place))
 
         QUERY(deletePlace,
-              "DELETE FROM place WHERE id=:placeId;",
-              PARAM(oatpp::UInt64, placeId))
+              "DELETE FROM place WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(deleteAllPlaces, "DELETE FROM place;")
 
@@ -115,8 +109,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 
         QUERY(getOffer,
-              "SELECT * FROM offer WHERE id=:offerId;",
-              PARAM(oatpp::UInt64, offerId))
+              "SELECT * FROM offer WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(replaceOffer,
               "REPLACE INTO offer"
@@ -126,8 +120,8 @@ namespace server::database {
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 
         QUERY(deleteOffer,
-              "DELETE FROM offer WHERE id=:offerId;",
-              PARAM(oatpp::UInt64, offerId))
+              "DELETE FROM offer WHERE id=:id;",
+              PARAM(oatpp::UInt64, id))
 
         QUERY(deleteAllOffers, "DELETE FROM offer;")
     };

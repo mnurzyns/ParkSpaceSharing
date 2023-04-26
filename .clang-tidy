@@ -42,6 +42,10 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.VariableCase
     value: camelCase
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: id
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: id
 
   - key: readability-magic-numbers.IgnoredIntegerValues
     value: 0;1;2;3;4;10

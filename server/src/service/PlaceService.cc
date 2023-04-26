@@ -6,7 +6,7 @@ namespace server::service {
     PlaceService::createOne(
             oatpp::Object<server::dto::PlaceDto> const &dto
     ) {
-        auto queryResult = database->createPlace(dto);
+        auto queryResult = database_->createPlace(dto);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
@@ -20,9 +20,9 @@ namespace server::service {
 
     oatpp::Object<server::dto::PlaceDto>
     PlaceService::getOne(
-            oatpp::UInt64 const &placeId
+            oatpp::UInt64 const &id
     ) {
-        auto queryResult = database->getPlace(placeId);
+        auto queryResult = database_->getPlace(id);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Not found")
@@ -43,7 +43,7 @@ namespace server::service {
         std::string const queryTableFts = " FROM place_fts";
         std::string const queryFilters = query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
 
-        auto queryTotalResult = database->executeQuery(
+        auto queryTotalResult = database_->executeQuery(
                 "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
                 {{"query", oatpp::String(query)}}
         );
@@ -54,7 +54,7 @@ namespace server::service {
 
         OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "Not found")
 
-        auto queryResult = database->executeQuery(
+        auto queryResult = database_->executeQuery(
                 "SELECT place.*" + queryTableFts +
                 " INNER JOIN place ON place.id = place_fts.place_id" + queryFilters +
                 " LIMIT :offset,:limit;", {
@@ -78,7 +78,7 @@ namespace server::service {
     PlaceService::putOne(
             oatpp::Object<dto::PlaceDto> const &dto
     ) {
-        auto queryResult = database->replacePlace(dto);
+        auto queryResult = database_->replacePlace(dto);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
@@ -92,10 +92,10 @@ namespace server::service {
 
     oatpp::Object<dto::PlaceDto>
     PlaceService::patchOne(
-            oatpp::UInt64 const &placeId,
+            oatpp::UInt64 const &id,
             oatpp::Object<dto::PlaceDto> const &dto
     ) {
-        auto queryResult = database->getPlace(placeId);
+        auto queryResult = database_->getPlace(id);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
@@ -112,7 +112,7 @@ namespace server::service {
         existing->longitude = dto->longitude ? dto->longitude : existing->longitude;
         existing->ownerId = dto->ownerId ? dto->ownerId : existing->ownerId;
 
-        queryResult = database->replacePlace(existing);
+        queryResult = database_->replacePlace(existing);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
@@ -126,14 +126,14 @@ namespace server::service {
 
     oatpp::Object<dto::StatusDto>
     PlaceService::deleteOne(
-            const oatpp::UInt64 &placeId
+            const oatpp::UInt64 &id
     ) {
-        auto queryResult = database->getPlace(placeId);
+        auto queryResult = database_->getPlace(id);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
         OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Not found")
 
-        queryResult = database->deletePlace(placeId);
+        queryResult = database_->deletePlace(id);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
 

@@ -69,9 +69,9 @@ namespace server::controller {
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("GET", "place/{placeId}", getOne,
-                 PATH(UInt64, placeId)) {
-            return createDtoResponse(Status::CODE_200, service_.getOne(placeId));
+        ENDPOINT("GET", "place/{id}", getOne,
+                 PATH(UInt64, id)) {
+            return createDtoResponse(Status::CODE_200, service_.getOne(id));
         }
 
         ENDPOINT_INFO(putOne) {
@@ -142,19 +142,19 @@ namespace server::controller {
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("PATCH", "place/{placeId}", patchOne,
+        ENDPOINT("PATCH", "place/{id}", patchOne,
                  AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
-                 PATH(UInt64, placeId),
+                 PATH(UInt64, id),
                  BODY_DTO(oatpp::Object<dto::PlaceDto>, dto)) {
             OATPP_ASSERT_HTTP(
                     authObject->role == 0 ||
                     ((dto->ownerId == nullptr ||
                       dto->ownerId == authObject->userId) &&
-                     service_.getOne(placeId)->ownerId == authObject->userId),
+                     service_.getOne(id)->ownerId == authObject->userId),
                     Status::CODE_403,
                     "Cannot modify other user's place as a regular user"
             )
-            return createDtoResponse(Status::CODE_200, service_.patchOne(placeId, dto));
+            return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
         }
 
         ENDPOINT_INFO(deleteOne) {
@@ -169,16 +169,16 @@ namespace server::controller {
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("DELETE", "place/{placeId}", deleteOne,
+        ENDPOINT("DELETE", "place/{id}", deleteOne,
                  AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
-                 PATH(UInt64, placeId)) {
+                 PATH(UInt64, id)) {
             OATPP_ASSERT_HTTP(
                     authObject->role == 0 ||
-                    service_.getOne(placeId)->ownerId == authObject->userId,
+                    service_.getOne(id)->ownerId == authObject->userId,
                     Status::CODE_403,
                     "Cannot delete other user's place as a regular user"
             )
-            return createDtoResponse(Status::CODE_200, service_.deleteOne(placeId));
+            return createDtoResponse(Status::CODE_200, service_.deleteOne(id));
         }
     };
 

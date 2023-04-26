@@ -16,7 +16,7 @@ namespace server::service {
     class PlaceService {
 
     private:
-        OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>, database);
+        OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>, database_);
 
     public:
         static std::shared_ptr<PlaceService>
@@ -31,7 +31,7 @@ namespace server::service {
 
         oatpp::Object<dto::PlaceDto>
         getOne(
-                oatpp::UInt64 const &placeId
+                oatpp::UInt64 const &id
         );
 
         //TODO:
@@ -49,13 +49,13 @@ namespace server::service {
 
         oatpp::Object<dto::PlaceDto>
         patchOne(
-                oatpp::UInt64 const &placeId,
+                oatpp::UInt64 const &id,
                 oatpp::Object<dto::PlaceDto> const &dto
         );
 
         oatpp::Object<dto::StatusDto>
         deleteOne(
-                oatpp::UInt64 const &placeId
+                oatpp::UInt64 const &id
         );
     };
 
