@@ -8,12 +8,14 @@
 #include "dto/OfferDto.hh"
 #include "service/PlaceService.hh"
 
+using HttpError = oatpp::web::protocol::http::HttpError;
+
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace server::controller {
 
     class PlaceController :
-            public ::oatpp::web::server::api::ApiController {
+            public oatpp::web::server::api::ApiController {
     private:
         server::service::PlaceService service_;
 
@@ -39,9 +41,11 @@ namespace server::controller {
             info->tags.emplace_back("place-controller");
             info->addSecurityRequirement("JWT Bearer Auth", {});
 
-            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::PlaceDto>>(Status::CODE_200, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_409, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
@@ -56,7 +60,12 @@ namespace server::controller {
                     Status::CODE_400,
                     "Required parameter not provided"
             )
-            dto->ownerId = authObject->userId;
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0 ||
+                    authObject->userId == dto->ownerId,
+                    Status::CODE_403,
+                    "Cannot create place for another user as a regular user"
+            )
             return createDtoResponse(Status::CODE_200, service_.createOne(dto));
         }
 
@@ -72,17 +81,6 @@ namespace server::controller {
         ENDPOINT("GET", "place/{id}", getOne,
                  PATH(UInt64, id)) {
             return createDtoResponse(Status::CODE_200, service_.getOne(id));
-        }
-
-        ENDPOINT_INFO(putOne) {
-            info->summary = "Put one place";
-            info->tags.emplace_back("place-controller");
-            info->addSecurityRequirement("JWT Bearer Auth", {});
-
-            info->addResponse<oatpp::Object<dto::PlaceDto>>(Status::CODE_200, "application/json");
-            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
-            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
-            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
         ENDPOINT_INFO(search) {
@@ -105,6 +103,18 @@ namespace server::controller {
             return createDtoResponse(Status::CODE_200, service_.search(query, limit, offset));
         }
 
+        ENDPOINT_INFO(putOne) {
+            info->summary = "Put one place";
+            info->tags.emplace_back("place-controller");
+            info->addSecurityRequirement("JWT Bearer Auth", {});
+
+            info->addResponse<oatpp::Object<dto::PlaceDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
+
         ENDPOINT("PUT", "place", putOne,
                  AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
                  BODY_DTO(oatpp::Object<dto::PlaceDto>, dto)) {
@@ -120,12 +130,12 @@ namespace server::controller {
             try {
                 OATPP_ASSERT_HTTP(
                         authObject->role == 0 ||
-                        (dto->ownerId == authObject->userId &&
-                         service_.getOne(dto->id)->ownerId == authObject->userId),
+                        (authObject->userId == service_.getOne(dto->id)->ownerId &&
+                         (dto->ownerId == nullptr || dto->ownerId == authObject->userId)),
                         Status::CODE_403,
-                        "Cannot create or modify other user's place as a regular user"
+                        "Cannot create or modify other user's places as a regular user"
                 )
-            } catch (oatpp::web::protocol::http::HttpError &error) {
+            } catch (HttpError &error) {
                 if (error.getInfo().status != Status::CODE_404) { throw; }
             }
             return createDtoResponse(Status::CODE_200, service_.putOne(dto));
@@ -138,6 +148,7 @@ namespace server::controller {
 
             info->addResponse<oatpp::Object<dto::PlaceDto>>(Status::CODE_200, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
             info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
@@ -148,11 +159,10 @@ namespace server::controller {
                  BODY_DTO(oatpp::Object<dto::PlaceDto>, dto)) {
             OATPP_ASSERT_HTTP(
                     authObject->role == 0 ||
-                    ((dto->ownerId == nullptr ||
-                      dto->ownerId == authObject->userId) &&
-                     service_.getOne(id)->ownerId == authObject->userId),
+                    (authObject->userId == service_.getOne(id)->ownerId &&
+                     (dto->ownerId == nullptr || dto->ownerId == authObject->userId)),
                     Status::CODE_403,
-                    "Cannot modify other user's place as a regular user"
+                    "Cannot modify other user's places as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
         }
@@ -176,7 +186,7 @@ namespace server::controller {
                     authObject->role == 0 ||
                     service_.getOne(id)->ownerId == authObject->userId,
                     Status::CODE_403,
-                    "Cannot delete other user's place as a regular user"
+                    "Cannot delete other user's places as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.deleteOne(id));
         }

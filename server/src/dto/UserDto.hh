@@ -3,6 +3,8 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/Types.hpp>
 
+#include "PageDto.hh"
+
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace server::dto {
@@ -19,6 +21,12 @@ namespace server::dto {
         DTO_FIELD(String, password, "password");
 
         DTO_FIELD(Int32, role, "role"); // 0 - admin, 1 - user //TODO: enum
+    };
+
+    class UserPageDto : public PageDto<oatpp::Object<UserDto>> {
+
+        DTO_INIT(UserPageDto, PageDto<oatpp::Object<UserDto>>)
+
     };
 
 } // namespace server::dto

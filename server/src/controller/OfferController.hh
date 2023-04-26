@@ -14,7 +14,7 @@ namespace server::controller {
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 class OfferController :
-        public ::oatpp::web::server::api::ApiController {
+        public oatpp::web::server::api::ApiController {
 private:
     service::OfferService service_;
 public:

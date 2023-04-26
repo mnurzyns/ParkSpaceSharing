@@ -1,121 +1,197 @@
 #pragma once
 
-#include "auth/auth_handler.hpp"
-#include "dto/page_dto.hh"
-#include "dto/offer_dto.hh"
-#include "dto/status_dto.hh"
-#include "service/user_service.hh"
-
-#include <memory>
-#include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
-#include <oatpp/core/macro/component.hpp>
-#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
-#include <oatpp/web/server/api/ApiController.hpp>
-#include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 
-namespace server::controller
-{
+#include "auth/AuthHandler.hh"
+#include "dto/StatusDto.hh"
+#include "dto/UserDto.hh"
+#include "service/UserService.hh"
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
-class user_controller :
-    public ::oatpp::web::server::api::ApiController
-{
-public:
-    [[nodiscard]]
-    explicit
-    user_controller(const std::shared_ptr<ObjectMapper>& objectMapper, const std::shared_ptr<JWT>& jwt_)
-    : oatpp::web::server::api::ApiController(objectMapper) 
-    {
-        setDefaultAuthorizationHandler(std::make_shared<AuthHandler>(jwt_));    
-    }
+namespace server::controller {
 
-    static std::shared_ptr<user_controller> create_shared(
-        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
-        OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_))
-    {
-        return std::make_shared<user_controller>(objectMapper,jwt_);
-    }
+    class UserController :
+            public oatpp::web::server::api::ApiController {
+    private:
+        server::service::UserService service_;
 
-    ENDPOINT_INFO(get_users)
-    {
-        info->summary = "Get users (for admin use)";
-        info->tags.emplace_back("user_controller");
-        info->addSecurityRequirement("JWT Bearer Auth");
+    public:
+        [[nodiscard]]
+        explicit
+        UserController(const std::shared_ptr<ObjectMapper> &objectMapper, const std::shared_ptr<auth::JWT> &jwtObject)
+                : oatpp::web::server::api::ApiController(objectMapper) {
+            setDefaultAuthorizationHandler(std::make_shared<auth::AuthHandler>(jwtObject));
+        }
 
-        info->addResponse<::oatpp::Object<::server::dto::user_page_dto>>(Status::CODE_200, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
-    }
-    ENDPOINT("GET", "users", get_users, 
-        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
-    {
-        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
-        return createDtoResponse(Status::CODE_200, service_.get_users());
-    }
+        static std::shared_ptr<UserController> createShared(
+                OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
+                OATPP_COMPONENT(std::shared_ptr<auth::JWT>, jwt_)
+        ) {
+            return std::make_shared<UserController>(objectMapper, jwt_);
+        }
 
-    ENDPOINT_INFO(get_user_byId)
-    {
-        info->summary = "Get user by id (for admin use)";
-        info->tags.emplace_back("user_controller");
-        info->addSecurityRequirement("JWT Bearer Auth");
+        // Endpoints
 
-        info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_404, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
-    }
-    ENDPOINT("GET", "users/{user_id}", get_user_byId,
-        PATH(oatpp::UInt32, user_id),
-        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
-    {
-        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
-        return createDtoResponse(Status::CODE_200, service_.get_user_byId(user_id));
-    }
+        ENDPOINT_INFO(createOne) {
+            info->summary = "Create one user";
+            info->tags.emplace_back("user-controller");
+            info->addSecurityRequirement("JWT Bearer Auth", {});
 
-    ENDPOINT_INFO(create_user)
-    {
-        info->summary = "Create a user (for admin use)";
-        info->tags.emplace_back("user_controller");
-        info->addSecurityRequirement("JWT Bearer Auth");
+            info->addResponse<oatpp::Object<dto::UserDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_409, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
 
-        info->addResponse<::oatpp::Object<::server::dto::user_dto>>(Status::CODE_200, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_401, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_409, "application/json");
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_500, "application/json");
-    }
-    ENDPOINT("POST", "users", create_user, 
-        BODY_DTO(Object<::server::dto::user_dto>, user_dto),
-        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
-    {
-        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
-        return createDtoResponse(Status::CODE_200, service_.create_user(user_dto));
-    }
+        ENDPOINT("POST", "user", createOne,
+                 AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
+                 BODY_DTO(oatpp::Object<dto::UserDto>, dto)) {
+            OATPP_ASSERT_HTTP(
+                    dto->email &&
+                    dto->password &&
+                    dto->username &&
+                    dto->role,
+                    Status::CODE_400,
+                    "Required parameter not provided"
+            )
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0,
+                    Status::CODE_403,
+                    "Cannot create users as a regular user"
+            );
+            return createDtoResponse(Status::CODE_200, service_.createOne(dto));
+        }
 
-    ENDPOINT_INFO(delete_user) {
-        info->summary = "Delete User (for admin use)";
-        info->tags.emplace_back("user_controller");
-        info->addSecurityRequirement("JWT Bearer Auth");
+        ENDPOINT_INFO(getOne) {
+            info->summary = "Get one user";
+            info->tags.emplace_back("user-controller");
 
-        info->addResponse<::oatpp::Object<::server::dto::status_dto>>(Status::CODE_200, "application/json");
-    }
-    ENDPOINT("DELETE", "users/{user_id}", delete_user, 
-        PATH(oatpp::UInt32, userId),
-        AUTHORIZATION(std::shared_ptr<JWT::Payload>, authObject))
-    {
-        OATPP_ASSERT_HTTP(authObject->isAdmin, Status::CODE_401, "Unauthorized");
-        return createDtoResponse(Status::CODE_200, service_.delete_user(userId));
-    }
+            info->addResponse<oatpp::Object<dto::UserDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
 
+        ENDPOINT("GET", "user/{id}", getOne,
+                 PATH(UInt64, id)) {
+            return createDtoResponse(Status::CODE_200, service_.getOne(id));
+        }
 
-    
+        ENDPOINT_INFO(search) {
+            info->summary = "Search users";
+            info->tags.emplace_back("user-controller");
 
-private:
-    ::server::service::user_service service_;
-};
+            info->queryParams["query"].required = false;
+            info->queryParams["limit"].required = false;
+            info->queryParams["offset"].required = false;
 
-#include OATPP_CODEGEN_END(ApiController)
+            info->addResponse<oatpp::Object<dto::UserPageDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
+
+        ENDPOINT("GET", "user", search,
+                 QUERY(String, query, "query", std::string{}),
+                 QUERY(UInt64, limit, "limit", 20U),
+                 QUERY(UInt64, offset, "offset", uint64_t{0})) {
+            return createDtoResponse(Status::CODE_200, service_.search(query, limit, offset));
+        }
+
+        ENDPOINT_INFO(putOne) {
+            info->summary = "Put one user";
+            info->tags.emplace_back("user-controller");
+            info->addSecurityRequirement("JWT Bearer Auth", {});
+
+            info->addResponse<oatpp::Object<dto::UserDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
+
+        ENDPOINT("PUT", "user", putOne,
+                 AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
+                 BODY_DTO(oatpp::Object<dto::UserDto>, dto)) {
+            OATPP_ASSERT_HTTP(
+                    dto->id &&
+                    dto->email &&
+                    dto->password &&
+                    dto->username,
+                    Status::CODE_400,
+                    "Required parameter not provided"
+            )
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0,
+                    Status::CODE_403,
+                    "Cannot create or modify other users as a regular user"
+            )
+            return createDtoResponse(Status::CODE_200, service_.putOne(dto));
+        }
+
+        ENDPOINT_INFO(patchOne) {
+            info->summary = "Update one user";
+            info->tags.emplace_back("user-controller");
+            info->addSecurityRequirement("JWT Bearer Auth", {});
+
+            info->addResponse<oatpp::Object<dto::UserDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
+
+        ENDPOINT("PATCH", "user/{id}", patchOne,
+                 AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
+                 PATH(UInt64, id),
+                 BODY_DTO(oatpp::Object<dto::UserDto>, dto)) {
+            auto const existing = service_.getOne(id);
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0 ||
+                    (authObject->userId == existing->id &&
+                     (dto->id == nullptr || dto->id == id)),
+                    Status::CODE_403,
+                    "Cannot modify other users as a regular user"
+            )
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0 ||
+                    dto->role == existing->role,
+                    Status::CODE_403,
+                    "Cannot modify user role as a regular user"
+            )
+            return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
+        }
+
+        ENDPOINT_INFO(deleteOne) {
+            info->summary = "Delete one user";
+            info->tags.emplace_back("user-controller");
+            info->addSecurityRequirement("JWT Bearer Auth", {});
+
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+        }
+
+        ENDPOINT("DELETE", "user/{id}", deleteOne,
+                 AUTHORIZATION(std::shared_ptr<auth::JWT::Payload>, authObject),
+                 PATH(UInt64, id)) {
+            OATPP_ASSERT_HTTP(
+                    authObject->role == 0 ||
+                    /* Next line may seem weird, but it just checks
+                     * - if user exists (404 will be thrown if service didn't find it) and
+                     * - if user is modifying himself without adding additional conditions
+                    */
+                    service_.getOne(id)->id == authObject->userId,
+                    Status::CODE_403,
+                    "Cannot delete other user's user as a regular user"
+            )
+            return createDtoResponse(Status::CODE_200, service_.deleteOne(id));
+        }
+    };
 
 } // namespace server::controller
 
+#include OATPP_CODEGEN_END(ApiController)

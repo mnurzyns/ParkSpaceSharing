@@ -3,10 +3,8 @@
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/protocol/http/Http.hpp>
 
-#include "auth/JWT.hh"
 #include "database/MainDatabase.hh"
-#include "dto/PageDto.hh"
-#include "dto/UserDto.hh"
+#include "dto/PlaceDto.hh"
 #include "dto/StatusDto.hh"
 
 using Status = oatpp::web::protocol::http::Status;
@@ -34,7 +32,6 @@ namespace server::service {
                 oatpp::UInt64 const &id
         );
 
-        //TODO:
         oatpp::Object<dto::PlacePageDto>
         search(
                 oatpp::String const &query,

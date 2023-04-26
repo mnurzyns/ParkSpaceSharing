@@ -41,9 +41,9 @@ namespace server::database {
 
         QUERY(createUser,
               "INSERT INTO user"
-              "(username, email, password, role) VALUES "
-              "(:user.username, :user.email, :user.password, :user.role)"
-              "RETURNING id;",
+              "(id, username, email, password, role) VALUES "
+              "(:user.id, :user.username, :user.email, :user.password, :user.role)"
+              "RETURNING *;",
               PARAM(oatpp::Object<dto::UserDto>, user))
 
         QUERY(getUser,
@@ -63,7 +63,7 @@ namespace server::database {
 
         QUERY(deleteAllUsers, "DELETE FROM user;")
 
-        // For AuthService
+        // Get by UNIQUE fields
 
         QUERY(getUserByUsername,
               "SELECT * FROM user WHERE username=:username;",
@@ -77,8 +77,8 @@ namespace server::database {
 
         QUERY(createPlace,
               "INSERT INTO place"
-              "(owner_id, address, latitude, longitude) VALUES "
-              "(:place.owner_id, :place.address, :place.latitude, :place.longitude)"
+              "(id, owner_id, address, latitude, longitude) VALUES "
+              "(:place.id, :place.owner_id, :place.address, :place.latitude, :place.longitude)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::PlaceDto>, place))
 
@@ -103,8 +103,8 @@ namespace server::database {
 
         QUERY(createOffer,
               "INSERT INTO offer"
-              "(place_id, description, price, start_date, end_date) VALUES "
-              "(:offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
+              "(id, place_id, description, price, start_date, end_date) VALUES "
+              "(:offer.id, :offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 

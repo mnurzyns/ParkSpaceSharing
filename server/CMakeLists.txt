@@ -5,12 +5,12 @@ target_sources(
 
     src/main.cc
     src/ErrorHandler.cc
-
     src/auth/AuthHandler.cc
     src/auth/JWT.cc
 
     src/service/AuthService.cc
     src/service/PlaceService.cc
+    src/service/UserService.cc
 )
 
 target_include_directories(

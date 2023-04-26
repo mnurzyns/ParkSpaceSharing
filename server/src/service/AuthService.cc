@@ -12,13 +12,13 @@ namespace server::service {
         )
         {
             auto result = database_->getUserByEmail(dto->email);
-            OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage());
-            OATPP_ASSERT_HTTP(!result->hasMoreToFetch(), Status::CODE_409, "EMAIL_ALREADY_EXISTS");
+            OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage())
+            OATPP_ASSERT_HTTP(!result->hasMoreToFetch(), Status::CODE_409, "EMAIL_ALREADY_EXISTS")
         }
         {
             auto result = database_->getUserByUsername(dto->username);
-            OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage());
-            OATPP_ASSERT_HTTP(!result->hasMoreToFetch(), Status::CODE_409, "USERNAME_ALREADY_EXISTS");
+            OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage())
+            OATPP_ASSERT_HTTP(!result->hasMoreToFetch(), Status::CODE_409, "USERNAME_ALREADY_EXISTS")
         }
 
         auto userDto = oatpp::Object<dto::UserDto>::createShared();
@@ -28,7 +28,7 @@ namespace server::service {
         userDto->role = 1;
 
         auto res = database_->createUser(userDto);
-        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
+        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage())
 
         oatpp::Object<server::dto::SignInDto> const signInDto = std::make_shared<dto::SignInDto>();
         signInDto->login = dto->email;
@@ -51,14 +51,14 @@ namespace server::service {
             result = database_->getUserByUsername(dto->login);
         }
 
-        OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage());
-        OATPP_ASSERT_HTTP(result->hasMoreToFetch(), Status::CODE_404, "NOT_FOUND");
+        OATPP_ASSERT_HTTP(result->isSuccess(), Status::CODE_500, result->getErrorMessage())
+        OATPP_ASSERT_HTTP(result->hasMoreToFetch(), Status::CODE_404, "NOT_FOUND")
 
         auto fetch = result->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
 
-        OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "UNEXPECTED_NUMBER_OF_ROWS_FETCHED");
+        OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "UNEXPECTED_NUMBER_OF_ROWS_FETCHED")
 
-        OATPP_ASSERT_HTTP(dto->password == fetch[0]->password, Status::CODE_401, "WRONG_CREDENTIALS");
+        OATPP_ASSERT_HTTP(dto->password == fetch[0]->password, Status::CODE_401, "WRONG_CREDENTIALS")
 
         auto payload = std::make_shared<auth::JWT::Payload>();
         payload->userId = fetch[0]->id;

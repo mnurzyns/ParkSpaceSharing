@@ -8,7 +8,7 @@
 #include "component/AppComponent.hh"
 #include "controller/AuthController.hh"
 //#include "controller/OfferController.hh"
-//#include "controller/UserController.hh"
+#include "controller/UserController.hh"
 #include "controller/PlaceController.hh"
 
 int
@@ -23,8 +23,8 @@ main() {
 
     endpoints.append(router->addController(server::controller::AuthController::create_shared())->getEndpoints());
 //    endpoints.append(router->addController(server::controller::OfferController::createShared())->getEndpoints());
-//    endpoints.append(router->addController(server::controller::UserController::createShared())->getEndpoints());
     endpoints.append(router->addController(server::controller::PlaceController::createShared())->getEndpoints());
+    endpoints.append(router->addController(server::controller::UserController::createShared())->getEndpoints());
 
 
     router->addController(oatpp::swagger::Controller::createShared(endpoints));

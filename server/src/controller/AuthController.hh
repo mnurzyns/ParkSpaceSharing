@@ -32,15 +32,15 @@ namespace server::controller {
             info->summary = "Sign up";
             info->tags.emplace_back("auth-controller");
 
-            info->addConsumes < Object < dto::SignUpDto >> ("application/json");
+            info->addConsumes<Object<dto::SignUpDto>>("application/json");
 
-            info->addResponse < Object < dto::AuthDto >> (Status::CODE_200, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_400, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_409, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_500, "application/json");
+            info->addResponse<Object<dto::AuthDto>>(Status::CODE_200, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_409, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("POST", "signup", signUp, BODY_DTO(Object < dto::SignUpDto > , dto)) {
+        ENDPOINT("POST", "signup", signUp, BODY_DTO(Object<dto::SignUpDto>, dto)) {
             return createDtoResponse(Status::CODE_200, service_.signUp(dto));
         }
 
@@ -49,16 +49,16 @@ namespace server::controller {
             info->summary = "Sign in";
             info->tags.emplace_back("auth-controller");
 
-            info->addConsumes < Object < dto::SignInDto >> ("application/json");
+            info->addConsumes<Object<dto::SignInDto>>("application/json");
 
-            info->addResponse < Object < dto::AuthDto >> (Status::CODE_200, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_400, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_401, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_404, "application/json");
-            info->addResponse < Object < dto::StatusDto >> (Status::CODE_500, "application/json");
+            info->addResponse<Object<dto::AuthDto>>(Status::CODE_200, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("POST", "signin", signIn, BODY_DTO(Object < dto::SignInDto > , dto)) {
+        ENDPOINT("POST", "signin", signIn, BODY_DTO(Object<dto::SignInDto>, dto)) {
             return createDtoResponse(Status::CODE_200, service_.signIn(dto));
         }
 
