@@ -6,9 +6,10 @@
 
 #include "dto/StatusDto.hh"
 
-using ResponseFactory = oatpp::web::protocol::http::outgoing::ResponseFactory;
 
 namespace server {
+
+    using ResponseFactory = oatpp::web::protocol::http::outgoing::ResponseFactory;
 
     class ErrorHandler :
             public oatpp::web::server::handler::ErrorHandler {

@@ -8,9 +8,9 @@
 #include "dto/SignInDto.hh"
 #include "dto/SignUpDto.hh"
 
-using Status = oatpp::web::protocol::http::Status;
-
 namespace server::service {
+
+    using Status = oatpp::web::protocol::http::Status;
 
     class AuthService {
     private:

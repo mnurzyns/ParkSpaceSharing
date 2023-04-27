@@ -2,6 +2,10 @@
 
 namespace server::service {
 
+    std::shared_ptr<UserService> UserService::createShared() {
+        return std::make_shared<UserService>();
+    }
+
     oatpp::Object<server::dto::UserDto>
     UserService::createOne(
             oatpp::Object<server::dto::UserDto> const &dto

@@ -7,9 +7,9 @@
 #include "dto/PlaceDto.hh"
 #include "dto/StatusDto.hh"
 
-using Status = oatpp::web::protocol::http::Status;
-
 namespace server::service {
+
+    using Status = oatpp::web::protocol::http::Status;
 
     class PlaceService {
 
@@ -18,9 +18,7 @@ namespace server::service {
 
     public:
         static std::shared_ptr<PlaceService>
-        createShared() {
-            return std::make_shared<PlaceService>();
-        }
+        createShared();
 
         oatpp::Object<dto::PlaceDto>
         createOne(

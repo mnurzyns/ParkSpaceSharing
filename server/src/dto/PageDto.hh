@@ -17,7 +17,7 @@ namespace server::dto {
 
         DTO_FIELD(UInt64, count);
 
-        DTO_FIELD(Vector < T >, items);
+        DTO_FIELD(Vector<T>, items);
     };
 
 } // namespace server::dto

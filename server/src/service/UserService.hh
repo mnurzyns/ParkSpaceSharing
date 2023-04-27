@@ -7,9 +7,9 @@
 #include "dto/UserDto.hh"
 #include "dto/StatusDto.hh"
 
-using Status = oatpp::web::protocol::http::Status;
-
 namespace server::service {
+
+    using Status = oatpp::web::protocol::http::Status;
 
     class UserService {
 
@@ -18,9 +18,7 @@ namespace server::service {
 
     public:
         static std::shared_ptr<UserService>
-        createShared() {
-            return std::make_shared<UserService>();
-        }
+        createShared();
 
         oatpp::Object<dto::UserDto>
         createOne(

@@ -2,6 +2,12 @@
 
 namespace server::service {
 
+    using HttpError = oatpp::web::protocol::http::HttpError;
+
+    std::shared_ptr<PlaceService> PlaceService::createShared() {
+        return std::make_shared<PlaceService>();
+    }
+
     oatpp::Object<server::dto::PlaceDto>
     PlaceService::createOne(
             oatpp::Object<server::dto::PlaceDto> const &dto
@@ -10,7 +16,7 @@ namespace server::service {
             this->getOne(dto->id); // Will throw 404 if not found
             OATPP_ASSERT_HTTP(false, Status::CODE_409, "Place already exists")
         }
-        catch (oatpp::web::protocol::http::HttpError &e) {
+        catch (HttpError &e) {
             if (e.getInfo().status != Status::CODE_404) { throw; }
         }
 

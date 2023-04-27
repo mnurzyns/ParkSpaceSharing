@@ -9,8 +9,6 @@
 #include "service/OfferService.hh"
 #include "service/PlaceService.hh"
 
-using HttpError = oatpp::web::protocol::http::HttpError;
-
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace server::controller {
@@ -107,7 +105,7 @@ namespace server::controller {
         ENDPOINT("GET", "offer", search,
                  QUERY(String, query, "query", std::string{}),
                  QUERY(UInt64, limit, "limit", 20U),
-                 QUERY(UInt64, offset, "offset", uint64_t{0})) {
+                 QUERY(UInt64, offset, "offset", 0UL)) {
             return createDtoResponse(Status::CODE_200, offerService_.search(query, limit, offset));
         }
 
