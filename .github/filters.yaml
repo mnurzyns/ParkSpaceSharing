@@ -1,0 +1,8 @@
+cxx:
+  - "**/CMakeLists.txt"
+  - "**.cmake"
+  - "**.cc"
+  - "**.hh"
+  - "**.cpp"
+  - "**.hpp"
+  - "**.h"
