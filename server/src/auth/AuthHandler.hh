@@ -12,7 +12,7 @@ namespace server::auth {
         std::shared_ptr<JWT> jwt_;
     public:
         explicit AuthHandler(
-                std::shared_ptr<JWT> const &jwt
+                std::shared_ptr<JWT> jwt
         );
 
         std::shared_ptr<AuthorizationObject>

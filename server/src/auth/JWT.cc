@@ -14,12 +14,13 @@ namespace server::auth {
     JWT::createToken(
             std::shared_ptr<Payload> const &payload
     ) {
+        auto now = std::chrono::system_clock::now();
         auto token = jwt::create<Traits>()
                 .set_issuer(issuer_)
                 .set_subject(std::to_string(payload->userId))
-                .set_issued_at(std::chrono::system_clock::now())
-                .set_not_before(std::chrono::system_clock::now())
-                .set_expires_at(std::chrono::system_clock::now() + std::chrono::days{30}) //TODO: move to config
+                .set_issued_at(now)
+                .set_not_before(now)
+                .set_expires_at(now + std::chrono::days{30}) //TODO: move to config
                 .set_type("JWS")
                 .set_payload_claim("userId", boost::json::value(payload->userId))
                 .set_payload_claim("role", boost::json::value(payload->role))

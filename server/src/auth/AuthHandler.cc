@@ -2,8 +2,8 @@
 
 namespace server::auth {
 
-    AuthHandler::AuthHandler(std::shared_ptr<JWT> const &jwt)
-            : oatpp::web::server::handler::BearerAuthorizationHandler("API"), jwt_(jwt) {}
+    AuthHandler::AuthHandler(std::shared_ptr<JWT> jwt)
+            : oatpp::web::server::handler::BearerAuthorizationHandler("API"), jwt_(std::move(jwt)) {}
 
     std::shared_ptr<AuthHandler::AuthorizationObject>
     AuthHandler::authorize(
