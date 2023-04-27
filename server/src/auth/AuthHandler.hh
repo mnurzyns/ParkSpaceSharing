@@ -11,7 +11,9 @@ namespace server::auth {
     private:
         std::shared_ptr<JWT> jwt_;
     public:
-        explicit AuthHandler(
+        [[nodiscard]]
+        explicit
+        AuthHandler(
                 std::shared_ptr<JWT> jwt
         );
 
