@@ -22,14 +22,15 @@ namespace server::database {
         MainDatabase(std::shared_ptr<oatpp::orm::Executor> const &executor)
                 : oatpp::orm::DbClient{executor} {
             oatpp::orm::SchemaMigration migrator{executor};
-            auto migrations = std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}
-            | std::views::all | std::views::filter([](auto const& entry){
-                return entry.is_regular_file() && entry.path().extension() == ".sql";
-            }) | std::views::transform([](auto const& entry){
-                static auto i = 1L;
-                return std::make_pair(i++, entry);
-            });
-            for (auto const& [index, migration] : migrations) {
+            auto migrations =
+                    std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}
+                    | std::views::all | std::views::filter([](auto const &entry) {
+                        return entry.is_regular_file() && entry.path().extension() == ".sql";
+                    }) | std::views::transform([](auto const &entry) {
+                        static auto i = 1L;
+                        return std::make_pair(i++, entry);
+                    });
+            for (auto const &[index, migration]: migrations) {
                 migrator.addFile(index, migration.path().string());
             }
             migrator.migrate();
@@ -40,8 +41,8 @@ namespace server::database {
 
         QUERY(createUser,
               "INSERT INTO user"
-              "(id, username, email, password, role) VALUES "
-              "(:user.id, :user.username, :user.email, :user.password, :user.role)"
+              "(id, email, username, password, role) VALUES "
+              "(:user.id, :user.email, :user.username, :user.password, :user.role)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::UserDto>, user))
 
@@ -51,8 +52,8 @@ namespace server::database {
 
         QUERY(replaceUser,
               "REPLACE INTO user"
-              "(id, username, email, password, role) VALUES "
-              "(:user.id, :user.username, :user.email, :user.password, :user.role)"
+              "(id, email, username, password, role) VALUES "
+              "(:user.id, :user.email, :user.username, :user.password, :user.role)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::UserDto>, user))
 
@@ -102,8 +103,8 @@ namespace server::database {
 
         QUERY(createOffer,
               "INSERT INTO offer"
-              "(id, place_id, description, price, start_date, end_date) VALUES "
-              "(:offer.id, :offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
+              "(id, place_id, date_from, date_to, description, price) VALUES "
+              "(:offer.id, :offer.placeId, :offer.dateFrom, :offer.dateTo, :offer.description, :offer.price)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 
@@ -113,8 +114,8 @@ namespace server::database {
 
         QUERY(replaceOffer,
               "REPLACE INTO offer"
-              "(id, place_id, description, price, start_date, end_date) VALUES "
-              "(:offer.id, :offer.placeId, :offer.description, :offer.price, :offer.startDate, :offer.endDate)"
+              "(id, place_id, date_from, date_to, description, price) VALUES "
+              "(:offer.id, :offer.placeId, :offer.dateFrom, :offer.dateTo, :offer.description, :offer.price)"
               "RETURNING *;",
               PARAM(oatpp::Object<dto::OfferDto>, offer))
 

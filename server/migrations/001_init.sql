@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS `place`(
 CREATE TABLE IF NOT EXISTS `offer`(
     `id`            INTEGER PRIMARY KEY,
     `place_id`      INTEGER NOT NULL,
+    `date_from`     DATE    NOT NULL,
+    `date_to`       DATE    NOT NULL,
     `description`   TEXT    NOT NULL,
     `price`         INTEGER NOT NULL,
-    `start_date`    DATE    NOT NULL,
-    `end_date`      DATE    NOT NULL,
 
     FOREIGN KEY(`place_id`)
         REFERENCES place(`id`)

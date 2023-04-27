@@ -105,11 +105,11 @@ namespace server::service {
     ) {
         auto existing = this->getOne(id);
 
-        existing->email = dto->email ? dto->email : existing->email;
         existing->id = dto->id ? dto->id : existing->id;
+        existing->email = dto->email ? dto->email : existing->email;
+        existing->username = dto->username ? dto->username : existing->username;
         existing->password = dto->password ? dto->password : existing->password;
         existing->role = dto->role ? dto->role : existing->role;
-        existing->username = dto->username ? dto->username : existing->username;
 
         return this->putOne(existing);
     }

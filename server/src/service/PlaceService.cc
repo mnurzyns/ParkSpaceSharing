@@ -105,11 +105,11 @@ namespace server::service {
     ) {
         auto existing = this->getOne(id);
 
-        existing->address = dto->address ? dto->address : existing->address;
         existing->id = dto->id ? dto->id : existing->id;
+        existing->ownerId = dto->ownerId ? dto->ownerId : existing->ownerId;
+        existing->address = dto->address ? dto->address : existing->address;
         existing->latitude = dto->latitude ? dto->latitude : existing->latitude;
         existing->longitude = dto->longitude ? dto->longitude : existing->longitude;
-        existing->ownerId = dto->ownerId ? dto->ownerId : existing->ownerId;
 
         return this->putOne(existing);
     }

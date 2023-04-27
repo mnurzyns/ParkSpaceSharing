@@ -9,6 +9,7 @@ target_sources(
     src/auth/JWT.cc
 
     src/service/AuthService.cc
+    src/service/OfferService.cc
     src/service/PlaceService.cc
     src/service/UserService.cc
 )

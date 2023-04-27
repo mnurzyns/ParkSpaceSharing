@@ -9,7 +9,7 @@ VALUES
     (1, '123 Main St', 37.7749, -122.4194),
     (2, '456 Oak St', 37.7749, -122.4194);
 
-INSERT INTO offer(`place_id`, `description`, `price`, `start_date`, `end_date`)
+INSERT INTO offer(`place_id`, `description`, `price`, `date_from`, `date_to`)
 VALUES
-    (1, 'Reserved parking spot in a gated lot.', 10000, '2018-01-01', '2018-01-31'),
-    (2, 'Covered parking spot in a garage.', 20000, '2018-02-01', '2018-02-28');
+    (1, 'Parking spot in a gated lot.', 10000, 1514804400, 1517396400),
+    (2, 'Parking spot in a garage.', 20000, 1517482800, 1519815600);

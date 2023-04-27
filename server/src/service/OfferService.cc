@@ -1,110 +1,135 @@
-//namespace server::service
-//{
-//
-//    ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
-//    offer_service::get_offers() {
-//        auto res = database_->get_offers();
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No offers found");
-//
-//        auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>::createShared();
-//        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
-//
-//        all->items = fetch;
-//
-//        return all;
-//    }
-//
-//    ::oatpp::Object<::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>>
-//    offer_service::get_myOffers(oatpp::UInt32 const& user_id) {
-//        auto res = database_->get_myOffers(user_id);
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "No offers found");
-//
-//        auto all = ::server::dto::page_dto<::oatpp::Object<::server::dto::offer_dto>>::createShared();
-//        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
-//
-//        all->items = fetch;
-//
-//        return all;
-//    }
-//
-//    ::oatpp::Object<::server::dto::offer_dto>
-//    offer_service::get_offer_byId(oatpp::UInt32 const& offer_id){
-//
-//        auto res = database_->get_offer_byId(offer_id);
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//        OATPP_ASSERT_HTTP(res->hasMoreToFetch(), Status::CODE_404, "Offer not found");
-//
-//        auto fetch = res->fetch<::oatpp::Vector<::oatpp::Object<::server::dto::offer_dto>>>();
-//        OATPP_ASSERT_HTTP(fetch->size() == 1, Status::CODE_500, "Unknown error");
-//
-//        return fetch[0];
-//    }
-//
-//
-//    ::oatpp::Object<::server::dto::offer_dto>
-//    offer_service::create_offer(::oatpp::Object<::server::dto::offer_dto> const& dto, oatpp::UInt32 const& userId) {
-//
-//        auto res2 = database_->isHaveParkingSpace(userId,dto->parking_space_id);
-//        OATPP_ASSERT_HTTP(res2->isSuccess(), Status::CODE_500, res2->getErrorMessage());
-//        OATPP_ASSERT_HTTP(res2->hasMoreToFetch(), Status::CODE_409, "parking space isnt yours");
-//
-//        auto res = database_->is_offer_exist(dto->parking_space_id);
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//        OATPP_ASSERT_HTTP(!res->hasMoreToFetch(), Status::CODE_409, "parking space is already offered");
-//
-//        res.reset();
-//        res2.reset();
-//
-//        auto res3 = database_->create_offer(dto);
-//        OATPP_ASSERT_HTTP(res3->isSuccess(), Status::CODE_500, res3->getErrorMessage());
-//
-//        auto offer_id = ::oatpp::sqlite::Utils::getLastInsertRowId(res3->getConnection());
-//
-//        return get_offer_byId(static_cast<v_uint32>(offer_id));
-//    }
-//
-//    oatpp::String
-//    offer_service::delete_myOffer(oatpp::UInt32 const& offer_id,oatpp::UInt32 const& user_id)
-//    {
-//        auto res = database_->delete_myOffer(offer_id,user_id);
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//
-//        return "OK";
-//    }
-//
-//    oatpp::String
-//    offer_service::delete_offer(oatpp::UInt32 const& offer_id)
-//    {
-//        auto res = database_->delete_offer(offer_id);
-//        OATPP_ASSERT_HTTP(res->isSuccess(), Status::CODE_500, res->getErrorMessage());
-//
-//        return "OK";
-//    }
-//
-//} // namespace server::service
 #include "OfferService.hh"
-//TODO: implement filtering by properties of associated props
-auto server::service::OfferService::searchOffers(
-        const oatpp::web::protocol::http::QueryParams &queryParams,
-        const oatpp::UInt64 &limit,
-        const oatpp::UInt64 &offset
-) {
-    Key possibleParams[] = {"place.address"};
-    std::string query = "SELECT * FROM offer INNER JOIN place ON offer.place_id = place.id";
 
-    for (param : possibleParams) {
-        if (auto value = queryParams.get("place.address")) {
-            query += " WHERE " + param + " LIKE " + queryParams.get(param);
+namespace server::service {
+
+    oatpp::Object<server::dto::OfferDto>
+    OfferService::createOne(
+            oatpp::Object<server::dto::OfferDto> const &dto
+    ) {
+        try {
+            this->getOne(dto->id); // Will throw 404 if not found
+            OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
         }
+        catch (oatpp::web::protocol::http::HttpError &e) {
+            if (e.getInfo().status != Status::CODE_404) { throw; }
+        }
+
+        auto queryResult = database_->createOffer(dto);
+
+        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+
+        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+
+        return fetchResult[0];
     }
 
+    oatpp::Object<server::dto::OfferDto>
+    OfferService::getOne(
+            oatpp::UInt64 const &id
+    ) {
+        auto queryResult = database_->getOffer(id);
+
+        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Offer not found")
+
+        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+
+        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+
+        return fetchResult[0];
     }
 
-    if (queryParams.get("place.address")) {
-        query += " WHERE place.address LIKE " + queryParams.get("parking_space_id");
+    oatpp::Object<dto::OfferPageDto>
+    OfferService::search(
+            oatpp::String const &query,
+            oatpp::UInt64 const &limit,
+            oatpp::UInt64 const &offset
+    ) {
+        std::string const queryTableFts = " FROM offer_fts";
+        std::string const queryFilters = query->empty() ? std::string{} : " WHERE offer_fts MATCH :query";
+
+        auto queryTotalResult = database_->executeQuery(
+                "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
+                {{"query", oatpp::String(query)}}
+        );
+
+        OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(), Status::CODE_500, queryTotalResult->getErrorMessage())
+
+        auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
+
+        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "No offers found")
+
+        auto queryResult = database_->executeQuery(
+                "SELECT offer.*" + queryTableFts +
+                " INNER JOIN offer ON offer.id = offer_fts.offer_id" + queryFilters +
+                " LIMIT :offset,:limit;", {
+                        {"query",  oatpp::String(query)},
+                        {"offset", oatpp::UInt64(offset)},
+                        {"limit",  oatpp::UInt64(limit)}
+                });
+
+        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+
+        auto page = dto::OfferPageDto::createShared();
+        page->items = fetchResult;
+        page->limit = limit;
+        page->offset = offset;
+        page->count = fetchTotalResult[0][0];
+
+        return page;
     }
 
-    return nullptr;
-}
+    oatpp::Object<dto::OfferDto>
+    OfferService::putOne(
+            oatpp::Object<dto::OfferDto> const &dto
+    ) {
+        auto queryResult = database_->replaceOffer(dto);
+
+        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+
+        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+
+        return fetchResult[0];
+    }
+
+    oatpp::Object<dto::OfferDto>
+    OfferService::patchOne(
+            oatpp::UInt64 const &id,
+            oatpp::Object<dto::OfferDto> const &dto
+    ) {
+        auto existing = this->getOne(id);
+
+        existing->id = dto->id ? dto->id : existing->id;
+        existing->placeId = dto->placeId ? dto->placeId : existing->placeId;
+        existing->dateFrom = dto->dateFrom ? dto->dateFrom : existing->dateFrom;
+        existing->dateTo = dto->dateTo ? dto->dateTo : existing->dateTo;
+        existing->description = dto->description ? dto->description : existing->description;
+        existing->price = dto->price ? dto->price : existing->price;
+
+        return this->putOne(existing);
+    }
+
+    oatpp::Object<dto::StatusDto>
+    OfferService::deleteOne(
+            const oatpp::UInt64 &id
+    ) {
+        this->getOne(id); // Will throw 404 if not found
+
+        auto queryResult = database_->deleteOffer(id);
+
+        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+
+        auto status = dto::StatusDto::createShared();
+        status->status = "OK";
+        status->code = Status::CODE_200.code;
+        status->message = "Offer was successfully deleted";
+        return status;
+    }
+
+}  // namespace server::service
