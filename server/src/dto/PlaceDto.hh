@@ -24,9 +24,7 @@ namespace server::dto {
     };
 
     class PlacePageDto : public PageDto<oatpp::Object<PlaceDto>> {
-
         DTO_INIT(PlacePageDto, PageDto<oatpp::Object<PlaceDto>>)
-
     };
 
 } // namespace server::dto

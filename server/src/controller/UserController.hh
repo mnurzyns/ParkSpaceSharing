@@ -63,7 +63,7 @@ namespace server::controller {
             OATPP_ASSERT_HTTP(
                     authObject->role == 0,
                     Status::CODE_403,
-                    "Cannot create users as a regular user"
+                    "Cannot create user as a regular user"
             );
             return createDtoResponse(Status::CODE_200, service_.createOne(dto));
         }
@@ -128,7 +128,7 @@ namespace server::controller {
             OATPP_ASSERT_HTTP(
                     authObject->role == 0,
                     Status::CODE_403,
-                    "Cannot create or modify other users as a regular user"
+                    "Cannot create or modify other user as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.putOne(dto));
         }
@@ -155,13 +155,13 @@ namespace server::controller {
                     (authObject->userId == existing->id &&
                      (dto->id == nullptr || dto->id == id)),
                     Status::CODE_403,
-                    "Cannot modify other users as a regular user"
+                    "Cannot modify other user as a regular user"
             )
             OATPP_ASSERT_HTTP(
                     authObject->role == 0 ||
                     dto->role == existing->role,
                     Status::CODE_403,
-                    "Cannot modify user role as a regular user"
+                    "Cannot modify role as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
         }
@@ -189,7 +189,7 @@ namespace server::controller {
                     */
                     service_.getOne(id)->id == authObject->userId,
                     Status::CODE_403,
-                    "Cannot delete other user's user as a regular user"
+                    "Cannot delete another user as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.deleteOne(id));
         }

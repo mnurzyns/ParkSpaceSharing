@@ -24,9 +24,7 @@ namespace server::dto {
     };
 
     class UserPageDto : public PageDto<oatpp::Object<UserDto>> {
-
         DTO_INIT(UserPageDto, PageDto<oatpp::Object<UserDto>>)
-
     };
 
 } // namespace server::dto

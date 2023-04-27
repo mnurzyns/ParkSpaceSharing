@@ -68,7 +68,7 @@ namespace server::controller {
                     authObject->role == 0 ||
                     authObject->userId == dto->ownerId,
                     Status::CODE_403,
-                    "Cannot create place for another user as a regular user"
+                    "Cannot create place of another user as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.createOne(dto));
         }
@@ -137,7 +137,7 @@ namespace server::controller {
                         (authObject->userId == service_.getOne(dto->id)->ownerId &&
                          (dto->ownerId == nullptr || dto->ownerId == authObject->userId)),
                         Status::CODE_403,
-                        "Cannot create or modify other user's places as a regular user"
+                        "Cannot create or modify place of another user as a regular user"
                 )
             } catch (HttpError &error) {
                 if (error.getInfo().status != Status::CODE_404) { throw; }
@@ -166,7 +166,7 @@ namespace server::controller {
                     (authObject->userId == service_.getOne(id)->ownerId &&
                      (dto->ownerId == nullptr || dto->ownerId == authObject->userId)),
                     Status::CODE_403,
-                    "Cannot modify other user's places as a regular user"
+                    "Cannot modify other place of another user as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
         }
@@ -190,7 +190,7 @@ namespace server::controller {
                     authObject->role == 0 ||
                     service_.getOne(id)->ownerId == authObject->userId,
                     Status::CODE_403,
-                    "Cannot delete other user's places as a regular user"
+                    "Cannot delete place of another user as a regular user"
             )
             return createDtoResponse(Status::CODE_200, service_.deleteOne(id));
         }
