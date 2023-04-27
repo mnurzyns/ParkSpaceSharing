@@ -23,7 +23,7 @@ namespace server::component {
          * JWT component
          * */
         OATPP_CREATE_COMPONENT(std::shared_ptr<auth::JWT>, jwtComponent)([] {
-            return std::make_shared<auth::JWT>("secret", "issuer");
+            return std::make_shared<auth::JWT>("secret", "issuer"); //TODO: read from config, add expiration time
         }());
 
         /*
@@ -43,7 +43,7 @@ namespace server::component {
                 serverConnectionProviderComponent
         )([] {
             return oatpp::network::tcp::server::ConnectionProvider::createShared(
-                    {"::1", 8000, oatpp::network::Address::IP_6});
+                    {"::", 8000}, true); //TODO: read from config
         }());
 
         /*

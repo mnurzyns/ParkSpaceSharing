@@ -19,10 +19,12 @@ namespace server::controller {
 
     public:
         [[nodiscard]]
-        explicit AuthController(const std::shared_ptr<ObjectMapper> &objectMapper)
-                : oatpp::web::server::api::ApiController(objectMapper) {}
+        explicit AuthController(
+                std::shared_ptr<ObjectMapper> const &objectMapper
+        ) : oatpp::web::server::api::ApiController(objectMapper) {}
 
-        static std::shared_ptr<AuthController> create_shared(
+        static std::shared_ptr<AuthController>
+        create_shared(
                 OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
         ) {
             return std::make_shared<AuthController>(objectMapper);
@@ -32,15 +34,23 @@ namespace server::controller {
             info->summary = "Sign up";
             info->tags.emplace_back("auth-controller");
 
-            info->addConsumes<Object<dto::SignUpDto>>("application/json");
+            info->addConsumes<oatpp::Object<dto::SignUpDto>>("application/json");
 
-            info->addResponse<Object<dto::AuthDto>>(Status::CODE_200, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_400, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_409, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+            info->addResponse<oatpp::Object<dto::AuthDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_409, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("POST", "signup", signUp, BODY_DTO(Object<dto::SignUpDto>, dto)) {
+        ENDPOINT("POST", "signup", signUp,
+                 BODY_DTO(oatpp::Object<dto::SignUpDto>, dto)) {
+            OATPP_ASSERT_HTTP(
+                    dto->email &&
+                    dto->password &&
+                    dto->username,
+                    Status::CODE_400,
+                    "Required parameter not provided"
+            );
             return createDtoResponse(Status::CODE_200, service_.signUp(dto));
         }
 
@@ -49,16 +59,23 @@ namespace server::controller {
             info->summary = "Sign in";
             info->tags.emplace_back("auth-controller");
 
-            info->addConsumes<Object<dto::SignInDto>>("application/json");
+            info->addConsumes<oatpp::Object<dto::SignInDto>>("application/json");
 
-            info->addResponse<Object<dto::AuthDto>>(Status::CODE_200, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_400, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_401, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_404, "application/json");
-            info->addResponse<Object<dto::StatusDto>>(Status::CODE_500, "application/json");
+            info->addResponse<oatpp::Object<dto::AuthDto>>(Status::CODE_200, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404, "application/json");
+            info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500, "application/json");
         }
 
-        ENDPOINT("POST", "signin", signIn, BODY_DTO(Object<dto::SignInDto>, dto)) {
+        ENDPOINT("POST", "signin", signIn,
+                 BODY_DTO(oatpp::Object<dto::SignInDto>, dto)) {
+            OATPP_ASSERT_HTTP(
+                    dto->login &&
+                    dto->password,
+                    Status::CODE_400,
+                    "Required parameter not provided"
+            )
             return createDtoResponse(Status::CODE_200, service_.signIn(dto));
         }
 

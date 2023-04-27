@@ -22,12 +22,16 @@ namespace server::controller {
     public:
         [[nodiscard]]
         explicit
-        PlaceController(const std::shared_ptr<ObjectMapper> &objectMapper, const std::shared_ptr<auth::JWT> &jwtObject)
+        PlaceController(
+                std::shared_ptr<ObjectMapper> const &objectMapper,
+                std::shared_ptr<auth::JWT> const &jwtObject
+        )
                 : oatpp::web::server::api::ApiController(objectMapper) {
             setDefaultAuthorizationHandler(std::make_shared<auth::AuthHandler>(jwtObject));
         }
 
-        static std::shared_ptr<PlaceController> createShared(
+        static std::shared_ptr<PlaceController>
+        createShared(
                 OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
                 OATPP_COMPONENT(std::shared_ptr<auth::JWT>, jwt_)
         ) {

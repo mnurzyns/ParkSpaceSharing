@@ -1,7 +1,5 @@
 #include "ErrorHandler.hh"
 
-#include "dto/StatusDto.hh"
-
 namespace server {
 
     ErrorHandler::ErrorHandler(std::shared_ptr<oatpp::data::mapping::ObjectMapper> object_mapper) :

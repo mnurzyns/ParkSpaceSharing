@@ -17,13 +17,16 @@ namespace server::service {
         OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>, database_);
         OATPP_COMPONENT(std::shared_ptr<auth::JWT>, jwt_);
 
-
     public:
         oatpp::Object<dto::AuthDto>
-        signIn(oatpp::Object<dto::SignInDto> const &dto);
+        signIn(
+                oatpp::Object<dto::SignInDto> const &dto
+        );
 
         oatpp::Object<server::dto::AuthDto>
-        signUp(oatpp::Object<dto::SignUpDto> const &dto);
+        signUp(
+                oatpp::Object<dto::SignUpDto> const &dto
+        );
 
     };
 

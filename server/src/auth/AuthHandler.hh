@@ -11,9 +11,14 @@ namespace server::auth {
     private:
         std::shared_ptr<JWT> jwt_;
     public:
-        explicit AuthHandler(const std::shared_ptr<JWT> &jwt);
+        explicit AuthHandler(
+                std::shared_ptr<JWT> const &jwt
+        );
 
-        std::shared_ptr<AuthorizationObject> authorize(const oatpp::String &token) override;
+        std::shared_ptr<AuthorizationObject>
+        authorize(
+                oatpp::String const &token
+        ) override;
     };
 
 }  // namespace server::auth

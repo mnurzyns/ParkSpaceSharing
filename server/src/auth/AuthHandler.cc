@@ -2,10 +2,13 @@
 
 namespace server::auth {
 
-    AuthHandler::AuthHandler(const std::shared_ptr<JWT> &jwt)
-            : oatpp::web::server::handler::BearerAuthorizationHandler("API" /* Realm */), jwt_(jwt) {}
+    AuthHandler::AuthHandler(std::shared_ptr<JWT> const &jwt)
+            : oatpp::web::server::handler::BearerAuthorizationHandler("API"), jwt_(jwt) {}
 
-    std::shared_ptr<AuthHandler::AuthorizationObject> AuthHandler::authorize(const oatpp::String &token) {
+    std::shared_ptr<AuthHandler::AuthorizationObject>
+    AuthHandler::authorize(
+            oatpp::String const &token
+    ) {
         return jwt_->readAndVerifyToken(token);
     }
 

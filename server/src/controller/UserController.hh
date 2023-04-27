@@ -19,12 +19,15 @@ namespace server::controller {
     public:
         [[nodiscard]]
         explicit
-        UserController(const std::shared_ptr<ObjectMapper> &objectMapper, const std::shared_ptr<auth::JWT> &jwtObject)
-                : oatpp::web::server::api::ApiController(objectMapper) {
+        UserController(
+                std::shared_ptr<ObjectMapper> const &objectMapper,
+                std::shared_ptr<auth::JWT> const &jwtObject
+        ) : oatpp::web::server::api::ApiController(objectMapper) {
             setDefaultAuthorizationHandler(std::make_shared<auth::AuthHandler>(jwtObject));
         }
 
-        static std::shared_ptr<UserController> createShared(
+        static std::shared_ptr<UserController>
+        createShared(
                 OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
                 OATPP_COMPONENT(std::shared_ptr<auth::JWT>, jwt_)
         ) {

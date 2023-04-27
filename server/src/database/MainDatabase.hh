@@ -33,8 +33,7 @@ namespace server::database {
                 migrator.addFile(index, migration.path().string());
             }
             migrator.migrate();
-
-            OATPP_LOGD("database parking_space_sharing", "Migration version: %lld", executor->getSchemaVersion());
+            OATPP_LOGD("Database", "\tApplied migrations. Database version: %lld", executor->getSchemaVersion())
         }
 
         // User

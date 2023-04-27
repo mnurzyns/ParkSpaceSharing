@@ -22,12 +22,20 @@ namespace server::auth {
         jwt::verifier<jwt::default_clock, Traits> verifier_;
 
     public:
-        JWT(const oatpp::String &secret,
-            const oatpp::String &issuer);
+        JWT(
+                oatpp::String const &secret,
+                oatpp::String const &issuer
+        );
 
-        oatpp::String createToken(const std::shared_ptr<Payload> &payload);
+        oatpp::String
+        createToken(
+                std::shared_ptr<Payload> const &payload
+        );
 
-        std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String &token);
+        std::shared_ptr<Payload>
+        readAndVerifyToken(
+                oatpp::String const &token
+        );
 
     };
 

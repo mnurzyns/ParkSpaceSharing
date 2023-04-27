@@ -33,7 +33,7 @@ namespace server::service {
         auto queryResult = database_->getUser(id);
 
         OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Not found")
+        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "User not found")
 
         auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
 
@@ -60,7 +60,7 @@ namespace server::service {
 
         auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
 
-        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "Not found")
+        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "No users found")
 
         auto queryResult = database_->executeQuery(
                 "SELECT user.*" + queryTableFts +
