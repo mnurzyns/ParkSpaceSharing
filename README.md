@@ -4,7 +4,7 @@ Project created by trainees of Bakcyl Programowania in 2022/2023.
 ## Build from source
 
 ### Prerequisites
- - `C++20` Compiler e.g. `GCC`
+ - `C++23` Compiler e.g. `GCC`
  - `CMake`
  - `CMake` supported generator e.g. `Ninja`
  - [`Conan`](https://conan.io/) **< 2.0** or [install dependencies manually](#install-conan-dependencies-manually)
@@ -49,3 +49,4 @@ Required dependencies:
  - [`oatpp-swagger`](https://github.com/oatpp/oatpp-swagger)
  - [`oatpp-sqlite`](https://github.com/oatpp/oatpp-sqlite)
  - [`oatpp-openssl`](https://github.com/oatpp/oatpp-openssl)
+ - [`Boost.JSON`](https://boost.org/libs/json)
