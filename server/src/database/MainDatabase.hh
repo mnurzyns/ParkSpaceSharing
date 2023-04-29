@@ -22,16 +22,8 @@ namespace server::database {
         MainDatabase(std::shared_ptr<oatpp::orm::Executor> const &executor)
                 : oatpp::orm::DbClient{executor} {
             oatpp::orm::SchemaMigration migrator{executor};
-            auto migrations =
-                    std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}
-                    | std::views::all | std::views::filter([](auto const &entry) {
-                        return entry.is_regular_file() && entry.path().extension() == ".sql";
-                    }) | std::views::transform([](auto const &entry) {
-                        static auto i = 1L;
-                        return std::make_pair(i++, entry);
-                    });
-            for (auto const &[index, migration]: migrations) {
-                migrator.addFile(index, migration.path().string());
+            for (auto i = 0L; auto const &migration : std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}) { // NOLINT(readability-identifier-length)
+                migrator.addFile(++i, migration.path().string());
             }
             migrator.migrate();
             OATPP_LOGD("Database", "\tApplied migrations. Database version: %lld", executor->getSchemaVersion())
