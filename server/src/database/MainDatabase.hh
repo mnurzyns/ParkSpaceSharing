@@ -4,8 +4,7 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
 #include <filesystem>
-#include <ranges>
-#include <vector>
+#include <set>
 
 #include "dto/UserDto.hh"
 #include "dto/PlaceDto.hh"
@@ -22,11 +21,16 @@ namespace server::database {
         MainDatabase(std::shared_ptr<oatpp::orm::Executor> const &executor)
                 : oatpp::orm::DbClient{executor} {
             oatpp::orm::SchemaMigration migrator{executor};
-            for (auto i = 0L; auto const &migration : std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}) { // NOLINT(readability-identifier-length)
-                migrator.addFile(++i, migration.path().string());
+            auto migrations = std::set<std::string>{};
+            for (auto const &migration : std::filesystem::directory_iterator{MAIN_DATABASE_MIGRATIONS_PATH}) {
+                migrations.insert(migration.path().string());
+            }
+            for (auto i = 0L; auto const &migration : migrations) { // NOLINT(readability-identifier-length)
+                migrator.addFile(++i, migration);
+                OATPP_LOGD("Database", "\tAdded migration %s", migration.c_str())
             }
             migrator.migrate();
-            OATPP_LOGD("Database", "\tApplied migrations. Database version: %lld", executor->getSchemaVersion())
+            OATPP_LOGI("Database", "\tApplied migrations. Database version: %lld", executor->getSchemaVersion())
         }
 
         // User

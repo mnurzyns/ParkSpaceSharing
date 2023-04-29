@@ -37,7 +37,7 @@ main() {
     auto const host = appComponent.serverConnectionProviderComponent.getObject()->getProperty("host").toString();
     auto const address = "http://" + (host->find(":") == std::string::npos ? host : "[" + host + "]");
 
-    OATPP_LOGD(
+    OATPP_LOGI(
     "Server", "\tListening on %s:%s",
     address->c_str(),
     appComponent.serverConnectionProviderComponent.getObject()->getProperty("port").toString()->c_str()
