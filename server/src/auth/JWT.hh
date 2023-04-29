@@ -1,10 +1,10 @@
 #pragma once
 
 #include <jwt-cpp/jwt.h>
-#include <jwt-cpp/traits/boost-json/defaults.h>
+#include <jwt-cpp/traits/nlohmann-json/defaults.h>
 #include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 
-using Traits = jwt::traits::boost_json;
+using Traits = jwt::traits::nlohmann_json;
 
 namespace server::auth {
 
