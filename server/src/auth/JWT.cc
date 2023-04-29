@@ -22,8 +22,8 @@ namespace server::auth {
                 .set_not_before(now)
                 .set_expires_at(now + std::chrono::days{30}) //TODO: move to config
                 .set_type("JWS")
-                .set_payload_claim("userId", Traits::value_type{*payload->userId})
-                .set_payload_claim("role", Traits::value_type{*payload->role})
+                .set_payload_claim("userId", jwt::claim{*payload->userId})
+                .set_payload_claim("role", jwt::claim{*payload->role})
                 .sign(jwt::algorithm::hs512{secret_});
 
         return token;
