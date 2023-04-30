@@ -20,6 +20,7 @@ env:
 jobs:
   changes:
     name: Check for changes
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: read
