@@ -2,98 +2,87 @@
 
 namespace server::service {
 
-    oatpp::Object<server::dto::AuthDto> AuthService::signUp(
-            oatpp::Object<server::dto::SignUpDto> const &dto
-    ) {
-        {
-            auto result = database_->getUserByEmail(dto->email);
-            OATPP_ASSERT_HTTP(
-                    result->isSuccess(),
-                    Status::CODE_500,
-                    result->getErrorMessage()
-            )
-            OATPP_ASSERT_HTTP(
-                    !result->hasMoreToFetch(),
-                    Status::CODE_409,
-                    "User with provided email already exists"
-            )
-        }
-        {
-            auto result = database_->getUserByUsername(dto->username);
-            OATPP_ASSERT_HTTP(
-                    result->isSuccess(),
-                    Status::CODE_500,
-                    result->getErrorMessage()
-            )
-            OATPP_ASSERT_HTTP(
-                    !result->hasMoreToFetch(),
-                    Status::CODE_409,
-                    "User with provided username already exists"
-            )
-        }
+Object<AuthDto>
+AuthService::signUp(Object<SignUpDto> const& dto)
+{
+    {
+        auto query_result = database_->getUserByEmail(dto->email);
 
-        auto userDto = oatpp::Object<dto::UserDto>::createShared();
-        userDto->email = dto->email;
-        userDto->username = dto->username;
-        userDto->password = dto->password;
-        userDto->role = 1;
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
 
-        auto queryResult = database_->createUser(userDto);
-        OATPP_ASSERT_HTTP(
-                queryResult->isSuccess(),
-                Status::CODE_500,
-                queryResult->getErrorMessage()
-        )
+        OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
+                          Status::CODE_409,
+                          "User with provided email already exists")
+    }
+    {
+        auto query_result = database_->getUserByUsername(dto->username);
 
-        oatpp::Object<server::dto::SignInDto> const signInDto = std::make_shared<dto::SignInDto>();
-        signInDto->login = dto->email;
-        signInDto->password = dto->password;
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
 
-        return signIn(signInDto);
+        OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
+                          Status::CODE_409,
+                          "User with provided username already exists")
     }
 
-    oatpp::Object<server::dto::AuthDto> AuthService::signIn(oatpp::Object<server::dto::SignInDto> const &dto) {
-        std::shared_ptr<oatpp::orm::QueryResult> queryResult;
-        if (dto->login->find('@') != std::string::npos) {
-            queryResult = database_->getUserByEmail(dto->login);
-        } else {
-            queryResult = database_->getUserByUsername(dto->login);
-        }
+    auto user_dto = Object<UserDto>::createShared();
+    user_dto->email = dto->email;
+    user_dto->username = dto->username;
+    user_dto->password = dto->password;
+    user_dto->role = 1;
 
-        OATPP_ASSERT_HTTP(
-                queryResult->isSuccess(),
-                Status::CODE_500,
-                queryResult->getErrorMessage()
-        )
-        OATPP_ASSERT_HTTP(
-                queryResult->hasMoreToFetch(),
-                Status::CODE_404,
-                "User not found"
-        )
+    auto query_result = database_->createUser(user_dto);
 
-        auto fetch = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        OATPP_ASSERT_HTTP(
-                fetch->size() == 1,
-                Status::CODE_500,
-                "Unexpected number of rows returned!"
-        )
+    Object<SignInDto> const sign_in_dto = std::make_shared<SignInDto>();
+    sign_in_dto->login = dto->email;
+    sign_in_dto->password = dto->password;
 
-        OATPP_ASSERT_HTTP(
-                dto->password == fetch[0]->password,
-                Status::CODE_401,
-                "Invalid credentials"
-        )
+    return signIn(sign_in_dto);
+}
 
-        auto payload = std::make_shared<auth::JWT::Payload>();
-        payload->userId = fetch[0]->id;
-        payload->role = fetch[0]->role;
-
-        auto authDto = server::dto::AuthDto::createShared();
-        authDto->tokenType = "JWS";
-        authDto->token = jwt_->createToken(payload);
-
-        return authDto;
+Object<AuthDto>
+AuthService::signIn(Object<SignInDto> const& dto)
+{
+    std::shared_ptr<oatpp::orm::QueryResult> query_result;
+    if (dto->login->find('@') != std::string::npos) {
+        query_result = database_->getUserByEmail(dto->login);
+    } else {
+        query_result = database_->getUserByUsername(dto->login);
     }
 
-}  // namespace server::service
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_404, "User not found")
+
+    auto fetch = query_result->fetch<Vector<Object<UserDto>>>();
+
+    OATPP_ASSERT_HTTP(fetch->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
+
+    OATPP_ASSERT_HTTP(dto->password == fetch[0]->password,
+                      Status::CODE_401,
+                      "Invalid credentials")
+
+    auto payload = std::make_shared<JWT::Payload>();
+    payload->user_id = fetch[0]->id;
+    payload->role = fetch[0]->role;
+
+    auto auth_dto = AuthDto::createShared();
+    auth_dto->token_type = "JWS";
+    auth_dto->token = jwt_object_component->createToken(payload);
+
+    return auth_dto;
+}
+
+} // namespace server::service

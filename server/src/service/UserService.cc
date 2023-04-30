@@ -2,137 +2,155 @@
 
 namespace server::service {
 
-    std::shared_ptr<UserService> UserService::createShared() {
-        return std::make_shared<UserService>();
-    }
+std::shared_ptr<UserService>
+UserService::createShared()
+{
+    return std::make_shared<UserService>();
+}
 
-    oatpp::Object<server::dto::UserDto>
-    UserService::createOne(
-            oatpp::Object<server::dto::UserDto> const &dto
-    ) {
-        try {
-            this->getOne(dto->id); // Will throw 404 if not found
-            OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
+Object<UserDto>
+UserService::createOne(Object<UserDto> const& dto)
+{
+    try {
+        this->getOne(dto->id); // Will throw 404 if not found
+        OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
+    } catch (oatpp::web::protocol::http::HttpError& e) {
+        if (e.getInfo().status != Status::CODE_404) {
+            throw;
         }
-        catch (oatpp::web::protocol::http::HttpError &e) {
-            if (e.getInfo().status != Status::CODE_404) { throw; }
-        }
-
-        auto queryResult = database_->createUser(dto);
-
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
-
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
-
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
-
-        return fetchResult[0];
     }
 
-    oatpp::Object<server::dto::UserDto>
-    UserService::getOne(
-            oatpp::UInt64 const &id
-    ) {
-        auto queryResult = database_->getUser(id);
+    auto query_result = database_->createUser(dto);
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "User not found")
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
 
-        return fetchResult[0];
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-    oatpp::Object<dto::UserPageDto>
-    UserService::search(
-            oatpp::String const &query,
-            oatpp::UInt64 const &limit,
-            oatpp::UInt64 const &offset
-    ) {
-        std::string const queryTableFts = " FROM user_fts";
-        std::string const queryFilters = query->empty() ? std::string{} : " WHERE user_fts MATCH :query";
+    return fetch_result[0];
+}
 
-        auto queryTotalResult = database_->executeQuery(
-                "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
-                {{"query", oatpp::String(query)}}
-        );
+Object<UserDto>
+UserService::getOne(UInt64 const& id)
+{
+    auto query_result = database_->getUser(id);
 
-        OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(), Status::CODE_500, queryTotalResult->getErrorMessage())
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_404, "User not found")
 
-        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "No users found")
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
 
-        auto queryResult = database_->executeQuery(
-                "SELECT user.*" + queryTableFts +
-                " INNER JOIN user ON user.id = user_fts.user_id" + queryFilters +
-                " LIMIT :offset,:limit;", {
-                        {"query",  oatpp::String(query)},
-                        {"offset", oatpp::UInt64(offset)},
-                        {"limit",  oatpp::UInt64(limit)}
-                });
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
+    return fetch_result[0];
+}
 
-        auto page = dto::UserPageDto::createShared();
-        page->items = fetchResult;
-        page->limit = limit;
-        page->offset = offset;
-        page->count = fetchTotalResult[0][0];
+Object<UserPageDto>
+UserService::search(String const& query,
+                    UInt64 const& limit,
+                    UInt64 const& offset)
+{
+    std::string const queryTableFts = " FROM user_fts";
+    std::string const queryFilters =
+      query->empty() ? std::string{} : " WHERE user_fts MATCH :query";
 
-        return page;
-    }
+    auto queryTotalResult = database_->executeQuery(
+      "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
+      { { "query", String(query) } });
 
-    oatpp::Object<dto::UserDto>
-    UserService::putOne(
-            oatpp::Object<dto::UserDto> const &dto
-    ) {
-        auto queryResult = database_->replaceUser(dto);
+    OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(),
+                      Status::CODE_500,
+                      queryTotalResult->getErrorMessage())
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+    auto fetchTotalResult = queryTotalResult->fetch<Vector<Vector<UInt64>>>();
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::UserDto>>>();
+    OATPP_ASSERT_HTTP(
+      fetchTotalResult[0][0] > 0, Status::CODE_404, "No users found")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto query_result = database_->executeQuery(
+      "SELECT user.*" + queryTableFts +
+        " INNER JOIN user ON user.id = user_fts.user_id" + queryFilters +
+        " LIMIT :offset,:limit;",
+      { { "query", String(query) },
+        { "offset", UInt64(offset) },
+        { "limit", UInt64(limit) } });
 
-        return fetchResult[0];
-    }
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
 
-    oatpp::Object<dto::UserDto>
-    UserService::patchOne(
-            oatpp::UInt64 const &id,
-            oatpp::Object<dto::UserDto> const &dto
-    ) {
-        auto existing = this->getOne(id);
+    auto page = UserPageDto::createShared();
+    page->items = fetch_result;
+    page->limit = limit;
+    page->offset = offset;
+    page->count = fetchTotalResult[0][0];
 
-        existing->id = dto->id ? dto->id : existing->id;
-        existing->email = dto->email ? dto->email : existing->email;
-        existing->username = dto->username ? dto->username : existing->username;
-        existing->password = dto->password ? dto->password : existing->password;
-        existing->role = dto->role ? dto->role : existing->role;
+    return page;
+}
 
-        return this->putOne(existing);
-    }
+Object<UserDto>
+UserService::putOne(Object<UserDto> const& dto)
+{
+    auto query_result = database_->replaceUser(dto);
 
-    oatpp::Object<dto::StatusDto>
-    UserService::deleteOne(
-            const oatpp::UInt64 &id
-    ) {
-        this->getOne(id); // Will throw 404 if not found
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto queryResult = database_->deleteUser(id);
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
 
-        auto status = dto::StatusDto::createShared();
-        status->status = "OK";
-        status->code = Status::CODE_200.code;
-        status->message = "User was successfully deleted";
-        return status;
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-}  // namespace server::service
+    return fetch_result[0];
+}
+
+Object<UserDto>
+UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
+{
+    auto existing = this->getOne(id);
+
+    existing->id = dto->id ? dto->id : existing->id;
+    existing->email = dto->email ? dto->email : existing->email;
+    existing->username = dto->username ? dto->username : existing->username;
+    existing->password = dto->password ? dto->password : existing->password;
+    existing->role = dto->role ? dto->role : existing->role;
+
+    return this->putOne(existing);
+}
+
+Object<StatusDto>
+UserService::deleteOne(UInt64 const& id)
+{
+    this->getOne(id); // Will throw 404 if not found
+
+    auto query_result = database_->deleteUser(id);
+
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    auto status = StatusDto::createShared();
+    status->status = "OK";
+    status->code = Status::CODE_200.code;
+    status->message = "User was successfully deleted";
+    return status;
+}
+
+} // namespace server::service

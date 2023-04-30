@@ -1,7 +1,7 @@
 #pragma once
 
-#include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/Types.hpp>
+#include <oatpp/core/macro/codegen.hpp>
 
 #include "PageDto.hh"
 
@@ -9,25 +9,29 @@
 
 namespace server::dto {
 
-    class OfferDto : public oatpp::DTO {
-        DTO_INIT(OfferDto, DTO)
+using oatpp::Object;
 
-        DTO_FIELD(UInt64, id, "id");
+class OfferDto : public oatpp::DTO
+{
+    DTO_INIT(OfferDto, DTO)
 
-        DTO_FIELD(UInt64, placeId, "place_id");
+    DTO_FIELD(UInt64, id, "id");
 
-        DTO_FIELD(Int64, dateFrom, "date_from");
+    DTO_FIELD(UInt64, place_id, "place_id");
 
-        DTO_FIELD(Int64, dateTo, "date_to");
+    DTO_FIELD(Int64, date_from, "date_from");
 
-        DTO_FIELD(String, description, "description");
+    DTO_FIELD(Int64, date_to, "date_to");
 
-        DTO_FIELD(UInt64, price, "price");
-    };
+    DTO_FIELD(String, description, "description");
 
-    class OfferPageDto : public PageDto<oatpp::Object<OfferDto>> {
-        DTO_INIT(OfferPageDto, PageDto<oatpp::Object<OfferDto>>)
-    };
+    DTO_FIELD(UInt64, price, "price");
+};
+
+class OfferPageDto : public PageDto<Object<OfferDto>>
+{
+    DTO_INIT(OfferPageDto, PageDto<Object<OfferDto>>)
+};
 
 } // namespace server::dto
 

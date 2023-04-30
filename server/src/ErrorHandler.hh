@@ -1,32 +1,31 @@
 #pragma once
 
-#include <oatpp/web/server/handler/ErrorHandler.hpp>
 #include <oatpp/core/data/mapping/ObjectMapper.hpp>
 #include <oatpp/web/protocol/http/outgoing/ResponseFactory.hpp>
+#include <oatpp/web/server/handler/ErrorHandler.hpp>
 
 #include "dto/StatusDto.hh"
 
-
 namespace server {
 
-    using ResponseFactory = oatpp::web::protocol::http::outgoing::ResponseFactory;
+using oatpp::String, oatpp::data::mapping::ObjectMapper,
+  oatpp::web::protocol::http::outgoing::Response,
+  oatpp::web::protocol::http::outgoing::ResponseFactory,
+  oatpp::web::protocol::http::Status, server::dto::StatusDto;
 
-    class ErrorHandler :
-            public oatpp::web::server::handler::ErrorHandler {
-    public:
-        [[nodiscard]]
-        explicit
-        ErrorHandler(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+class ErrorHandler : public oatpp::web::server::handler::ErrorHandler
+{
+  public:
+    [[nodiscard]] explicit ErrorHandler(
+      std::shared_ptr<ObjectMapper> object_mapper);
 
-        std::shared_ptr<oatpp::web::protocol::http::outgoing::Response>
-        handleError(
-                oatpp::web::protocol::http::Status const &status,
-                oatpp::String const &message,
-                oatpp::web::protocol::http::Headers const &headers
-        ) override;
+    std::shared_ptr<Response>
+    handleError(Status const& status,
+                String const& message,
+                Headers const& headers) override;
 
-    private:
-        std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper_;
-    };
+  private:
+    std::shared_ptr<ObjectMapper> object_mapper_;
+};
 
 } // namespace server

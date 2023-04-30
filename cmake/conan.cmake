@@ -10,21 +10,21 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 conan_cmake_configure(
     REQUIRES
-        oatpp/1.3.0
-        oatpp-swagger/1.3.0
-        oatpp-sqlite/1.3.0
-        oatpp-openssl/1.3.0
-        jwt-cpp/0.6.0
-        openssl/3.0.8
-        nlohmann_json/3.11.2
-        toml11/3.7.1
+    oatpp/1.3.0
+    oatpp-swagger/1.3.0
+    oatpp-sqlite/1.3.0
+    oatpp-openssl/1.3.0
+    jwt-cpp/0.6.0
+    openssl/3.0.8
+    nlohmann_json/3.11.2
+    toml11/3.7.1
 
     GENERATORS
-        cmake_paths
-        cmake_find_package
+    cmake_paths
+    cmake_find_package
 
     OPTIONS
-        sqlite3:enable_fts5=True
+    sqlite3:enable_fts5=True
 )
 
 conan_cmake_autodetect(settings)

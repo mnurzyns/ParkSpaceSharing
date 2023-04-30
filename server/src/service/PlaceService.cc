@@ -2,139 +2,155 @@
 
 namespace server::service {
 
-    using HttpError = oatpp::web::protocol::http::HttpError;
+std::shared_ptr<PlaceService>
+PlaceService::createShared()
+{
+    return std::make_shared<PlaceService>();
+}
 
-    std::shared_ptr<PlaceService> PlaceService::createShared() {
-        return std::make_shared<PlaceService>();
-    }
-
-    oatpp::Object<server::dto::PlaceDto>
-    PlaceService::createOne(
-            oatpp::Object<server::dto::PlaceDto> const &dto
-    ) {
-        try {
-            this->getOne(dto->id); // Will throw 404 if not found
-            OATPP_ASSERT_HTTP(false, Status::CODE_409, "Place already exists")
+Object<PlaceDto>
+PlaceService::createOne(Object<PlaceDto> const& dto)
+{
+    try {
+        this->getOne(dto->id); // Will throw 404 if not found
+        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Place already exists")
+    } catch (HttpError& e) {
+        if (e.getInfo().status != Status::CODE_404) {
+            throw;
         }
-        catch (HttpError &e) {
-            if (e.getInfo().status != Status::CODE_404) { throw; }
-        }
-
-        auto queryResult = database_->createPlace(dto);
-
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
-
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::PlaceDto>>>();
-
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
-
-        return fetchResult[0];
     }
 
-    oatpp::Object<server::dto::PlaceDto>
-    PlaceService::getOne(
-            oatpp::UInt64 const &id
-    ) {
-        auto queryResult = database_->getPlace(id);
+    auto query_result = database_->createPlace(dto);
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Place not found")
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::PlaceDto>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
 
-        return fetchResult[0];
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-    oatpp::Object<dto::PlacePageDto>
-    PlaceService::search(
-            oatpp::String const &query,
-            oatpp::UInt64 const &limit,
-            oatpp::UInt64 const &offset
-    ) {
-        std::string const queryTableFts = " FROM place_fts";
-        std::string const queryFilters = query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
+    return fetch_result[0];
+}
 
-        auto queryTotalResult = database_->executeQuery(
-                "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
-                {{"query", oatpp::String(query)}}
-        );
+Object<PlaceDto>
+PlaceService::getOne(UInt64 const& id)
+{
+    auto query_result = database_->getPlace(id);
 
-        OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(), Status::CODE_500, queryTotalResult->getErrorMessage())
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_404, "Place not found")
 
-        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "No places found")
+    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
 
-        auto queryResult = database_->executeQuery(
-                "SELECT place.*" + queryTableFts +
-                " INNER JOIN place ON place.id = place_fts.place_id" + queryFilters +
-                " LIMIT :offset,:limit;", {
-                        {"query",  oatpp::String(query)},
-                        {"offset", oatpp::UInt64(offset)},
-                        {"limit",  oatpp::UInt64(limit)}
-                });
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::PlaceDto>>>();
+    return fetch_result[0];
+}
 
-        auto page = dto::PlacePageDto::createShared();
-        page->items = fetchResult;
-        page->limit = limit;
-        page->offset = offset;
-        page->count = fetchTotalResult[0][0];
+Object<PlacePageDto>
+PlaceService::search(String const& query,
+                     UInt64 const& limit,
+                     UInt64 const& offset)
+{
+    std::string const queryTableFts = " FROM place_fts";
+    std::string const queryFilters =
+      query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
 
-        return page;
-    }
+    auto queryTotalResult = database_->executeQuery(
+      "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
+      { { "query", String(query) } });
 
-    oatpp::Object<dto::PlaceDto>
-    PlaceService::putOne(
-            oatpp::Object<dto::PlaceDto> const &dto
-    ) {
-        auto queryResult = database_->replacePlace(dto);
+    OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(),
+                      Status::CODE_500,
+                      queryTotalResult->getErrorMessage())
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+    auto fetchTotalResult = queryTotalResult->fetch<Vector<Vector<UInt64>>>();
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::PlaceDto>>>();
+    OATPP_ASSERT_HTTP(
+      fetchTotalResult[0][0] > 0, Status::CODE_404, "No places found")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto query_result = database_->executeQuery(
+      "SELECT place.*" + queryTableFts +
+        " INNER JOIN place ON place.id = place_fts.place_id" + queryFilters +
+        " LIMIT :offset,:limit;",
+      { { "query", String(query) },
+        { "offset", UInt64(offset) },
+        { "limit", UInt64(limit) } });
 
-        return fetchResult[0];
-    }
+    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
 
-    oatpp::Object<dto::PlaceDto>
-    PlaceService::patchOne(
-            oatpp::UInt64 const &id,
-            oatpp::Object<dto::PlaceDto> const &dto
-    ) {
-        auto existing = this->getOne(id);
+    auto page = PlacePageDto::createShared();
+    page->items = fetch_result;
+    page->limit = limit;
+    page->offset = offset;
+    page->count = fetchTotalResult[0][0];
 
-        existing->id = dto->id ? dto->id : existing->id;
-        existing->ownerId = dto->ownerId ? dto->ownerId : existing->ownerId;
-        existing->address = dto->address ? dto->address : existing->address;
-        existing->latitude = dto->latitude ? dto->latitude : existing->latitude;
-        existing->longitude = dto->longitude ? dto->longitude : existing->longitude;
+    return page;
+}
 
-        return this->putOne(existing);
-    }
+Object<PlaceDto>
+PlaceService::putOne(Object<PlaceDto> const& dto)
+{
+    auto query_result = database_->replacePlace(dto);
 
-    oatpp::Object<dto::StatusDto>
-    PlaceService::deleteOne(
-            const oatpp::UInt64 &id
-    ) {
-        this->getOne(id); // Will throw 404 if not found
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto queryResult = database_->deletePlace(id);
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
 
-        auto status = dto::StatusDto::createShared();
-        status->status = "OK";
-        status->code = Status::CODE_200.code;
-        status->message = "Place was successfully deleted";
-        return status;
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-}  // namespace server::service
+    return fetch_result[0];
+}
+
+Object<PlaceDto>
+PlaceService::patchOne(UInt64 const& id, Object<PlaceDto> const& dto)
+{
+    auto existing = this->getOne(id);
+
+    existing->id = dto->id ? dto->id : existing->id;
+    existing->owner_id = dto->owner_id ? dto->owner_id : existing->owner_id;
+    existing->address = dto->address ? dto->address : existing->address;
+    existing->latitude = dto->latitude ? dto->latitude : existing->latitude;
+    existing->longitude = dto->longitude ? dto->longitude : existing->longitude;
+
+    return this->putOne(existing);
+}
+
+Object<StatusDto>
+PlaceService::deleteOne(UInt64 const& id)
+{
+    this->getOne(id); // Will throw 404 if not found
+
+    auto query_result = database_->deletePlace(id);
+
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    auto status = StatusDto::createShared();
+    status->status = "OK";
+    status->code = Status::CODE_200.code;
+    status->message = "Place was successfully deleted";
+    return status;
+}
+
+} // namespace server::service

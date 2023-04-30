@@ -14,7 +14,7 @@ Checks: '
     readability-*,
     -modernize-use-trailing-return-type,
 '
-
+FormatStyle: mozilla
 CheckOptions:
   - key: readability-identifier-naming.ConstexprVariableCase
     value: UPPER_CASE
@@ -23,7 +23,7 @@ CheckOptions:
   - key: readability-identifier-naming.EnumCase
     value: CamelCase
   - key: readability-identifier-naming.FunctionCase
-    value: camelCase
+    value: camelBack
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE
   - key: readability-identifier-naming.NamespaceCase
@@ -40,8 +40,22 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.UnionCase
     value: CamelCase
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: lower_case
+  - key: readability-identifier-naming.LocalVariableCase
+    value: lower_case
+  - key: readability-identifier-naming.StaticVariableCase
+    value: lower_case
   - key: readability-identifier-naming.VariableCase
-    value: camelCase
+    value: lower_case
+  - key: readability-identifier-naming.ConstantParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.ConstantPointerParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.PointerParameterCase
+    value: lower_case
   - key: readability-identifier-length.IgnoredParameterNames
     value: id
   - key: readability-identifier-length.IgnoredVariableNames

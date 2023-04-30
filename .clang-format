@@ -1,0 +1,10 @@
+---
+Language: Cpp
+BasedOnStyle: Mozilla
+IndentWidth: 4
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+QualifierAlignment: Right
+ReferenceAlignment: Left
+AlwaysBreakAfterReturnType: All

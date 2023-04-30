@@ -1,7 +1,7 @@
 #pragma once
 
-#include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/Types.hpp>
+#include <oatpp/core/macro/codegen.hpp>
 
 #include "PageDto.hh"
 
@@ -9,23 +9,27 @@
 
 namespace server::dto {
 
-    class UserDto : public oatpp::DTO {
-        DTO_INIT(UserDto, DTO)
+using oatpp::Object;
 
-        DTO_FIELD(UInt64, id, "id");
+class UserDto : public oatpp::DTO
+{
+    DTO_INIT(UserDto, DTO)
 
-        DTO_FIELD(String, email, "email");
+    DTO_FIELD(UInt64, id, "id");
 
-        DTO_FIELD(String, username, "username");
+    DTO_FIELD(String, email, "email");
 
-        DTO_FIELD(String, password, "password");
+    DTO_FIELD(String, username, "username");
 
-        DTO_FIELD(Int32, role, "role"); // 0 - admin, 1 - user //TODO: enum
-    };
+    DTO_FIELD(String, password, "password");
 
-    class UserPageDto : public PageDto<oatpp::Object<UserDto>> {
-        DTO_INIT(UserPageDto, PageDto<oatpp::Object<UserDto>>)
-    };
+    DTO_FIELD(Int32, role, "role"); // 0 - admin, 1 - user //TODO: enum
+};
+
+class UserPageDto : public PageDto<Object<UserDto>>
+{
+    DTO_INIT(UserPageDto, PageDto<Object<UserDto>>)
+};
 
 } // namespace server::dto
 

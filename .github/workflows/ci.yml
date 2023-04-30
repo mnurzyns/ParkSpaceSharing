@@ -48,7 +48,7 @@ jobs:
           - ubuntu-22.04
           - macos-12
         compiler:
-          - llvm-15.0.0 # llvm-15 only on macos
+          - llvm-15.0.0 # llvm-15 only on macOS
           - gcc-12
         generator:
           - "Ninja Multi-Config"

@@ -2,138 +2,158 @@
 
 namespace server::service {
 
-    std::shared_ptr<OfferService> OfferService::createShared() {
-        return std::make_shared<OfferService>();
-    }
+std::shared_ptr<OfferService>
+OfferService::createShared()
+{
+    return std::make_shared<OfferService>();
+}
 
-    oatpp::Object<server::dto::OfferDto>
-    OfferService::createOne(
-            oatpp::Object<server::dto::OfferDto> const &dto
-    ) {
-        try {
-            this->getOne(dto->id); // Will throw 404 if not found
-            OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
+Object<OfferDto>
+OfferService::createOne(Object<OfferDto> const& dto)
+{
+    try {
+        this->getOne(dto->id); // Will throw 404 if not found
+        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
+    } catch (oatpp::web::protocol::http::HttpError& e) {
+        if (e.getInfo().status != Status::CODE_404) {
+            throw;
         }
-        catch (oatpp::web::protocol::http::HttpError &e) {
-            if (e.getInfo().status != Status::CODE_404) { throw; }
-        }
-
-        auto queryResult = database_->createOffer(dto);
-
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
-
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
-
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
-
-        return fetchResult[0];
     }
 
-    oatpp::Object<server::dto::OfferDto>
-    OfferService::getOne(
-            oatpp::UInt64 const &id
-    ) {
-        auto queryResult = database_->getOffer(id);
+    auto query_result = database_->createOffer(dto);
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_404, "Offer not found")
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
 
-        return fetchResult[0];
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-    oatpp::Object<dto::OfferPageDto>
-    OfferService::search(
-            oatpp::String const &query,
-            oatpp::UInt64 const &limit,
-            oatpp::UInt64 const &offset
-    ) {
-        std::string const queryTableFts = " FROM offer_fts";
-        std::string const queryFilters = query->empty() ? std::string{} : " WHERE offer_fts MATCH :query";
+    return fetch_result[0];
+}
 
-        auto queryTotalResult = database_->executeQuery(
-                "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
-                {{"query", oatpp::String(query)}}
-        );
+Object<OfferDto>
+OfferService::getOne(UInt64 const& id)
+{
+    auto query_result = database_->getOffer(id);
 
-        OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(), Status::CODE_500, queryTotalResult->getErrorMessage())
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto fetchTotalResult = queryTotalResult->fetch<oatpp::Vector<oatpp::Vector<oatpp::UInt64>>>();
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_404, "Offer not found")
 
-        OATPP_ASSERT_HTTP(fetchTotalResult[0][0] > 0, Status::CODE_404, "No offers found")
+    auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
 
-        auto queryResult = database_->executeQuery(
-                "SELECT offer.*" + queryTableFts +
-                " INNER JOIN offer ON offer.id = offer_fts.offer_id" + queryFilters +
-                " LIMIT :offset,:limit;", {
-                        {"query",  oatpp::String(query)},
-                        {"offset", oatpp::UInt64(offset)},
-                        {"limit",  oatpp::UInt64(limit)}
-                });
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+    return fetch_result[0];
+}
 
-        auto page = dto::OfferPageDto::createShared();
-        page->items = fetchResult;
-        page->limit = limit;
-        page->offset = offset;
-        page->count = fetchTotalResult[0][0];
+Object<OfferPageDto>
+OfferService::search(String const& query,
+                     UInt64 const& limit,
+                     UInt64 const& offset)
+{
+    std::string const query_table_fts = " FROM offer_fts";
+    std::string const query_filters =
+      query->empty() ? std::string{} : " WHERE offer_fts MATCH :query";
 
-        return page;
-    }
+    auto query_total_result = database_->executeQuery(
+      "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
+      { { "query", String(query) } });
 
-    oatpp::Object<dto::OfferDto>
-    OfferService::putOne(
-            oatpp::Object<dto::OfferDto> const &dto
-    ) {
-        auto queryResult = database_->replaceOffer(dto);
+    OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
+                      Status::CODE_500,
+                      query_total_result->getErrorMessage())
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
-        OATPP_ASSERT_HTTP(queryResult->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+    auto fetch_total_result =
+      query_total_result->fetch<Vector<Vector<UInt64>>>();
 
-        auto fetchResult = queryResult->fetch<oatpp::Vector<oatpp::Object<dto::OfferDto>>>();
+    OATPP_ASSERT_HTTP(
+      fetch_total_result[0][0] > 0, Status::CODE_404, "No offers found")
 
-        OATPP_ASSERT_HTTP(fetchResult->size() == 1, Status::CODE_500, "Unexpected number of rows returned!")
+    auto query_result = database_->executeQuery(
+      "SELECT offer.*" + query_table_fts +
+        " INNER JOIN offer ON offer.id = offer_fts.offer_id" + query_filters +
+        " LIMIT :offset,:limit;",
+      { { "query", String(query) },
+        { "offset", UInt64(offset) },
+        { "limit", UInt64(limit) } });
 
-        return fetchResult[0];
-    }
+    auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
 
-    oatpp::Object<dto::OfferDto>
-    OfferService::patchOne(
-            oatpp::UInt64 const &id,
-            oatpp::Object<dto::OfferDto> const &dto
-    ) {
-        auto existing = this->getOne(id);
+    auto page = OfferPageDto::createShared();
+    page->items = fetch_result;
+    page->limit = limit;
+    page->offset = offset;
+    page->count = fetch_total_result[0][0];
 
-        existing->id = dto->id ? dto->id : existing->id;
-        existing->placeId = dto->placeId ? dto->placeId : existing->placeId;
-        existing->dateFrom = dto->dateFrom ? dto->dateFrom : existing->dateFrom;
-        existing->dateTo = dto->dateTo ? dto->dateTo : existing->dateTo;
-        existing->description = dto->description ? dto->description : existing->description;
-        existing->price = dto->price ? dto->price : existing->price;
+    return page;
+}
 
-        return this->putOne(existing);
-    }
+Object<OfferDto>
+OfferService::putOne(Object<OfferDto> const& dto)
+{
+    auto query_result = database_->replaceOffer(dto);
 
-    oatpp::Object<dto::StatusDto>
-    OfferService::deleteOne(
-            const oatpp::UInt64 &id
-    ) {
-        this->getOne(id); // Will throw 404 if not found
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
 
-        auto queryResult = database_->deleteOffer(id);
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
 
-        OATPP_ASSERT_HTTP(queryResult->isSuccess(), Status::CODE_500, queryResult->getErrorMessage())
+    auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
 
-        auto status = dto::StatusDto::createShared();
-        status->status = "OK";
-        status->code = Status::CODE_200.code;
-        status->message = "Offer was successfully deleted";
-        return status;
-    }
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
 
-}  // namespace server::service
+    return fetch_result[0];
+}
+
+Object<OfferDto>
+OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
+{
+    auto existing = this->getOne(id);
+
+    existing->id = dto->id ? dto->id : existing->id;
+    existing->place_id = dto->place_id ? dto->place_id : existing->place_id;
+    existing->date_from = dto->date_from ? dto->date_from : existing->date_from;
+    existing->date_to = dto->date_to ? dto->date_to : existing->date_to;
+    existing->description =
+      dto->description ? dto->description : existing->description;
+    existing->price = dto->price ? dto->price : existing->price;
+
+    return this->putOne(existing);
+}
+
+Object<StatusDto>
+OfferService::deleteOne(UInt64 const& id)
+{
+    this->getOne(id); // Will throw 404 if not found
+
+    auto query_result = database_->deleteOffer(id);
+
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    auto status = StatusDto::createShared();
+    status->status = "OK";
+    status->code = Status::CODE_200.code;
+    status->message = "Offer was successfully deleted";
+    return status;
+}
+
+} // namespace server::service

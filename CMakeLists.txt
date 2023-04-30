@@ -3,15 +3,14 @@ cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
 
 option(CONAN "Use conan package manager" ON)
 
-#set(CMAKE_BUILD_TYPE Release)
 project(ParkingSpaceSharing LANGUAGES CXX VERSION 0.0.1)
 
 if(NOT MSVC)
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options (-fsanitize=address,leak,undefined)
-        add_link_options    (-fsanitize=address,leak,undefined)
+        add_compile_options(-fsanitize=address,leak,undefined)
+        add_link_options(-fsanitize=address,leak,undefined)
     endif()
 else()
     # 4996 - getenv unsafe
@@ -28,9 +27,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-find_package(oatpp         1.3.0 REQUIRED)
+find_package(oatpp 1.3.0 REQUIRED)
 find_package(oatpp-swagger 1.3.0 REQUIRED)
-find_package(oatpp-sqlite  1.3.0 REQUIRED)
+find_package(oatpp-sqlite 1.3.0 REQUIRED)
 find_package(oatpp-openssl 1.3.0 REQUIRED)
 
 find_package(OpenSSL 3.0.8 REQUIRED)
