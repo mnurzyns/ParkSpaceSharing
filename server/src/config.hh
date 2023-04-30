@@ -41,9 +41,9 @@ struct from<server::config>
     static
     server::config from_toml(toml::value const& val)
     {
-        auto server = toml::find_or(val, "server", {});
-        auto jwt = toml::find_or(server, "jwt", {});
-        auto swagger = toml::find_or(server, "swagger", {});
+        auto const& server = toml::find_or(val, "server", {});
+        auto const& jwt = toml::find_or(server, "jwt", {});
+        auto const& swagger = toml::find_or(server, "swagger", {});
 
         return server::config
         {
@@ -53,7 +53,7 @@ struct from<server::config>
             .jwt_secret = toml::find_or<std::string>(jwt, "secret", "secret"),
             .jwt_issuer = toml::find_or<std::string>(jwt, "issuer", "issuer"),
             .jwt_expire_after = toml::find_or<std::uint64_t>(jwt, "expire_after", 30*24*60*60), // 30 days
-            .swagger_res_path = toml::find_or<std::string>(jwt, "res_path", "/usr/local/share/" PSS_PROJECT_NAME "/oatpp-swagger-res"),
+            .swagger_res_path = toml::find_or<std::string>(swagger, "res_path", "/usr/local/share/" PSS_PROJECT_NAME "/oatpp-swagger-res"),
         };
     }
 };
