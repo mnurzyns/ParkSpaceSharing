@@ -4,6 +4,7 @@ target_sources(
     server PRIVATE
 
     src/main.cc
+    src/config.cc
     src/ErrorHandler.cc
     src/auth/AuthHandler.cc
     src/auth/JWT.cc
@@ -23,7 +24,6 @@ target_include_directories(
 target_compile_definitions(
     server
     PUBLIC OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
-    PUBLIC MAIN_DATABASE_FILE="${CMAKE_BINARY_DIR}/bin/main.db"
     PUBLIC MAIN_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
 )
 
@@ -38,5 +38,6 @@ target_link_libraries(
     PUBLIC OpenSSL::SSL
     PUBLIC OpenSSL::Crypto
     PUBLIC nlohmann_json::nlohmann_json
+    PUBLIC toml11::toml11
 )
 

@@ -1,6 +1,8 @@
+#include "JWT.hh"
+
 #include <oatpp/core/Types.hpp>
 
-#include "JWT.hh"
+#include "config.hh"
 
 namespace server::auth {
 
@@ -20,7 +22,7 @@ namespace server::auth {
                 .set_subject(std::to_string(payload->userId))
                 .set_issued_at(now)
                 .set_not_before(now)
-                .set_expires_at(now + std::chrono::days{30}) //TODO: move to config
+                .set_expires_at(now + std::chrono::seconds{server::config::get_instance().jwt_expire_after})
                 .set_type("JWS")
                 .set_payload_claim("userId", jwt::claim{*payload->userId})
                 .set_payload_claim("role", jwt::claim{*payload->role})

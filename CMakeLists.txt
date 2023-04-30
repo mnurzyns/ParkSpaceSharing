@@ -36,6 +36,8 @@ find_package(OpenSSL 3.0.8 REQUIRED)
 find_package(jwt-cpp 0.6.0 REQUIRED)
 find_package(nlohmann_json 3.9.0 REQUIRED)
 
+find_package(toml11 3.7 REQUIRED)
+
 #find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
 #find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 

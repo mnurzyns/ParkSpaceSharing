@@ -7,6 +7,7 @@
 #include <oatpp/web/server/interceptor/AllowCorsGlobal.hpp>
 
 #include "auth/JWT.hh"
+#include "config.hh"
 #include "DatabaseComponent.hh"
 #include "ErrorHandler.hh"
 #include "SwaggerComponent.hh"
@@ -23,7 +24,8 @@ namespace server::component {
          * JWT component
          * */
         OATPP_CREATE_COMPONENT(std::shared_ptr<auth::JWT>, jwtComponent)([] {
-            return std::make_shared<auth::JWT>("secret", "issuer"); //TODO: read from config, add expiration time
+            auto const& config = server::config::get_instance();
+            return std::make_shared<auth::JWT>(config.jwt_secret, config.jwt_issuer);
         }());
 
         /*
@@ -42,8 +44,9 @@ namespace server::component {
                 std::shared_ptr<oatpp::network::ServerConnectionProvider>,
                 serverConnectionProviderComponent
         )([] {
+            auto const& config = server::config::get_instance();
             return oatpp::network::tcp::server::ConnectionProvider::createShared(
-                    {"::", 8000}, true); //TODO: read from config
+                {config.bind, config.port}, true);
         }());
 
         /*

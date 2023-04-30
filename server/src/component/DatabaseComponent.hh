@@ -3,6 +3,7 @@
 #include <oatpp-sqlite/ConnectionProvider.hpp>
 #include <oatpp-sqlite/Executor.hpp>
 
+#include "config.hh"
 #include "database/MainDatabase.hh"
 
 namespace server::component {
@@ -14,7 +15,7 @@ namespace server::component {
                 std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>,
                 databaseConnectionPoolComponent
         )([] {
-            auto tmp = std::make_shared<oatpp::sqlite::ConnectionProvider>(MAIN_DATABASE_FILE); // TODO: move to config
+            auto tmp = std::make_shared<oatpp::sqlite::ConnectionProvider>(server::config::get_instance().database_path);
             return oatpp::sqlite::ConnectionPool::createShared(tmp, 10, std::chrono::seconds{5});
         }());
 

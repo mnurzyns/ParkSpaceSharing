@@ -36,4 +36,5 @@ build/*
 .vscode/*
 .cache/*
 
-CMakeCache.txt
+**/config.toml
+/main.sqlite3
