@@ -1,5 +1,7 @@
 add_executable(server)
 
+set_property(TARGET server PROPERTY OUTPUT_NAME "pss-server")
+
 target_sources(
     server PRIVATE
 
@@ -41,3 +43,9 @@ target_link_libraries(
     PUBLIC toml11::toml11
 )
 
+install(TARGETS server DESTINATION bin)
+
+install(
+    DIRECTORY "${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res/"
+    DESTINATION "share/${PROJECT_NAME}/oatpp-swagger-res"
+)
