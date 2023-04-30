@@ -38,3 +38,5 @@ build/*
 
 **/config.toml
 /main.sqlite3
+
+/app_config
