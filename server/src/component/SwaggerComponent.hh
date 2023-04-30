@@ -1,8 +1,12 @@
 #pragma once
 
+#include <filesystem>
+
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp-swagger/Model.hpp>
 #include <oatpp-swagger/Resources.hpp>
+
+#include "config.hh"
 
 namespace server::component {
 
@@ -25,7 +29,14 @@ namespace server::component {
         }());
 
         OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::Resources>, swagger_resources)([] {
-            return oatpp::swagger::Resources::loadResources(OATPP_SWAGGER_RES_PATH);
+            std::string_view res_path = server::config::get_instance().swagger_res_path;
+            if(!std::filesystem::exists(res_path)) {
+                res_path = OATPP_SWAGGER_RES_PATH;
+                if(!std::filesystem::exists(res_path)) {
+                    throw std::runtime_error{"server.swagger.res_path does not point to a valid directory. Check your configuration."};
+                }
+            }
+            return oatpp::swagger::Resources::loadResources(oatpp::String{std::string{res_path}});
         }());
 
     };

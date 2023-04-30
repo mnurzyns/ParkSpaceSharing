@@ -25,6 +25,7 @@ target_include_directories(
 
 target_compile_definitions(
     server
+    PUBLIC PSS_PROJECT_NAME="${PROJECT_NAME}"
     PUBLIC OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
     PUBLIC MAIN_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
 )
