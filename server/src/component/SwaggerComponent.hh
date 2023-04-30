@@ -36,6 +36,8 @@ namespace server::component {
                     throw std::runtime_error{"server.swagger.res_path does not point to a valid directory. Check your configuration."};
                 }
             }
+
+            OATPP_LOGI("Swagger", "\tUsing \"%*s\" as swagger resource path.", res_path.length(), res_path.data());
             return oatpp::swagger::Resources::loadResources(oatpp::String{std::string{res_path}});
         }());
 
