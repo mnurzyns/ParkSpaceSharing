@@ -41,9 +41,9 @@ struct from<server::config>
     static
     server::config from_toml(toml::value const& val)
     {
-        auto const& server = toml::find_or(val, "server", {});
-        auto const& jwt = toml::find_or(server, "jwt", {});
-        auto const& swagger = toml::find_or(server, "swagger", {});
+        auto const& server = toml::find_or(val, "server", toml::value{});
+        auto const& jwt = toml::find_or(server, "jwt", toml::value{});
+        auto const& swagger = toml::find_or(server, "swagger", toml::value{});
 
         return server::config
         {
