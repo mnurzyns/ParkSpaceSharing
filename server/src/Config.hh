@@ -41,10 +41,10 @@ using server::Config;
 using std::chrono::duration_cast, std::chrono::days, std::chrono::milliseconds;
 
 template<>
-struct from<Config>
+struct [[maybe_unused]] from<Config>
 {
-    static Config
-    from_toml(toml::value const& val) // NOLINT
+    [[maybe_unused]] static Config
+    from_toml(toml::value const& val)
     {
         auto const& server = toml::find_or(val, "server", toml::value{});
         auto const& jwt = toml::find_or(server, "jwt", toml::value{});
@@ -70,10 +70,10 @@ struct from<Config>
 };
 
 template<>
-struct into<Config>
+struct [[maybe_unused]] into<Config>
 {
-    static toml::value
-    into_toml(Config const& config) // NOLINT
+    [[maybe_unused]] static toml::value
+    into_toml(Config const& config)
     {
         // When writing to file values will be written last to first
         // thus the reverse order.

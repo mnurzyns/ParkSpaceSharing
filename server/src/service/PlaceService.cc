@@ -64,26 +64,27 @@ PlaceService::search(String const& query,
                      UInt64 const& limit,
                      UInt64 const& offset)
 {
-    std::string const queryTableFts = " FROM place_fts";
-    std::string const queryFilters =
+    std::string const query_table_fts = " FROM place_fts";
+    std::string const query_filters =
       query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
 
-    auto queryTotalResult = database_->executeQuery(
-      "SELECT COUNT(*)" + queryTableFts + queryFilters + ";",
+    auto query_total_result = database_->executeQuery(
+      "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
       { { "query", String(query) } });
 
-    OATPP_ASSERT_HTTP(queryTotalResult->isSuccess(),
+    OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
                       Status::CODE_500,
-                      queryTotalResult->getErrorMessage())
+                      query_total_result->getErrorMessage())
 
-    auto fetchTotalResult = queryTotalResult->fetch<Vector<Vector<UInt64>>>();
+    auto fetch_total_result =
+      query_total_result->fetch<Vector<Vector<UInt64>>>();
 
     OATPP_ASSERT_HTTP(
-      fetchTotalResult[0][0] > 0, Status::CODE_404, "No places found")
+      fetch_total_result[0][0] > 0, Status::CODE_404, "No places found")
 
     auto query_result = database_->executeQuery(
-      "SELECT place.*" + queryTableFts +
-        " INNER JOIN place ON place.id = place_fts.place_id" + queryFilters +
+      "SELECT place.*" + query_table_fts +
+        " INNER JOIN place ON place.id = place_fts.place_id" + query_filters +
         " LIMIT :offset,:limit;",
       { { "query", String(query) },
         { "offset", UInt64(offset) },
@@ -95,7 +96,7 @@ PlaceService::search(String const& query,
     page->items = fetch_result;
     page->limit = limit;
     page->offset = offset;
-    page->count = fetchTotalResult[0][0];
+    page->count = fetch_total_result[0][0];
 
     return page;
 }
