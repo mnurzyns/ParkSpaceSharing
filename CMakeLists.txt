@@ -40,13 +40,9 @@ find_package(toml11 3.7 REQUIRED)
 
 find_package(toml11 3.7 REQUIRED)
 
-#find_package(QT NAMES Qt5 COMPONENTS Core Quick REQUIRED)
-#find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 add_subdirectory(server)
 
 #include(CTest)
 #enable_testing()
-

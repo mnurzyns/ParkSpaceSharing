@@ -95,12 +95,6 @@ jobs:
           ccache: true
           clangtidy: false
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 5.15.2
-          cache: true
-
       - name: Cleanup Conan system packages (they are not properly cached)
         run: |
           conan remove -f '*/system'
@@ -117,4 +111,3 @@ jobs:
         working-directory: ${{github.workspace}}/build
         run: |
           ctest -C ${{matrix.build_type}}
-
