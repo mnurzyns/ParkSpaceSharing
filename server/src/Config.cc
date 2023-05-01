@@ -68,7 +68,7 @@ getConfig()
                    "The new config file will be placed in \"%s\".\n",
                    config_path.c_str())
         // This will construct the config with default values.
-        // See Config.hh fromToml()
+        // See Config.hh from_toml()
         config = toml::get<Config>(toml::value{});
     }
 
