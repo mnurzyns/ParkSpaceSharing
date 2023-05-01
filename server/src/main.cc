@@ -11,6 +11,8 @@
 #include "controller/PlaceController.hh"
 #include "controller/UserController.hh"
 
+using namespace server::controller;
+
 int
 main()
 {
@@ -18,23 +20,21 @@ main()
 
     server::component::AppComponent app_component;
 
-    auto router = app_component.http_router.getObject();
+    const OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>,
+                          http_router);
 
     oatpp::web::server::api::Endpoints endpoints;
 
-    endpoints.append(
-      router->addController(server::controller::AuthController::createShared())
-        ->getEndpoints());
-    endpoints.append(
-      router->addController(server::controller::OfferController::createShared())
-        ->getEndpoints());
-    endpoints.append(
-      router->addController(server::controller::PlaceController::createShared())
-        ->getEndpoints());
-    endpoints.append(
-      router->addController(server::controller::UserController::createShared())
-        ->getEndpoints());
-    router->addController(oatpp::swagger::Controller::createShared(endpoints));
+    endpoints.append(http_router->addController(AuthController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(OfferController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(PlaceController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(UserController::createShared())
+                       ->getEndpoints());
+    http_router->addController(
+      oatpp::swagger::Controller::createShared(endpoints));
 
     oatpp::network::Server server(
       app_component.server_connection_provider.getObject(),

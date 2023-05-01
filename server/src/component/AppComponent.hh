@@ -14,6 +14,9 @@
 
 namespace server::component {
 
+using oatpp::data::mapping::ObjectMapper, oatpp::network::ConnectionHandler,
+  oatpp::network::ServerConnectionProvider, oatpp::web::server::HttpRouter;
+
 class AppComponent
 {
 
@@ -33,8 +36,7 @@ class AppComponent
     /*
      * Object mapper component
      * */
-    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>,
-                           object_mapper)
+    OATPP_CREATE_COMPONENT(std::shared_ptr<ObjectMapper>, object_mapper)
     ([] {
         auto tmp = oatpp::parser::json::mapping::ObjectMapper::createShared();
         tmp->getDeserializer()->getConfig()->allowUnknownFields = false;
@@ -44,9 +46,8 @@ class AppComponent
     /*
      * Server connection provider component
      * */
-    OATPP_CREATE_COMPONENT(
-      std::shared_ptr<oatpp::network::ServerConnectionProvider>,
-      server_connection_provider)
+    OATPP_CREATE_COMPONENT(std::shared_ptr<ServerConnectionProvider>,
+                           server_connection_provider)
     ([] {
         auto const& config = Config::getInstance();
         return oatpp::network::tcp::server::ConnectionProvider::createShared(
@@ -56,21 +57,19 @@ class AppComponent
     /*
      * HTTP Router component
      * */
-    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>,
-                           http_router)
-    ([] { return oatpp::web::server::HttpRouter::createShared(); }());
+    OATPP_CREATE_COMPONENT(std::shared_ptr<HttpRouter>, http_router)
+    ([] { return HttpRouter::createShared(); }());
 
     /*
      * Server connection handler component
      * */
-    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
+    OATPP_CREATE_COMPONENT(std::shared_ptr<ConnectionHandler>,
                            connection_handler)
     ([] {
-        const OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>,
+        const OATPP_COMPONENT(std::shared_ptr<HttpRouter>,
                               http_router_component);
-        const OATPP_COMPONENT(
-          std::shared_ptr<oatpp::data::mapping::ObjectMapper>,
-          object_mapper_component);
+        const OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
+                              object_mapper_component);
 
         auto tmp = oatpp::web::server::HttpConnectionHandler::createShared(
           http_router_component);
