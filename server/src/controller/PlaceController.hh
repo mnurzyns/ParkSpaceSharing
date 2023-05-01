@@ -118,8 +118,8 @@ class PlaceController : public oatpp::web::server::api::ApiController
              "place",
              search,
              QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", 20U),
-             QUERY(UInt64, offset, "offset", 0UL))
+             QUERY(UInt64, limit, "limit", uint64_t{20}),
+             QUERY(UInt64, offset, "offset", uint64_t{0}))
     {
         return createDtoResponse(Status::CODE_200,
                                  service_.search(query, limit, offset));

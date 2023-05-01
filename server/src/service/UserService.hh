@@ -33,8 +33,8 @@ class UserService
 
     Object<UserPageDto>
     search(String const& query,
-           UInt64 const& limit = 20UL,
-           UInt64 const& offset = 0UL);
+           UInt64 const& limit = uint64_t{20},
+           UInt64 const& offset = uint64_t{0});
 
     Object<UserDto>
     putOne(Object<UserDto> const& dto);
