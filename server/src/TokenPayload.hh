@@ -16,4 +16,4 @@ struct TokenPayload : public oatpp::web::server::handler::AuthorizationObject
     Role user_role;
 };
 
-}
+} // namespace server
