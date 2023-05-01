@@ -64,12 +64,12 @@ PlaceService::search(String const& query,
                      UInt64 const& limit,
                      UInt64 const& offset)
 {
-    std::string const query_table_fts = " FROM place_fts";
-    std::string const query_filters =
-      query->empty() ? std::string{} : " WHERE place_fts MATCH :query";
+    char const* query_table_fts = " FROM place_fts";
+    char const* query_filters =
+      query->empty() ? "" : " WHERE place_fts MATCH :query";
 
     auto query_total_result = database_->executeQuery(
-      "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
+      std::string{} + "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
       { { "query", String(query) } });
 
     OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
@@ -83,7 +83,7 @@ PlaceService::search(String const& query,
       fetch_total_result[0][0] > 0, Status::CODE_404, "No places found")
 
     auto query_result = database_->executeQuery(
-      "SELECT place.*" + query_table_fts +
+      std::string{} + "SELECT place.*" + query_table_fts +
         " INNER JOIN place ON place.id = place_fts.place_id" + query_filters +
         " LIMIT :offset,:limit;",
       { { "query", String(query) },
