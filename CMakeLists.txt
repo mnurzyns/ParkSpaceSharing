@@ -1,5 +1,4 @@
-set(CMAKE_REQUIRED_VERSION 3.14)
-cmake_minimum_required(VERSION ${CMAKE_REQUIRED_VERSION})
+cmake_minimum_required(VERSION 3.14)
 
 option(CONAN "Use conan package manager" ON)
 
@@ -35,8 +34,6 @@ find_package(oatpp-openssl 1.3.0 REQUIRED)
 find_package(OpenSSL 3.0.8 REQUIRED)
 find_package(jwt-cpp 0.6.0 REQUIRED)
 find_package(nlohmann_json 3.9.0 REQUIRED)
-
-find_package(toml11 3.7 REQUIRED)
 
 find_package(toml11 3.7 REQUIRED)
 
