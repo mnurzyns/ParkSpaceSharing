@@ -9,7 +9,7 @@ target_sources(
     src/AuthHandler.cc
     src/Config.cc
     src/ErrorHandler.cc
-    src/JWT.cc
+    src/TokenUtils.cc
 
     src/database/MainDatabase.cc
 

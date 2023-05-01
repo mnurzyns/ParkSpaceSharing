@@ -2,7 +2,7 @@
 
 #include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 
-#include "JWT.hh"
+#include "TokenUtils.hh"
 
 namespace server {
 
@@ -12,10 +12,10 @@ class AuthHandler
   : public oatpp::web::server::handler::BearerAuthorizationHandler
 {
   private:
-    std::shared_ptr<JWT> jwt_object_;
+    std::shared_ptr<TokenUtils> token_utils_;
 
   public:
-    [[nodiscard]] explicit AuthHandler(std::shared_ptr<JWT> jwt_object);
+    [[nodiscard]] explicit AuthHandler(std::shared_ptr<TokenUtils> token_utils);
 
     std::shared_ptr<AuthorizationObject>
     authorize(String const& token) override;

@@ -19,20 +19,20 @@ class UserController : public oatpp::web::server::api::ApiController
   public:
     [[nodiscard]] explicit UserController(
       std::shared_ptr<ObjectMapper> const& object_mapper,
-      std::shared_ptr<JWT> jwt_object)
+      std::shared_ptr<TokenUtils> token_utils)
       : oatpp::web::server::api::ApiController(object_mapper)
     {
         setDefaultAuthorizationHandler(
-          std::make_shared<AuthHandler>(std::move(jwt_object)));
+          std::make_shared<AuthHandler>(std::move(token_utils)));
     }
 
     static std::shared_ptr<UserController>
     createShared(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
                                  object_mapper_component),
-                 OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_object_component))
+                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component))
     {
         return std::make_shared<UserController>(object_mapper_component,
-                                                jwt_object_component);
+                                                token_utils_component);
     }
 
     // Endpoints
@@ -60,7 +60,7 @@ class UserController : public oatpp::web::server::api::ApiController
     ENDPOINT("POST",
              "user",
              createOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(oatpp::Object<dto::UserDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->email && dto->password && dto->username &&
@@ -142,7 +142,7 @@ class UserController : public oatpp::web::server::api::ApiController
     ENDPOINT("PUT",
              "user",
              putOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(oatpp::Object<dto::UserDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->id && dto->email && dto->password &&
@@ -179,7 +179,7 @@ class UserController : public oatpp::web::server::api::ApiController
     ENDPOINT("PATCH",
              "user/{id}",
              patchOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id),
              BODY_DTO(oatpp::Object<dto::UserDto>, dto))
     {
@@ -216,7 +216,7 @@ class UserController : public oatpp::web::server::api::ApiController
     ENDPOINT("DELETE",
              "user/{id}",
              deleteOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id))
     {
         OATPP_ASSERT_HTTP(auth_object->role == 0 ||
@@ -231,4 +231,5 @@ class UserController : public oatpp::web::server::api::ApiController
 } // namespace server::controller
 
 #include OATPP_CODEGEN_END(ApiController)
-#include "JWT.hh"
+#include "TokenPayload.hh"
+#include "TokenUtils.hh"

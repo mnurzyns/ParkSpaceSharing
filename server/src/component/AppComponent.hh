@@ -9,8 +9,8 @@
 #include "Config.hh"
 #include "DatabaseComponent.hh"
 #include "ErrorHandler.hh"
-#include "JWT.hh"
 #include "SwaggerComponent.hh"
+#include "TokenUtils.hh"
 
 namespace server::component {
 
@@ -27,10 +27,10 @@ class AppComponent
     /*
      * JWT component
      * */
-    OATPP_CREATE_COMPONENT(std::shared_ptr<JWT>, jwt_object)
+    OATPP_CREATE_COMPONENT(std::shared_ptr<TokenUtils>, token_utils)
     ([] {
         auto const& config = Config::getInstance();
-        return std::make_shared<JWT>(config.jwt_secret, config.jwt_issuer);
+        return std::make_shared<TokenUtils>(config.jwt_secret, config.jwt_issuer);
     }());
 
     /*

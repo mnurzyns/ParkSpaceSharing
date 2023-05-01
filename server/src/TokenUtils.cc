@@ -1,10 +1,10 @@
-#include "JWT.hh"
+#include "TokenUtils.hh"
 
 namespace server {
 
 using std::chrono::system_clock, std::chrono::milliseconds;
 
-JWT::JWT(std::string secret, std::string issuer)
+TokenUtils::TokenUtils(std::string secret, std::string issuer)
   : secret_(std::move(secret))
   , issuer_(std::move(issuer))
   , verifier_(jwt::verify()
@@ -14,7 +14,7 @@ JWT::JWT(std::string secret, std::string issuer)
 }
 
 String
-JWT::createToken(std::shared_ptr<Payload> payload)
+TokenUtils::createToken(std::shared_ptr<TokenPayload> payload)
 {
     auto now = system_clock::now();
     auto token =
@@ -33,15 +33,15 @@ JWT::createToken(std::shared_ptr<Payload> payload)
     return token;
 }
 
-std::shared_ptr<JWT::Payload>
-JWT::readAndVerifyToken(String const& token)
+std::shared_ptr<TokenPayload>
+TokenUtils::readAndVerifyToken(String const& token)
 {
     auto decoded = jwt::decode<JsonTraits>(token);
     verifier_.verify(decoded);
 
     // TODO: Verify that the issuer exists in the database (custom verifier?)
 
-    auto payload = std::make_shared<Payload>();
+    auto payload = std::make_shared<TokenPayload>();
     payload->user_id =
       static_cast<uint64_t>(decoded.get_payload_claim("user_id").as_int());
     payload->role =

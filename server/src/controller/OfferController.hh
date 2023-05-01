@@ -3,7 +3,7 @@
 #include <oatpp/core/macro/codegen.hpp>
 
 #include "AuthHandler.hh"
-#include "JWT.hh"
+#include "TokenUtils.hh"
 #include "dto/OfferDto.hh"
 #include "dto/StatusDto.hh"
 #include "service/OfferService.hh"
@@ -22,20 +22,20 @@ class OfferController : public oatpp::web::server::api::ApiController
   public:
     [[nodiscard]] explicit OfferController(
       std::shared_ptr<ObjectMapper> const& object_mapper,
-      std::shared_ptr<JWT> jwt_object)
+      std::shared_ptr<TokenUtils> token_utils)
       : oatpp::web::server::api::ApiController(object_mapper)
     {
         setDefaultAuthorizationHandler(
-          std::make_shared<AuthHandler>(std::move(jwt_object)));
+          std::make_shared<AuthHandler>(std::move(token_utils)));
     }
 
     static std::shared_ptr<OfferController>
     createShared(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
                                  object_mapper_component),
-                 OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_object_component))
+                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component))
     {
         return std::make_shared<OfferController>(object_mapper_component,
-                                                 jwt_object_component);
+                                                 token_utils_component);
     }
 
     // Endpoints
@@ -65,7 +65,7 @@ class OfferController : public oatpp::web::server::api::ApiController
     ENDPOINT("POST",
              "offer",
              createOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->place_id && dto->date_from && dto->date_to &&
@@ -153,7 +153,7 @@ class OfferController : public oatpp::web::server::api::ApiController
     ENDPOINT("PUT",
              "offer",
              putOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->id && dto->place_id && dto->date_from &&
@@ -192,7 +192,7 @@ class OfferController : public oatpp::web::server::api::ApiController
     ENDPOINT("PATCH",
              "offer/{id}",
              patchOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id),
              BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
     {
@@ -228,7 +228,7 @@ class OfferController : public oatpp::web::server::api::ApiController
     ENDPOINT("DELETE",
              "offer/{id}",
              deleteOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id))
     {
         OATPP_ASSERT_HTTP(
@@ -246,3 +246,4 @@ class OfferController : public oatpp::web::server::api::ApiController
 } // namespace server::controller
 
 #include OATPP_CODEGEN_END(ApiController)
+#include "TokenPayload.hh"

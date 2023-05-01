@@ -3,7 +3,7 @@
 #include <oatpp/core/macro/codegen.hpp>
 
 #include "AuthHandler.hh"
-#include "JWT.hh"
+#include "TokenUtils.hh"
 #include "dto/OfferDto.hh"
 #include "dto/StatusDto.hh"
 #include "service/PlaceService.hh"
@@ -22,20 +22,20 @@ class PlaceController : public oatpp::web::server::api::ApiController
   public:
     [[nodiscard]] explicit PlaceController(
       std::shared_ptr<ObjectMapper> const& object_mapper,
-      std::shared_ptr<JWT> jwt_object)
+      std::shared_ptr<TokenUtils> token_utils)
       : oatpp::web::server::api::ApiController(object_mapper)
     {
         setDefaultAuthorizationHandler(
-          std::make_shared<AuthHandler>(std::move(jwt_object)));
+          std::make_shared<AuthHandler>(std::move(token_utils)));
     }
 
     static std::shared_ptr<PlaceController>
     createShared(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
                                  object_mapper_component),
-                 OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_object_component))
+                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component))
     {
         return std::make_shared<PlaceController>(object_mapper_component,
-                                                 jwt_object_component);
+                                                 token_utils_component);
     }
 
     // Endpoints
@@ -63,7 +63,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
     ENDPOINT("POST",
              "place",
              createOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(Object<dto::PlaceDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->owner_id && dto->address && dto->latitude &&
@@ -146,7 +146,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
     ENDPOINT("PUT",
              "place",
              putOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              BODY_DTO(Object<dto::PlaceDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->id && dto->owner_id && dto->address &&
@@ -191,7 +191,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
     ENDPOINT("PATCH",
              "place/{id}",
              patchOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id),
              BODY_DTO(Object<dto::PlaceDto>, dto))
     {
@@ -226,7 +226,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
     ENDPOINT("DELETE",
              "place/{id}",
              deleteOne,
-             AUTHORIZATION(std::shared_ptr<JWT::Payload>, auth_object),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id))
     {
         OATPP_ASSERT_HTTP(
@@ -242,3 +242,4 @@ class PlaceController : public oatpp::web::server::api::ApiController
 } // namespace server::controller
 
 #include OATPP_CODEGEN_END(ApiController)
+#include "TokenPayload.hh"

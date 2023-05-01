@@ -2,24 +2,18 @@
 
 #include <jwt-cpp/jwt.h>
 #include <jwt-cpp/traits/nlohmann-json/defaults.h>
-#include <oatpp/web/server/handler/AuthorizationHandler.hpp>
+#include <oatpp/core/Types.hpp>
 
 #include "Config.hh"
+#include "TokenPayload.hh"
 
 namespace server {
 
 using namespace oatpp::data::mapping::type; // NOLINT
 using JsonTraits = jwt::traits::nlohmann_json;
 
-class JWT
+class TokenUtils
 {
-
-  public:
-    struct Payload : public oatpp::web::server::handler::AuthorizationObject
-    {
-        UInt64 user_id;
-        Int32 role;
-    };
 
   private:
     std::string secret_;
@@ -27,12 +21,12 @@ class JWT
     jwt::verifier<jwt::default_clock, JsonTraits> verifier_;
 
   public:
-    JWT(std::string secret, std::string issuer);
+    TokenUtils(std::string secret, std::string issuer);
 
     String
-    createToken(std::shared_ptr<Payload> payload);
+    createToken(std::shared_ptr<TokenPayload> payload);
 
-    std::shared_ptr<Payload>
+    std::shared_ptr<TokenPayload>
     readAndVerifyToken(String const& token);
 };
 

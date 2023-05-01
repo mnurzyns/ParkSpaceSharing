@@ -3,7 +3,7 @@
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/component.hpp>
 
-#include "JWT.hh"
+#include "TokenUtils.hh"
 #include "database/MainDatabase.hh"
 #include "dto/AuthDto.hh"
 #include "dto/SignInDto.hh"
@@ -20,7 +20,7 @@ class AuthService
   private:
     OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>,
                     database_);                                  // NOLINT
-    OATPP_COMPONENT(std::shared_ptr<JWT>, jwt_object_component); // NOLINT
+    OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component); // NOLINT
 
   public:
     Object<AuthDto>

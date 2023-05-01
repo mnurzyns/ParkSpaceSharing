@@ -1,4 +1,5 @@
 #include "AuthService.hh"
+#include "TokenPayload.hh"
 
 namespace server::service {
 
@@ -74,13 +75,13 @@ AuthService::signIn(Object<SignInDto> const& dto)
                       Status::CODE_401,
                       "Invalid credentials")
 
-    auto payload = std::make_shared<JWT::Payload>();
+    auto payload = std::make_shared<TokenPayload>();
     payload->user_id = fetch[0]->id;
     payload->role = fetch[0]->role;
 
     auto auth_dto = AuthDto::createShared();
     auth_dto->token_type = "JWS";
-    auth_dto->token = jwt_object_component->createToken(payload);
+    auth_dto->token = token_utils_component->createToken(payload);
 
     return auth_dto;
 }

@@ -1,18 +1,17 @@
 #include "AuthHandler.hh"
-#include "JWT.hh"
 
 namespace server {
 
-AuthHandler::AuthHandler(std::shared_ptr<JWT> jwt_object)
+AuthHandler::AuthHandler(std::shared_ptr<TokenUtils> token_utils)
   : oatpp::web::server::handler::BearerAuthorizationHandler("API")
-  , jwt_object_(std::move(jwt_object))
+  , token_utils_(std::move(token_utils))
 {
 }
 
 std::shared_ptr<AuthHandler::AuthorizationObject>
 AuthHandler::authorize(String const& token)
 {
-    return jwt_object_->readAndVerifyToken(token);
+    return token_utils_->readAndVerifyToken(token);
 }
 
 } // namespace server
