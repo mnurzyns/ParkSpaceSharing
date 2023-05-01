@@ -8,12 +8,7 @@
 
 namespace server {
 
-using oatpp::Void, oatpp::Any, oatpp::String, oatpp::Int8, oatpp::UInt8,
-  oatpp::Int16, oatpp::UInt16, oatpp::Int32, oatpp::UInt32, oatpp::Int64,
-  oatpp::UInt64, oatpp::Float32, oatpp::Float64, oatpp::Boolean, oatpp::Object,
-  oatpp::Enum, oatpp::Vector, oatpp::List, oatpp::UnorderedSet,
-  oatpp::UnorderedMap;
-
+using namespace oatpp::data::mapping::type;
 using JsonTraits = jwt::traits::nlohmann_json;
 
 class JWT

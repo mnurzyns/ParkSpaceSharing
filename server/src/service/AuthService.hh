@@ -11,13 +11,9 @@
 
 namespace server::service {
 
-using oatpp::Void, oatpp::Any, oatpp::String, oatpp::Int8, oatpp::UInt8,
-  oatpp::Int16, oatpp::UInt16, oatpp::Int32, oatpp::UInt32, oatpp::Int64,
-  oatpp::UInt64, oatpp::Float32, oatpp::Float64, oatpp::Boolean, oatpp::Object,
-  oatpp::Enum, oatpp::Vector, oatpp::List, oatpp::UnorderedSet,
-  oatpp::UnorderedMap, dto::AuthDto, dto::SignInDto, dto::SignUpDto,
-  dto::UserDto;
-using oatpp::web::protocol::http::Status;
+using namespace oatpp::data::mapping::type;
+using namespace server::dto;
+using oatpp::Object, oatpp::web::protocol::http::Status;
 
 class AuthService
 {
