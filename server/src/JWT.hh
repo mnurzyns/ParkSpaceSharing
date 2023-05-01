@@ -27,12 +27,12 @@ class JWT
     };
 
   private:
-    String secret_;
-    String issuer_;
+    std::string secret_;
+    std::string issuer_;
     jwt::verifier<jwt::default_clock, JsonTraits> verifier_;
 
   public:
-    JWT(String const& secret, String const& issuer);
+    JWT(std::string secret, std::string issuer);
 
     String
     createToken(std::shared_ptr<Payload> const& payload);
