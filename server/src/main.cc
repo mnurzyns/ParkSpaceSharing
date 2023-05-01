@@ -11,7 +11,7 @@
 #include "controller/PlaceController.hh"
 #include "controller/UserController.hh"
 
-using namespace server::controller;
+using namespace server::controller; // NOLINT
 
 int
 main()

@@ -44,7 +44,7 @@ template<>
 struct [[maybe_unused]] from<Config>
 {
     [[maybe_unused]] static Config
-    from_toml(toml::value const& val)
+    from_toml(toml::value const& val) // NOLINT
     {
         auto const& server = toml::find_or(val, "server", toml::value{});
         auto const& jwt = toml::find_or(server, "jwt", toml::value{});
@@ -53,8 +53,8 @@ struct [[maybe_unused]] from<Config>
         return Config{
             .bind = toml::find_or<std::string>(server, "bind", "0.0.0.0"),
             .port = toml::find_or<std::uint16_t>(server, "port", 8000),
-            .database_path = toml::find_or<std::string>(
-              server, "database_path", "main.db"),
+            .database_path =
+              toml::find_or<std::string>(server, "database_path", "main.db"),
             .jwt_secret = toml::find_or<std::string>(jwt, "secret", "secret"),
             .jwt_issuer = toml::find_or<std::string>(jwt, "issuer", "issuer"),
             .jwt_expire_after = toml::find_or<std::uint64_t>(
@@ -73,7 +73,7 @@ template<>
 struct [[maybe_unused]] into<Config>
 {
     [[maybe_unused]] static toml::value
-    into_toml(Config const& config)
+    into_toml(Config const& config) // NOLINT
     {
         // When writing to file values will be written last to first
         // thus the reverse order.

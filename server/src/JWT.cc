@@ -50,4 +50,4 @@ JWT::readAndVerifyToken(String const& token)
     return payload;
 }
 
-}  // namespace server
+} // namespace server

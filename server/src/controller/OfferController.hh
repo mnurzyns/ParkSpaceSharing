@@ -246,4 +246,3 @@ class OfferController : public oatpp::web::server::api::ApiController
 } // namespace server::controller
 
 #include OATPP_CODEGEN_END(ApiController)
-#include "JWT.hh"

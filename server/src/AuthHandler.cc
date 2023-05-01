@@ -15,4 +15,4 @@ AuthHandler::authorize(String const& token)
     return jwt_object_->readAndVerifyToken(token);
 }
 
-} // namespace auth
+} // namespace server
