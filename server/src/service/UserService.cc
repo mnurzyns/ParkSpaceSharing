@@ -76,7 +76,8 @@ UserService::search(String const& query,
                       Status::CODE_500,
                       query_total_result->getErrorMessage())
 
-    auto fetch_total_result = query_total_result->fetch<Vector<Vector<UInt64>>>();
+    auto fetch_total_result =
+      query_total_result->fetch<Vector<Vector<UInt64>>>();
 
     OATPP_ASSERT_HTTP(
       fetch_total_result[0][0] > 0, Status::CODE_404, "No users found")

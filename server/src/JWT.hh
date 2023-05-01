@@ -8,7 +8,7 @@
 
 namespace server {
 
-using namespace oatpp::data::mapping::type;
+using namespace oatpp::data::mapping::type; // NOLINT
 using JsonTraits = jwt::traits::nlohmann_json;
 
 class JWT
@@ -30,7 +30,7 @@ class JWT
     JWT(std::string secret, std::string issuer);
 
     String
-    createToken(std::shared_ptr<Payload> const& payload);
+    createToken(std::shared_ptr<Payload> payload);
 
     std::shared_ptr<Payload>
     readAndVerifyToken(String const& token);

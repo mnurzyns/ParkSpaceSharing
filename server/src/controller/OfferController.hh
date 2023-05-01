@@ -22,11 +22,11 @@ class OfferController : public oatpp::web::server::api::ApiController
   public:
     [[nodiscard]] explicit OfferController(
       std::shared_ptr<ObjectMapper> const& object_mapper,
-      std::shared_ptr<JWT> const& jwt_object)
+      std::shared_ptr<JWT> jwt_object)
       : oatpp::web::server::api::ApiController(object_mapper)
     {
         setDefaultAuthorizationHandler(
-          std::make_shared<AuthHandler>(jwt_object));
+          std::make_shared<AuthHandler>(std::move(jwt_object)));
     }
 
     static std::shared_ptr<OfferController>

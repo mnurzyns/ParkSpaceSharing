@@ -14,7 +14,7 @@ JWT::JWT(std::string secret, std::string issuer)
 }
 
 String
-JWT::createToken(std::shared_ptr<Payload> const& payload)
+JWT::createToken(std::shared_ptr<Payload> payload)
 {
     auto now = system_clock::now();
     auto token =
