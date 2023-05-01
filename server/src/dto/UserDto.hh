@@ -11,6 +11,8 @@ namespace server::dto {
 
 using oatpp::Object;
 
+ENUM(Role, int8_t, VALUE(Admin, 0, "admin"), VALUE(User, 1, "user"))
+
 class UserDto : public oatpp::DTO
 {
     DTO_INIT(UserDto, DTO)
@@ -23,7 +25,7 @@ class UserDto : public oatpp::DTO
 
     DTO_FIELD(String, password, "password");
 
-    DTO_FIELD(Int32, role, "role"); // 0 - admin, 1 - user //TODO: enum
+    DTO_FIELD(Enum<Role>::AsNumber, role, "role");
 };
 
 class UserPageDto : public PageDto<Object<UserDto>>

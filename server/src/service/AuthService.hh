@@ -19,8 +19,9 @@ class AuthService
 {
   private:
     OATPP_COMPONENT(std::shared_ptr<database::MainDatabase>,
-                    database_);                                  // NOLINT
-    OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component); // NOLINT
+                    database_); // NOLINT
+    OATPP_COMPONENT(std::shared_ptr<TokenUtils>,
+                    token_utils_component); // NOLINT
 
   public:
     Object<AuthDto>

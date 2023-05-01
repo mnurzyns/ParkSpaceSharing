@@ -29,7 +29,8 @@ class UserController : public oatpp::web::server::api::ApiController
     static std::shared_ptr<UserController>
     createShared(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
                                  object_mapper_component),
-                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component))
+                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>,
+                                 token_utils_component))
     {
         return std::make_shared<UserController>(object_mapper_component,
                                                 token_utils_component);
@@ -68,7 +69,7 @@ class UserController : public oatpp::web::server::api::ApiController
                           Status::CODE_400,
                           "Required parameter not provided")
 
-        OATPP_ASSERT_HTTP(auth_object->role == 0,
+        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin,
                           Status::CODE_403,
                           "Cannot create user as a regular user")
 
@@ -114,8 +115,8 @@ class UserController : public oatpp::web::server::api::ApiController
              "user",
              search,
              QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", uint64_t{20}),
-             QUERY(UInt64, offset, "offset", uint64_t{0}))
+             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
+             QUERY(UInt64, offset, "offset", uint64_t{ 0 }))
     {
         return createDtoResponse(Status::CODE_200,
                                  service_.search(query, limit, offset));
@@ -151,7 +152,7 @@ class UserController : public oatpp::web::server::api::ApiController
                           "Required parameter not provided")
 
         OATPP_ASSERT_HTTP(
-          auth_object->role == 0,
+          auth_object->user_role == Role::Admin,
           Status::CODE_403,
           "Cannot create or modify other user as a regular user")
 
@@ -184,11 +185,13 @@ class UserController : public oatpp::web::server::api::ApiController
              BODY_DTO(oatpp::Object<dto::UserDto>, dto))
     {
         auto const existing = service_.getOne(id);
-        OATPP_ASSERT_HTTP(auth_object->role == 0 || auth_object->user_id == id,
+        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
+                            auth_object->user_id == id,
                           Status::CODE_403,
                           "Cannot modify other user as a regular user")
 
-        OATPP_ASSERT_HTTP(auth_object->role == 0 || dto->role == existing->role,
+        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
+                            dto->role == existing->role,
                           Status::CODE_403,
                           "Cannot modify role as a regular user")
 
@@ -219,7 +222,7 @@ class UserController : public oatpp::web::server::api::ApiController
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id))
     {
-        OATPP_ASSERT_HTTP(auth_object->role == 0 ||
+        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
                             service_.getOne(id)->id == auth_object->user_id,
                           Status::CODE_403,
                           "Cannot delete another user as a regular user")

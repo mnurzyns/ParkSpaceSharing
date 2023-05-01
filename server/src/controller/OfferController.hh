@@ -32,7 +32,8 @@ class OfferController : public oatpp::web::server::api::ApiController
     static std::shared_ptr<OfferController>
     createShared(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
                                  object_mapper_component),
-                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>, token_utils_component))
+                 OATPP_COMPONENT(std::shared_ptr<TokenUtils>,
+                                 token_utils_component))
     {
         return std::make_shared<OfferController>(object_mapper_component,
                                                  token_utils_component);
@@ -74,7 +75,7 @@ class OfferController : public oatpp::web::server::api::ApiController
                           "Required parameter not provided")
 
         OATPP_ASSERT_HTTP(
-          auth_object->role == 0 ||
+          auth_object->user_role == Role::Admin ||
             auth_object->user_id ==
               place_service_.getOne(dto->place_id)->owner_id,
           Status::CODE_403,
@@ -123,8 +124,8 @@ class OfferController : public oatpp::web::server::api::ApiController
              "offer",
              search,
              QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", uint64_t{20}),
-             QUERY(UInt64, offset, "offset", uint64_t{0}))
+             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
+             QUERY(UInt64, offset, "offset", uint64_t{ 0 }))
     {
         return createDtoResponse(Status::CODE_200,
                                  offer_service_.search(query, limit, offset));
@@ -161,7 +162,7 @@ class OfferController : public oatpp::web::server::api::ApiController
                           Status::CODE_400,
                           "Required parameter not provided")
 
-        OATPP_ASSERT_HTTP(auth_object->role == 0 ||
+        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
                             auth_object->user_id ==
                               place_service_.getOne(dto->place_id)->owner_id,
                           Status::CODE_403,
@@ -197,7 +198,7 @@ class OfferController : public oatpp::web::server::api::ApiController
              BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(
-          auth_object->role == 0 ||
+          auth_object->user_role == Role::Admin ||
             auth_object->user_id ==
               place_service_.getOne(dto->place_id)->owner_id,
           Status::CODE_403,
@@ -232,7 +233,7 @@ class OfferController : public oatpp::web::server::api::ApiController
              PATH(UInt64, id))
     {
         OATPP_ASSERT_HTTP(
-          auth_object->role == 0 ||
+          auth_object->user_role == Role::Admin ||
             place_service_.getOne(offer_service_.getOne(id)->place_id)
                 ->owner_id == auth_object->user_id,
           Status::CODE_403,

@@ -30,7 +30,8 @@ class AppComponent
     OATPP_CREATE_COMPONENT(std::shared_ptr<TokenUtils>, token_utils)
     ([] {
         auto const& config = Config::getInstance();
-        return std::make_shared<TokenUtils>(config.jwt_secret, config.jwt_issuer);
+        return std::make_shared<TokenUtils>(config.jwt_secret,
+                                            config.jwt_issuer);
     }());
 
     /*

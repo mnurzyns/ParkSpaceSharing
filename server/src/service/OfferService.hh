@@ -33,8 +33,8 @@ class OfferService
 
     Object<OfferPageDto>
     search(String const& query,
-           UInt64 const& limit = uint64_t{20},
-           UInt64 const& offset = uint64_t{0});
+           UInt64 const& limit = uint64_t{ 20 },
+           UInt64 const& offset = uint64_t{ 0 });
 
     Object<OfferDto>
     putOne(Object<OfferDto> const& dto);

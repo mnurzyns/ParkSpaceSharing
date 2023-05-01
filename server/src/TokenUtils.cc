@@ -27,7 +27,7 @@ TokenUtils::createToken(std::shared_ptr<TokenPayload> payload)
                         milliseconds{ Config::getInstance().jwt_expire_after })
         .set_type("JWS")
         .set_payload_claim("user_id", jwt::claim{ *payload->user_id })
-        .set_payload_claim("role", jwt::claim{ *payload->role })
+        .set_payload_claim("role", jwt::claim{ payload->user_role })
         .sign(jwt::algorithm::hs512{ secret_ });
 
     return token;
@@ -44,8 +44,7 @@ TokenUtils::readAndVerifyToken(String const& token)
     auto payload = std::make_shared<TokenPayload>();
     payload->user_id =
       static_cast<uint64_t>(decoded.get_payload_claim("user_id").as_int());
-    payload->role =
-      static_cast<int32_t>(decoded.get_payload_claim("role").as_int());
+    payload->user_role = Role(decoded.get_payload_claim("role").as_int());
 
     return payload;
 }

@@ -33,7 +33,7 @@ AuthService::signUp(Object<SignUpDto> const& dto)
     user_dto->email = dto->email;
     user_dto->username = dto->username;
     user_dto->password = dto->password;
-    user_dto->role = 1;
+    user_dto->role = Role::User;
 
     auto query_result = database_->createUser(user_dto);
 
@@ -77,7 +77,7 @@ AuthService::signIn(Object<SignInDto> const& dto)
 
     auto payload = std::make_shared<TokenPayload>();
     payload->user_id = fetch[0]->id;
-    payload->role = fetch[0]->role;
+    payload->user_role = fetch[0]->role;
 
     auto auth_dto = AuthDto::createShared();
     auth_dto->token_type = "JWS";
