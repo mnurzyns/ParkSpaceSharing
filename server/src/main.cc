@@ -1,49 +1,67 @@
-#include <memory>
-
+#include <oatpp-sqlite/Connection.hpp>
+#include <oatpp-swagger/Controller.hpp>
 #include <oatpp/core/base/Environment.hpp>
 #include <oatpp/core/macro/component.hpp>
-#include <oatpp/core/provider/Provider.hpp>
-#include <oatpp/network/ConnectionHandler.hpp>
-#include <oatpp/network/ConnectionProvider.hpp>
 #include <oatpp/network/Server.hpp>
-#include <oatpp/web/server/HttpRouter.hpp>
 #include <oatpp/web/server/api/Endpoint.hpp>
-#include <oatpp-swagger/Controller.hpp>
 
-#include "component/app_component.hh"
-#include "controller/user_controller.hh"
-#include "controller/offer_controller.hh"
+#include "component/AppComponent.hh"
+#include "controller/AuthController.hh"
+#include "controller/OfferController.hh"
+#include "controller/PlaceController.hh"
+#include "controller/UserController.hh"
+
+using namespace server::controller; // NOLINT
 
 int
 main()
 {
-    ::oatpp::base::Environment::init();
+    oatpp::base::Environment::init();
 
-    ::server::component::app_component const app_component{};
+    server::component::AppComponent app_component;
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::web::server::HttpRouter>, router);
+    const OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>,
+                          http_router);
 
-    ::oatpp::web::server::api::Endpoints endpoints{};
-    endpoints.append(router->addController(::server::controller::user_controller::create_shared())->getEndpoints());
-    endpoints.append(router->addController(::server::controller::offer_controller::create_shared())->getEndpoints());
+    oatpp::web::server::api::Endpoints endpoints;
 
-    router->addController(::oatpp::swagger::Controller::createShared(endpoints));
+    endpoints.append(http_router->addController(AuthController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(OfferController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(PlaceController::createShared())
+                       ->getEndpoints());
+    endpoints.append(http_router->addController(UserController::createShared())
+                       ->getEndpoints());
+    http_router->addController(
+      oatpp::swagger::Controller::createShared(endpoints));
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::network::ServerConnectionProvider>, server_connection_provider);
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::network::ConnectionHandler>, connection_handler);
+    oatpp::network::Server server(
+      app_component.server_connection_provider.getObject(),
+      app_component.connection_handler.getObject());
 
-    ::oatpp::network::Server server{server_connection_provider, connection_handler};
-    OATPP_LOGD(
-            "Server",
-            "Server running on %s:%s",
-            server_connection_provider->getProperty("host").toString()->c_str(),
-            server_connection_provider->getProperty("port").toString()->c_str());
+    auto const host = app_component.server_connection_provider.getObject()
+                        ->getProperty("host")
+                        .toString();
+    auto const address = // Add square brackets for IPv6 addresses
+      "http://" +
+      (host->find(":") == std::string::npos ? host : "[" + host + "]");
+
+    OATPP_LOGI("Server",
+               "\tListening on %s:%s",
+               address->c_str(),
+               app_component.server_connection_provider.getObject()
+                 ->getProperty("port")
+                 .toString()
+                 ->c_str())
 
     server.run();
 
-    OATPP_COMPONENT(::std::shared_ptr<::oatpp::provider::Provider<::oatpp::sqlite::Connection>>, database_connection_provider);
-    database_connection_provider->stop();
+    OATPP_COMPONENT(const std::shared_ptr<
+                      oatpp::provider::Provider<oatpp::sqlite::Connection>>,
+                    database_connection_provider);
 
-    ::oatpp::base::Environment::destroy();
+    database_connection_provider->stop();
+    oatpp::base::Environment::destroy();
     return 0;
 }

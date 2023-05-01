@@ -1,13 +1,22 @@
 add_executable(server)
 
+set_property(TARGET server PROPERTY OUTPUT_NAME "pss-server")
+
 target_sources(
     server PRIVATE
 
     src/main.cc
-    src/config.cc
-    src/error_handler.cc
-    src/service/user_service.cc
-    src/service/offer_service.cc
+    src/AuthHandler.cc
+    src/Config.cc
+    src/ErrorHandler.cc
+    src/TokenUtils.cc
+
+    src/database/MainDatabase.cc
+
+    src/service/AuthService.cc
+    src/service/OfferService.cc
+    src/service/PlaceService.cc
+    src/service/UserService.cc
 )
 
 target_include_directories(
@@ -18,10 +27,9 @@ target_include_directories(
 
 target_compile_definitions(
     server
-
-    PUBLIC -DPSS_OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
-    PUBLIC -DPSS_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
-    PUBLIC -DPSS_DATABASE_FILE="${CMAKE_CURRENT_BINARY_DIR}/database.sqlite3"
+    PUBLIC PROJECT_NAME="${PROJECT_NAME}"
+    PUBLIC OATPP_SWAGGER_RES_PATH="${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res"
+    PUBLIC MAIN_DATABASE_MIGRATIONS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/migrations"
 )
 
 target_link_libraries(
@@ -30,6 +38,17 @@ target_link_libraries(
     PUBLIC oatpp::oatpp
     PUBLIC oatpp::oatpp-swagger
     PUBLIC oatpp::oatpp-sqlite
+    PUBLIC oatpp::oatpp-openssl
+    PUBLIC jwt-cpp::jwt-cpp
+    PUBLIC OpenSSL::SSL
+    PUBLIC OpenSSL::Crypto
+    PUBLIC nlohmann_json::nlohmann_json
     PUBLIC toml11::toml11
 )
 
+install(TARGETS server DESTINATION bin)
+
+install(
+    DIRECTORY "${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res/"
+    DESTINATION "share/${PROJECT_NAME}/oatpp-swagger-res"
+)

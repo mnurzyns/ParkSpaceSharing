@@ -20,6 +20,7 @@ env:
 jobs:
   changes:
     name: Check for changes
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: read
@@ -47,7 +48,7 @@ jobs:
           - ubuntu-22.04
           - macos-12
         compiler:
-          - llvm-15.0.0 # llvm-15 only on macos
+          - llvm-15.0.0 # llvm-15 only on macOS
           - gcc-12
         generator:
           - "Ninja Multi-Config"
@@ -94,12 +95,6 @@ jobs:
           ccache: true
           clangtidy: false
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 5.15.2
-          cache: true
-
       - name: Cleanup Conan system packages (they are not properly cached)
         run: |
           conan remove -f '*/system'
@@ -116,4 +111,3 @@ jobs:
         working-directory: ${{github.workspace}}/build
         run: |
           ctest -C ${{matrix.build_type}}
-

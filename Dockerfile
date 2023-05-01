@@ -12,10 +12,15 @@ FROM deps AS server
 
 COPY . /build
 WORKDIR /build
-RUN cmake -S. -Bbuild -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release -DCONAN:BOOL=ON
-RUN cmake --build build
+
+RUN \
+    --mount=type=cache,target=/root/.conan/data \
+    --mount=type=cache,target=/build/build \
+    cmake -S. -Bbuild -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release -DCONAN:BOOL=ON && \
+    cmake --build   build && \
+    cmake --install build
 
 ENV XDG_CONFIG_HOME=/app_config
 RUN mkdir -p $XDG_CONFIG_HOME
 
-CMD ["/build/build/bin/server"]
+CMD ["pss-server"]

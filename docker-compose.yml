@@ -6,9 +6,11 @@ services:
     image: pss/server
     ports:
       - "8000:8000/tcp"
+    # volumes:
     # Uncomment if you want to access/modify the config file
-    #volumes:
     #  - ./app_config:/app_config:rw
+    # Uncomment if you want to preserve the database between after shutdown
+    #  - ./main.db:/main.db:rw
     build:
       context: .
       dockerfile: ./Dockerfile
