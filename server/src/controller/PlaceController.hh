@@ -157,10 +157,8 @@ class PlaceController : public oatpp::web::server::api::ApiController
         try {
             OATPP_ASSERT_HTTP(
               auth_object->role == 0 ||
-                (((dto->owner_id == nullptr &&
-                   (dto->owner_id = auth_object->user_id)) && // NOLINT
-                  auth_object->user_id == service_.getOne(dto->id)->owner_id) ||
-                 dto->owner_id == auth_object->user_id),
+                (dto->owner_id == auth_object->user_id &&
+                 dto->owner_id == service_.getOne(dto->id)->owner_id),
               Status::CODE_403,
               "Cannot create or modify place of another user as a regular user")
         } catch (HttpError& error) {
@@ -199,10 +197,8 @@ class PlaceController : public oatpp::web::server::api::ApiController
     {
         OATPP_ASSERT_HTTP(
           auth_object->role == 0 ||
-            (((dto->owner_id == nullptr &&
-               (dto->owner_id = auth_object->user_id)) || // NOLINT
-              dto->owner_id == auth_object->user_id) &&
-             auth_object->user_id == service_.getOne(id)->owner_id),
+            (dto->owner_id == auth_object->user_id &&
+             dto->owner_id == service_.getOne(id)->owner_id),
           Status::CODE_403,
           "Cannot modify other place of another user as a regular user")
 

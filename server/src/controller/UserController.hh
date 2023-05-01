@@ -184,9 +184,7 @@ class UserController : public oatpp::web::server::api::ApiController
              BODY_DTO(oatpp::Object<dto::UserDto>, dto))
     {
         auto const existing = service_.getOne(id);
-        OATPP_ASSERT_HTTP(auth_object->role == 0 ||
-                            (auth_object->user_id == existing->id &&
-                             (dto->id == nullptr || dto->id == id)),
+        OATPP_ASSERT_HTTP(auth_object->role == 0 || auth_object->user_id == id,
                           Status::CODE_403,
                           "Cannot modify other user as a regular user")
 
