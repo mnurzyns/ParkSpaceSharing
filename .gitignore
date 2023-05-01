@@ -37,6 +37,6 @@ build/*
 .cache/*
 
 **/config.toml
-/main.sqlite3
+/main.db
 
 /app_config

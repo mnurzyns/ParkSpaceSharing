@@ -10,7 +10,7 @@ services:
     # Uncomment if you want to access/modify the config file
     #  - ./app_config:/app_config:rw
     # Uncomment if you want to preserve the database between after shutdown
-    #  - ./main.sqlite3:/main.sqlite3:rw
+    #  - ./main.db:/main.db:rw
     build:
       context: .
       dockerfile: ./Dockerfile

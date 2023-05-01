@@ -54,7 +54,7 @@ struct from<Config>
             .bind = toml::find_or<std::string>(server, "bind", "0.0.0.0"),
             .port = toml::find_or<std::uint16_t>(server, "port", 8000),
             .database_path = toml::find_or<std::string>(
-              server, "database_path", "main.sqlite3"),
+              server, "database_path", "main.db"),
             .jwt_secret = toml::find_or<std::string>(jwt, "secret", "secret"),
             .jwt_issuer = toml::find_or<std::string>(jwt, "issuer", "issuer"),
             .jwt_expire_after = toml::find_or<std::uint64_t>(
