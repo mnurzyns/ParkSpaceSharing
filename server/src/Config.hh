@@ -21,7 +21,7 @@ struct Config
     std::string bind;
     std::uint16_t port;
 
-    std::string databasePath;
+    std::string database_path;
 
     std::string jwt_secret;
     std::string jwt_issuer;
@@ -52,8 +52,8 @@ struct from<Config>
         return Config{
             .bind = toml::find_or<std::string>(server, "bind", "0.0.0.0"),
             .port = toml::find_or<std::uint16_t>(server, "port", 8000),
-            .databasePath = toml::find_or<std::string>(
-              server, "databasePath", "main.sqlite3"),
+            .database_path = toml::find_or<std::string>(
+              server, "database_path", "main.sqlite3"),
             .jwt_secret = toml::find_or<std::string>(jwt, "secret", "secret"),
             .jwt_issuer = toml::find_or<std::string>(jwt, "issuer", "issuer"),
             .jwt_expire_after = toml::find_or<std::uint64_t>(
@@ -87,7 +87,7 @@ struct into<Config>
                     { "issuer", config.jwt_issuer },
                     { "secret", config.jwt_secret },
                   } },
-                { "databasePath", config.databasePath },
+                { "database_path", config.database_path },
                 { "port", config.port },
                 { "bind", config.bind },
               } } });
