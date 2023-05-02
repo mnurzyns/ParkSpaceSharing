@@ -33,20 +33,21 @@ TokenUtils::createToken(std::shared_ptr<TokenPayload> payload)
     return token;
 }
 
-std::shared_ptr<TokenPayload>
-TokenUtils::readAndVerifyToken(String const& token)
+TokenPayload
+TokenUtils::readToken(jwt::decoded_jwt<JsonTraits> const& token)
 {
-    auto decoded = jwt::decode<JsonTraits>(token);
-    verifier_.verify(decoded);
-
-    // TODO: Verify that the issuer exists in the database (custom verifier?)
-
-    auto payload = std::make_shared<TokenPayload>();
-    payload->user_id =
-      static_cast<uint64_t>(decoded.get_payload_claim("user_id").as_int());
-    payload->user_role = Role(decoded.get_payload_claim("role").as_int());
+    TokenPayload payload{};
+    payload.user_id =
+      static_cast<uint64_t>(token.get_payload_claim("user_id").as_int());
+    payload.user_role = Role(token.get_payload_claim("role").as_int());
 
     return payload;
+}
+
+void
+TokenUtils::verifyToken(jwt::decoded_jwt<JsonTraits> const& token) const
+{
+    verifier_.verify(token);
 }
 
 } // namespace server

@@ -1,4 +1,5 @@
 #include "AuthHandler.hh"
+#include <jwt-cpp/jwt.h>
 
 namespace server {
 
@@ -11,7 +12,9 @@ AuthHandler::AuthHandler(std::shared_ptr<TokenUtils> token_utils)
 std::shared_ptr<AuthHandler::AuthorizationObject>
 AuthHandler::authorize(String const& token)
 {
-    return token_utils_->readAndVerifyToken(token);
+    auto decoded = jwt::decode(token);
+    token_utils_->verifyToken(decoded);
+    return std::make_shared<AuthHandler::AuthorizationObject>(TokenUtils::readToken(decoded));
 }
 
 } // namespace server
