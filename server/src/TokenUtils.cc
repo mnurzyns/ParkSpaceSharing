@@ -8,8 +8,8 @@ TokenUtils::TokenUtils(std::string secret, std::string issuer)
   : secret_(std::move(secret))
   , issuer_(std::move(issuer))
   , verifier_(jwt::verify()
-                .allow_algorithm(jwt::algorithm::hs512{ secret })
-                .with_issuer(issuer))
+                .allow_algorithm(jwt::algorithm::hs512{ secret_ })
+                .with_issuer(issuer_))
 {
 }
 
