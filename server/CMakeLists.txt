@@ -1,28 +1,25 @@
-add_executable(server)
-
-set_property(TARGET server PROPERTY OUTPUT_NAME "pss-server")
+add_library(server)
 
 target_sources(
     server PRIVATE
 
-    src/main.cc
-    src/AuthHandler.cc
-    src/Config.cc
-    src/ErrorHandler.cc
-    src/TokenUtils.cc
+    lib/AuthHandler.cc
+    lib/Config.cc
+    lib/ErrorHandler.cc
+    lib/TokenUtils.cc
 
-    src/database/MainDatabase.cc
+    lib/database/MainDatabase.cc
 
-    src/service/AuthService.cc
-    src/service/OfferService.cc
-    src/service/PlaceService.cc
-    src/service/UserService.cc
+    lib/service/AuthService.cc
+    lib/service/OfferService.cc
+    lib/service/PlaceService.cc
+    lib/service/UserService.cc
 )
 
 target_include_directories(
     server
 
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib
 )
 
 target_compile_definitions(
@@ -52,4 +49,20 @@ install(TARGETS server DESTINATION bin)
 install(
     DIRECTORY "${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res/"
     DESTINATION "share/${PROJECT_NAME}/oatpp-swagger-res"
+)
+
+add_executable(server-exe)
+
+set_property(TARGET server-exe PROPERTY OUTPUT_NAME "pss-server")
+
+target_sources(
+    server-exe PRIVATE
+
+    exe/main.cc
+)
+
+target_link_libraries(
+    server-exe
+
+    PRIVATE server
 )

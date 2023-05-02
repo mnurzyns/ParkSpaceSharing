@@ -39,7 +39,7 @@ find_package(toml11 3.7 REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-add_subdirectory(server)
+# TODO if tests enabled
+enable_testing()
 
-#include(CTest)
-#enable_testing()
+add_subdirectory(server)
