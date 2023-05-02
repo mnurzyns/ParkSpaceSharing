@@ -26,8 +26,11 @@ class TokenUtils
     String
     createToken(std::shared_ptr<TokenPayload> payload);
 
-    std::shared_ptr<TokenPayload>
-    readAndVerifyToken(String const& token);
+    static TokenPayload
+    readToken(jwt::decoded_jwt<JsonTraits> const& token);
+
+    void
+    verifyToken(jwt::decoded_jwt<JsonTraits> const& token) const;
 };
 
 } // namespace server
