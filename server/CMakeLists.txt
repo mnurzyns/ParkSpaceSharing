@@ -66,3 +66,24 @@ target_link_libraries(
 
     PRIVATE server
 )
+
+# TODO if tests enabled
+add_executable(server-tests)
+
+target_sources(
+  server-tests PRIVATE
+
+  tests/main.cc
+
+  tests/FullTest.cc
+)
+
+target_include_directories(server-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+target_link_libraries(
+    server-tests
+
+    PRIVATE server
+)
+
+add_test(NAME server COMMAND server-tests)
