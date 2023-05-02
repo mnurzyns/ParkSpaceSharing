@@ -2,6 +2,7 @@
 
 #include <oatpp/web/server/api/ApiController.hpp>
 
+#include "TokenPayload.hh"
 #include "dto/AuthDto.hh"
 #include "dto/SignInDto.hh"
 #include "dto/SignUpDto.hh"
@@ -11,6 +12,8 @@
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 namespace server::controller {
+
+using dto::AuthDto, dto::SignInDto, dto::SignUpDto, dto::StatusDto;
 
 class AuthController : public oatpp::web::server::api::ApiController
 {
@@ -37,28 +40,25 @@ class AuthController : public oatpp::web::server::api::ApiController
         info->summary = "Sign up";
         info->tags.emplace_back("auth-controller");
 
-        info->addConsumes<oatpp::Object<dto::SignUpDto>>("application/json");
+        info->addConsumes<Object<SignUpDto>>("application/json");
 
-        info->addResponse<oatpp::Object<dto::AuthDto>>(Status::CODE_200,
-                                                       "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_409,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_201,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_409,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
-    ENDPOINT("POST",
-             "signup",
-             signUp,
-             BODY_DTO(oatpp::Object<dto::SignUpDto>, dto))
+    ENDPOINT("POST", "signup", signUp, BODY_DTO(Object<SignUpDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->email && dto->password && dto->username,
                           Status::CODE_400,
                           "Required parameter not provided")
 
-        return createDtoResponse(Status::CODE_200, service_.signUp(dto));
+        return createDtoResponse(Status::CODE_201, service_.signUp(dto));
     }
 
     ENDPOINT_INFO(signIn)
@@ -66,24 +66,21 @@ class AuthController : public oatpp::web::server::api::ApiController
         info->summary = "Sign in";
         info->tags.emplace_back("auth-controller");
 
-        info->addConsumes<oatpp::Object<dto::SignInDto>>("application/json");
+        info->addConsumes<Object<SignInDto>>("application/json");
 
-        info->addResponse<oatpp::Object<dto::AuthDto>>(Status::CODE_200,
-                                                       "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<AuthDto>>(Status::CODE_200,
+                                           "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
-    ENDPOINT("POST",
-             "signin",
-             signIn,
-             BODY_DTO(oatpp::Object<dto::SignInDto>, dto))
+    ENDPOINT("POST", "signin", signIn, BODY_DTO(Object<SignInDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->login && dto->password,
                           Status::CODE_400,

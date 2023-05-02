@@ -152,7 +152,8 @@ OfferService::deleteOne(UInt64 const& id)
     auto status = StatusDto::createShared();
     status->status = "OK";
     status->code = Status::CODE_200.code;
-    status->message = "Offer was successfully deleted";
+    status->message = "Offer deleted successfully";
+
     return status;
 }
 

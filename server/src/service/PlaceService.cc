@@ -150,7 +150,8 @@ PlaceService::deleteOne(UInt64 const& id)
     auto status = StatusDto::createShared();
     status->status = "OK";
     status->code = Status::CODE_200.code;
-    status->message = "Place was successfully deleted";
+    status->message = "Place deleted successfully";
+
     return status;
 }
 

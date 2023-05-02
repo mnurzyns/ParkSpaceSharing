@@ -8,12 +8,14 @@
 #include "dto/AuthDto.hh"
 #include "dto/SignInDto.hh"
 #include "dto/SignUpDto.hh"
+#include "dto/StatusDto.hh"
 
 namespace server::service {
 
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
-using oatpp::Object, oatpp::web::protocol::http::Status;
+using oatpp::Object, oatpp::web::protocol::http::Status, dto::AuthDto,
+  dto::SignInDto, dto::SignUpDto, dto::StatusDto;
 
 class AuthService
 {
@@ -27,7 +29,7 @@ class AuthService
     Object<AuthDto>
     signIn(Object<SignInDto> const& dto);
 
-    Object<AuthDto>
+    Object<StatusDto>
     signUp(Object<SignUpDto> const& dto);
 };
 

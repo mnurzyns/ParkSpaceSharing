@@ -1,9 +1,8 @@
 #include "AuthService.hh"
-#include "TokenPayload.hh"
 
 namespace server::service {
 
-Object<AuthDto>
+Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
     {
@@ -41,11 +40,13 @@ AuthService::signUp(Object<SignUpDto> const& dto)
                       Status::CODE_500,
                       query_result->getErrorMessage())
 
-    Object<SignInDto> const sign_in_dto = std::make_shared<SignInDto>();
-    sign_in_dto->login = dto->email;
-    sign_in_dto->password = dto->password;
+    auto status_dto = Object<StatusDto>::createShared();
 
-    return signIn(sign_in_dto);
+    status_dto->code = Status::CODE_201.code;
+    status_dto->message = "User created successfully";
+    status_dto->status = "Created";
+
+    return status_dto;
 }
 
 Object<AuthDto>

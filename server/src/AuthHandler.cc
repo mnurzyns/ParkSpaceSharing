@@ -1,9 +1,5 @@
 #include "AuthHandler.hh"
 
-#include <jwt-cpp/jwt.h>
-
-#include "TokenPayload.hh"
-
 namespace server {
 
 AuthHandler::AuthHandler(std::shared_ptr<TokenUtils> token_utils)

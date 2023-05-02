@@ -150,7 +150,8 @@ UserService::deleteOne(UInt64 const& id)
     auto status = StatusDto::createShared();
     status->status = "OK";
     status->code = Status::CODE_200.code;
-    status->message = "User was successfully deleted";
+    status->message = "User deleted successfully";
+
     return status;
 }
 
