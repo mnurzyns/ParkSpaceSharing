@@ -82,12 +82,19 @@ getConfig()
     return config;
 }
 
+static Config g_config{ getConfig() }; // NOLINT
+
 Config const&
 Config::getInstance()
 {
-    static Config const config{ getConfig() };
 
-    return config;
+    return g_config;
+}
+
+Config&
+Config::getInstanceMut()
+{
+    return g_config;
 }
 
 } // namespace server

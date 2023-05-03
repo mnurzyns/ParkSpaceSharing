@@ -31,6 +31,16 @@ struct Config
 
     static Config const&
     getInstance();
+
+// 'Temporary' solution to allow mutating
+// the server configuration in unit tests.
+#ifdef CONFIG_ALLOW_MUTATION
+  public:
+#else
+  private:
+#endif
+    static Config&
+    getInstanceMut();
 };
 
 } // namespace server
