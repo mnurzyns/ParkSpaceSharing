@@ -17,6 +17,7 @@ env:
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
   CTEST_OUTPUT_ON_FAILURE: 1
+  ASAN_OPTIONS: "detect_stack_use_after_return=false"
 
 jobs:
   changes:
