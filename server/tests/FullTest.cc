@@ -192,7 +192,7 @@ FullTest::onRun()
 
     oatpp::network::Server server(conn_provider, conn_handler);
 
-    std::jthread server_thread{ [&server] { server.run(); } };
+    std::thread server_thread{ [&server] { server.run(); } };
 
     tests::allTests();
 
