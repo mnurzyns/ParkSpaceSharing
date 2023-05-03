@@ -74,6 +74,7 @@ target_sources(
   server-tests PRIVATE
 
   tests/main.cc
+  tests/Assert.cc
 
   tests/FullTest.cc
 )
