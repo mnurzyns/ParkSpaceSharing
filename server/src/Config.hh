@@ -38,7 +38,7 @@ struct Config
 namespace toml {
 
 using server::Config;
-using std::chrono::duration_cast, std::chrono::days, std::chrono::milliseconds;
+using std::chrono::duration_cast, std::chrono::days, std::chrono::seconds;
 
 template<>
 struct [[maybe_unused]] from<Config>
@@ -60,7 +60,7 @@ struct [[maybe_unused]] from<Config>
             .jwt_expire_after = toml::find_or<std::uint64_t>(
               jwt,
               "expire_after",
-              duration_cast<milliseconds>(days{ 30 }).count()), // NOLINT
+              duration_cast<seconds>(days{ 30 }).count()), // NOLINT
             .swagger_res_path = toml::find_or<std::string>(
               swagger,
               "res_path",
