@@ -16,6 +16,7 @@ env:
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+  CTEST_OUTPUT_ON_FAILURE: 1
 
 jobs:
   changes:
@@ -110,4 +111,4 @@ jobs:
       - name: Test
         working-directory: ${{github.workspace}}/build
         run: |
-          ctest -C ${{matrix.build_type}}
+          ctest --verbose -C ${{matrix.build_type}}
