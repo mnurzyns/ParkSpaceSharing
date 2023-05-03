@@ -87,7 +87,7 @@ class MainDatabase : public oatpp::orm::DbClient
     QUERY(createOffer,
           "INSERT INTO offer"
           "(id, place_id, date_from, date_to, description, price) VALUES "
-          "(:offer.id, :offer.placeId, :offer.dateFrom, :offer.dateTo, "
+          "(:offer.id, :offer.place_id, :offer.date_from, :offer.date_to, "
           ":offer.description, :offer.price)"
           "RETURNING *;",
           PARAM(oatpp::Object<dto::OfferDto>, offer))
@@ -99,7 +99,7 @@ class MainDatabase : public oatpp::orm::DbClient
     QUERY(replaceOffer,
           "REPLACE INTO offer"
           "(id, place_id, date_from, date_to, description, price) VALUES "
-          "(:offer.id, :offer.placeId, :offer.dateFrom, :offer.dateTo, "
+          "(:offer.id, :offer.place_id, :offer.date_from, :offer.date_to, "
           ":offer.description, :offer.price)"
           "RETURNING *;",
           PARAM(oatpp::Object<dto::OfferDto>, offer))
