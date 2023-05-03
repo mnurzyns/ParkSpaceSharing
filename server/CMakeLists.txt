@@ -85,6 +85,7 @@ target_link_libraries(
     server-tests
 
     PRIVATE server
+    PRIVATE $<$<NOT:$<BOOL:${SOURCE_LOCATION_SUPPORTED}>>:source_location::source_location>
 )
 
 add_test(NAME server COMMAND server-tests)

@@ -8,6 +8,11 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
+set(CONAN_EXTRA_REQUIRES "")
+if(NOT SOURCE_LOCATION_SUPPORTED)
+  set(CONAN_EXTRA_REQUIRES "source_location/0.2.1")
+endif()
+
 conan_cmake_configure(
     REQUIRES
     oatpp/1.3.0
@@ -19,6 +24,7 @@ conan_cmake_configure(
     nlohmann_json/3.11.2
     toml11/3.7.1
     botan/2.19.3
+    ${CONAN_EXTRA_REQUIRES}
 
     GENERATORS
     cmake_paths
@@ -39,4 +45,3 @@ conan_cmake_install(
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-
