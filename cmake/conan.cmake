@@ -18,6 +18,7 @@ conan_cmake_configure(
     openssl/3.0.8
     nlohmann_json/3.11.2
     toml11/3.7.1
+    botan/2.19.3
 
     GENERATORS
     cmake_paths

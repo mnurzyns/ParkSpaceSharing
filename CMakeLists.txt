@@ -34,7 +34,7 @@ find_package(oatpp-openssl 1.3.0 REQUIRED)
 find_package(OpenSSL 3.0.8 REQUIRED)
 find_package(jwt-cpp 0.6.0 REQUIRED)
 find_package(nlohmann_json 3.9.0 REQUIRED)
-
+find_package(botan 2.19.3 REQUIRED)
 find_package(toml11 3.7 REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")

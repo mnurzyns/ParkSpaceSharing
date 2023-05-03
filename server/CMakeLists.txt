@@ -44,6 +44,7 @@ target_link_libraries(
     PUBLIC OpenSSL::Crypto
     PUBLIC nlohmann_json::nlohmann_json
     PUBLIC toml11::toml11
+    PUBLIC botan::botan
 )
 
 install(TARGETS server DESTINATION bin)
