@@ -1,4 +1,9 @@
 #include "FullTest.hh"
+#include <memory>
+#include <oatpp-test/UnitTest.hpp>
+
+#define CONFIG_ALLOW_MUTATION
+#include "Config.hh"
 
 #include "TokenPayload.hh"
 #include "TokenUtils.hh"
@@ -50,71 +55,118 @@ class Client : public oatpp::web::client::ApiClient
 
 #include OATPP_CODEGEN_END(ApiClient)
 
-void
-userPostTest()
+struct TestEnvironment
 {
-    auto conn_provider =
-      oatpp::network::tcp::client::ConnectionProvider::createShared(
-        { "localhost", 8000 });
-    auto executor =
-      oatpp::web::client::HttpRequestExecutor::createShared(conn_provider);
-    auto mapper = oatpp::parser::json::mapping::ObjectMapper::createShared();
-    auto client = Client::createShared(executor, mapper);
-
-    oatpp::Object<server::dto::AuthDto> auth{};
+    TestEnvironment()
+      : conn_provider(
+          oatpp::network::tcp::client::ConnectionProvider::createShared(
+            { "localhost", 8000 }))
+      , executor(
+          oatpp::web::client::HttpRequestExecutor::createShared(conn_provider))
+      , mapper(oatpp::parser::json::mapping::ObjectMapper::createShared())
+      , client(Client::createShared(executor, mapper))
     {
-        auto signup_dto = server::dto::SignUpDto::createShared();
-        signup_dto->email = "string";
-        signup_dto->username = "string";
-        signup_dto->password = "string";
-
-        auto response = client->signup(signup_dto);
-        // OATPP_ASSERT(response->getStatusCode() == 200);
-        OATPP_LOGD("TEST", "Created user");
     }
 
-    // Log in
-    {
-        auto signin_dto = server::dto::SignInDto::createShared();
-        signin_dto->login = "string";
-        signin_dto->password = "string";
+    std::shared_ptr<oatpp::network::tcp::client::ConnectionProvider>
+      conn_provider;
+    std::shared_ptr<oatpp::web::client::HttpRequestExecutor> executor;
+    std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper> mapper;
+    std::shared_ptr<Client> client;
+};
 
-        auto response = client->signin(signin_dto);
-        OATPP_ASSERT(response->getStatusCode() == 200);
-        OATPP_LOGD("TEST", "Loged in.");
+struct AuthContext
+{
+    std::string token;
+    server::TokenPayload token_payload;
+};
 
-        auth =
-          response->readBodyToDto<oatpp::Object<server::dto::AuthDto>>(mapper);
-        OATPP_ASSERT(auth);
-        OATPP_ASSERT(auth->token);
-        OATPP_LOGD("TEST", "Auth token=\"%s\"", auth->token->c_str());
-    }
+void
+userSignUp(TestEnvironment const& env)
+{
+    auto signup_dto = server::dto::SignUpDto::createShared();
+    signup_dto->email = "string";
+    signup_dto->username = "string";
+    signup_dto->password = "string";
+
+    auto response = env.client->signup(signup_dto);
+    // currentlly creates
+    // user but returns 404
+    // OATPP_ASSERT(response->getStatusCode() == 200);
+}
+
+AuthContext
+userSignIn(TestEnvironment const& env)
+{
+    auto signin_dto = server::dto::SignInDto::createShared();
+    signin_dto->login = "string";
+    signin_dto->password = "string";
+
+    auto response = env.client->signin(signin_dto);
+    OATPP_ASSERT(response->getStatusCode() == 200);
+
+    auto auth_dto =
+      response->readBodyToDto<oatpp::Object<server::dto::AuthDto>>(env.mapper);
+    OATPP_ASSERT(auth_dto);
+    OATPP_ASSERT(auth_dto->token);
+
     auto token_payload =
-      server::TokenUtils::readToken(jwt::decode(auth->token));
+      server::TokenUtils::readToken(jwt::decode(auth_dto->token));
 
-    // Create one place
-    oatpp::Object<server::dto::PlaceDto> place{};
-    {
-        auto place_dto = server::dto::PlaceDto::createShared();
-        place_dto->owner_id = token_payload.user_id;
-        place_dto->address = "West street";
-        place_dto->latitude = 25.31662036314199;
-        place_dto->longitude = 51.46711279943629;
+    return AuthContext{ .token = auth_dto->token,
+                        .token_payload = token_payload };
+}
 
-        auto response = client->place_create_one(auth->token, place_dto);
-        OATPP_ASSERT(response->getStatusCode() == 200);
+oatpp::Object<server::dto::PlaceDto>
+placePost(TestEnvironment const& env,
+          AuthContext const& auth,
+          oatpp::Object<server::dto::PlaceDto const> place_dto)
+{
+    auto response = env.client->place_create_one(auth.token, place_dto);
+    OATPP_ASSERT(response->getStatusCode() == 200);
 
-        place =
-          response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(mapper);
-        OATPP_LOGD("TEST", "Created place: %lu\n", *place->id);
-    }
+    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
+      env.mapper);
+}
 
-    // Remove previously created place
-    {
-        auto response = client->place_delete_one(auth->token, place->id);
-        OATPP_ASSERT(response->getStatusCode() == 200);
-        OATPP_LOGD("TEST", "Deleted place: %lu\n", *place->id);
-    }
+void
+placeDelete(TestEnvironment const& env,
+            AuthContext const& auth,
+            oatpp::UInt64 const& id)
+{
+    auto response = env.client->place_delete_one(auth.token, id);
+    OATPP_ASSERT(response->getStatusCode() == 200);
+}
+
+void
+placeControllerTests(TestEnvironment const& env, AuthContext const& auth)
+{
+    auto place_input = server::dto::PlaceDto::createShared();
+    place_input->owner_id = auth.token_payload.user_id;
+    place_input->address = "West street";
+    place_input->latitude = 25.31662036314199;
+    place_input->longitude = 51.46711279943629;
+
+    auto place_returned = placePost(env, auth, place_input);
+
+    OATPP_ASSERT(place_returned->id != nullptr &&
+                 place_input->owner_id == place_returned->owner_id &&
+                 place_input->address == place_returned->address &&
+                 place_input->latitude == place_returned->latitude &&
+                 place_input->longitude == place_returned->longitude);
+
+    placeDelete(env, auth, place_returned->id);
+}
+
+void
+allTests()
+{
+    TestEnvironment env{};
+
+    userSignUp(env);
+    auto auth = userSignIn(env);
+
+    placeControllerTests(env, auth);
 }
 
 } // namespace
@@ -122,8 +174,9 @@ userPostTest()
 void
 FullTest::onRun()
 {
-    // TODO(Piotr Stefański): Make sure the database is always in the same
-    // state.
+    auto& conf = server::Config::getInstanceMut();
+    conf.database_path = ":memory:";
+
     server::component::AppComponent component{};
     OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>,
                     conn_provider);
@@ -143,7 +196,7 @@ FullTest::onRun()
 
     std::jthread server_thread{ [&server] { server.run(); } };
 
-    userPostTest();
+    allTests();
 
     server.stop();
     db_conn_provider->stop();
