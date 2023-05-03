@@ -1,4 +1,4 @@
-# ParkSpaceSharing
+# ParkingSpaceSharing
 Project created by trainees of Bakcyl Programowania in 2022/2023.
 
 ## Run server using docker-compose
@@ -50,10 +50,16 @@ cmake --build build
 ./build/bin/client
 ```
 
-### Install conan dependencies manually
-Required dependencies:
- - [`oatpp`](https://github.com/oatpp/oatpp)
- - [`oatpp-swagger`](https://github.com/oatpp/oatpp-swagger)
- - [`oatpp-sqlite`](https://github.com/oatpp/oatpp-sqlite)
- - [`oatpp-openssl`](https://github.com/oatpp/oatpp-openssl)
- - [`nlohmann_json`](https://github.com/nlohmann/json)
+### Install required conan dependencies manually
+
+| Dependency                                                | Tested version |
+|-----------------------------------------------------------|----------------|
+| [`oatpp`](https://github.com/oatpp/oatpp)                 | **1.3.0**      |
+| [`oatpp-swagger`](https://github.com/oatpp/oatpp-swagger) | **1.3.0**      |
+| [`oatpp-sqlite`](https://github.com/oatpp/oatpp-sqlite)   | **1.3.0**      |
+| [`oatpp-openssl`](https://github.com/oatpp/oatpp-openssl) | **1.3.0**      |
+| [`openssl`](https://github.com/openssl/openssl)           | **3.0.8**      |
+| [`jwt-cpp`](https://github.com/Thalhammer/jwt-cpp)        | **0.6.0**      |
+| [`nlohmann_json`](https://github.com/nlohmann/json)       | **3.11.2**     |
+| [`toml11`](https://github.com/ToruNiina/toml11)           | **3.7.1**      |
+| [`Botan`](https://github.com/randombit/botan)             | **2.19.3**     |
