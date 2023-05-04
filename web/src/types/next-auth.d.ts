@@ -9,7 +9,7 @@ declare module "next-auth" {
     id: number,
     name: string,
     email: string,
-    admin: boolean,
+    role: number,
     token: string,
   }
   interface Session extends DefaultSession {

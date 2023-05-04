@@ -3,8 +3,9 @@ import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
 import {
   AuthControllerApi,
-  ParkingSpaceControllerApi,
   SignInDto,
+  UserControllerApi,
+  UserDto,
 } from "@/client";
 
 
@@ -44,10 +45,10 @@ export const authOptions = {
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: {
-          label: "Email",
+        login: {
+          label: "Login",
           type: "text",
-          placeholder: "jsmith@gmail.com",
+          placeholder: "jsmith",
         },
         password: { label: "Password", type: "password" },
       },
@@ -61,44 +62,48 @@ export const authOptions = {
 
         const client = new AuthControllerApi();
         const body: SignInDto = {
-          email: credentials!.email,
+          login: credentials!.login,
           password: credentials!.password,
         };
-        const user: User = {
-          id: 1,
-          name: "usernameskfk",
-          email: "token.user.email",
-          admin: false,
-          token: "rawToken",
-        };
-        console.log("user", user);
-        return user;
+        // const user: User = {
+        //   id: 1,
+        //   name: "usernameskfk",
+        //   email: "token.user.email",
+        //   admin: false,
+        //   token: "rawToken",
+        // };
+        // console.log("user", user);
+        // return user;
         const res = await client.signIn(body).catch((err) => {
           console.log(err.response.data);
           console.error("Invalid credentials");
-
+          return null;
         });
-        console .log("res", res);
-        if (res === undefined) {
-
+        if (res == null) {
           return null;
         } else{
-          var rawToken = res!.data.token;
+          var rawToken = res.data.token;
           var token = JSON.parse(
             Buffer.from(res!.data.token!.split(".")[1], "base64").toString()
           );
+          console.log("token", token);
           //   "iss": "issuer",
           //   "user": "{\"id\":2,\"username\":null,\"email\":null,\"password\":null,\"admin\":null}"
           // }
-          token.user = JSON.parse(token.user);
+          
+          const client: UserControllerApi = new UserControllerApi();
+          const userFromRequest: UserDto = (await client.getOne(token.user_id)).data;
+          if (userFromRequest == null) {
+            return null;
+          }
           const user = {
-            id: token.user.id,
-            name: token.user.username,
-            email: token.user.email,
-            admin: token.user.admin,
-            token: rawToken,
+            id: token.user_id,
+            name: userFromRequest.username!,
+            email: userFromRequest.email!,
+            role: userFromRequest.role!,
+            token: rawToken!,
           };
-          //return user;
+          return user;
         }
 
       },
