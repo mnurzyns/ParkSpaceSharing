@@ -34,6 +34,17 @@ class ApiClient : public oatpp::web::client::ApiClient
              place_create_one,
              AUTHORIZATION(String, auth_string, "Bearer"),
              BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
+    API_CALL("PUT",
+             "place",
+             place_put_one,
+             AUTHORIZATION(String, auth_string, "Bearer"),
+             BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
+    API_CALL("PATCH",
+             "place/{id}",
+             place_patch_one,
+             AUTHORIZATION(String, auth_string, "Bearer"),
+             PATH(UInt64, id),
+             BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
     API_CALL("DELETE",
              "place/{id}",
              place_delete_one,

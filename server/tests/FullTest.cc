@@ -21,8 +21,8 @@
 #include <oatpp/web/client/HttpRequestExecutor.hpp>
 #include <oatpp/web/protocol/http/incoming/Response.hpp>
 
-#include "Assert.hh"
 #include "ApiClient.hh"
+#include "Assert.hh"
 #include "Context.hh"
 
 namespace tests {
@@ -64,9 +64,34 @@ userSignIn(TestEnvironment const& env)
 oatpp::Object<server::dto::PlaceDto>
 placePost(TestEnvironment const& env,
           AuthContext const& auth,
-          oatpp::Object<server::dto::PlaceDto> place_dto)
+          oatpp::Object<server::dto::PlaceDto> const& place_dto)
 {
     auto response = env.client->place_create_one(auth.token, place_dto);
+    testAssert(response->getStatusCode() == 200, assertWrap(response));
+
+    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
+      env.mapper);
+}
+
+oatpp::Object<server::dto::PlaceDto>
+placePatch(TestEnvironment const& env,
+           AuthContext const& auth,
+           oatpp::UInt64 const& id,
+           oatpp::Object<server::dto::PlaceDto> const& place_dto)
+{
+    auto response = env.client->place_patch_one(auth.token, id, place_dto);
+    testAssert(response->getStatusCode() == 200, assertWrap(response));
+
+    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
+      env.mapper);
+}
+
+oatpp::Object<server::dto::PlaceDto>
+placePut(TestEnvironment const& env,
+         AuthContext const& auth,
+         oatpp::Object<server::dto::PlaceDto> const& place_dto)
+{
+    auto response = env.client->place_put_one(auth.token, place_dto);
     testAssert(response->getStatusCode() == 200, assertWrap(response));
 
     return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
@@ -85,21 +110,53 @@ placeDelete(TestEnvironment const& env,
 void
 placeControllerTests(TestEnvironment const& env, AuthContext const& auth)
 {
-    auto place_input = server::dto::PlaceDto::createShared();
-    place_input->owner_id = auth.token_payload.user_id;
-    place_input->address = "West street";
-    place_input->latitude = 25.31662036314199;
-    place_input->longitude = 51.46711279943629;
+    OATPP_LOGD("[PlaceController]", "POST place");
+    auto place_post_input = server::dto::PlaceDto::createShared();
+    place_post_input->owner_id = auth.token_payload.user_id;
+    place_post_input->address = "West street";
+    place_post_input->latitude = 25.31662036314199;
+    place_post_input->longitude = 51.46711279943629;
 
-    auto place_returned = placePost(env, auth, place_input);
+    auto place_post_result = placePost(env, auth, place_post_input);
 
-    testAssert(place_returned->id != nullptr &&
-               place_input->owner_id == place_returned->owner_id &&
-               place_input->address == place_returned->address &&
-               place_input->latitude == place_returned->latitude &&
-               place_input->longitude == place_returned->longitude);
+    testAssert(place_post_result->id != nullptr &&
+               place_post_input->owner_id == place_post_result->owner_id &&
+               place_post_input->address == place_post_result->address &&
+               place_post_input->latitude == place_post_result->latitude &&
+               place_post_input->longitude == place_post_result->longitude);
 
-    placeDelete(env, auth, place_returned->id);
+    // OATPP_LOGD("[PlaceController]", "PATCH place");
+    // auto place_patch_input = server::dto::PlaceDto::createShared();
+    // place_patch_input->owner_id  = nullptr;
+    // place_patch_input->latitude  = nullptr;
+    // place_patch_input->longitude = nullptr;
+    // place_patch_input->address = "East street";
+    // auto place_patch_result =
+    //   placePatch(env, auth, place_post_result->id, place_patch_input);
+
+    // testAssert(place_patch_result->id != nullptr &&
+    //            place_post_result->owner_id == place_patch_result->owner_id &&
+    //            "East street" == place_patch_result->address &&
+    //            place_post_result->latitude == place_patch_result->latitude &&
+    //            place_post_result->longitude == place_patch_result->longitude);
+
+    OATPP_LOGD("[PlaceController]", "PUT place");
+    auto place_put_input = server::dto::PlaceDto::createShared();
+    place_put_input->id = place_post_result->id;
+    place_put_input->owner_id = auth.token_payload.user_id;
+    place_put_input->address = "North street";
+    place_put_input->latitude = 0.123;
+    place_put_input->longitude = 0.456;
+
+    auto place_put_result = placePut(env, auth, place_put_input);
+    testAssert(place_put_result->id != nullptr &&
+               place_put_input->owner_id == place_put_result->owner_id &&
+               place_put_input->address == place_put_result->address &&
+               place_put_input->latitude == place_put_result->latitude &&
+               place_put_input->longitude == place_put_result->longitude);
+
+    OATPP_LOGD("[PlaceController]", "DELETE place");
+    placeDelete(env, auth, place_post_result->id);
 }
 
 oatpp::Object<server::dto::OfferDto>
