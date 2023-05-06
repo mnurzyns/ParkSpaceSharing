@@ -24,4 +24,3 @@ runs:
         key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.build_type }}-${{ inputs.generator }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
         restore-keys: |
           ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.build_type }}
-
