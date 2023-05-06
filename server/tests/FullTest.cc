@@ -33,49 +33,14 @@
 namespace tests {
 
 void
-userSignUp(TestEnvironment const& env)
-{
-    auto signup_dto = server::dto::SignUpDto::createShared();
-    signup_dto->email = "string";
-    signup_dto->username = "string";
-    signup_dto->password = "string";
-
-    auto response = env.client->signup(signup_dto);
-    testAssert(response->getStatusCode() == 201, assertWrap(response));
-}
-
-AuthContext
-userSignIn(TestEnvironment const& env)
-{
-    auto signin_dto = server::dto::SignInDto::createShared();
-    signin_dto->login = "string";
-    signin_dto->password = "string";
-
-    auto response = env.client->signin(signin_dto);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
-
-    auto auth_dto =
-      response->readBodyToDto<oatpp::Object<server::dto::AuthDto>>(env.mapper);
-    testAssert(auth_dto != nullptr);
-    testAssert(auth_dto->token != nullptr && !auth_dto->token->empty());
-
-    auto token_payload =
-      server::TokenUtils::readToken(jwt::decode(auth_dto->token));
-
-    return AuthContext{ .token = auth_dto->token,
-                        .token_payload = token_payload };
-}
-
-void
 allTests()
 {
     TestEnvironment env{};
 
-    userSignUp(env);
-    auto auth = userSignIn(env);
-
     signupPostTest(env);
     signinPostTest(env);
+
+    auto auth = signinAsDummyUser(env);
 
     placePostTest(env, auth);
     placeGetByIdTest(env, auth);
