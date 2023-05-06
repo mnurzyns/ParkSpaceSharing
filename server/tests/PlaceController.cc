@@ -3,6 +3,7 @@
 #include "ApiClient.hh"
 #include "Assert.hh"
 #include "dto/OfferDto.hh"
+#include "dto/PlaceDto.hh"
 
 namespace tests {
 
@@ -198,6 +199,27 @@ placePutTest(TestEnvironment const& env, AuthContext const& auth)
 
         auto res = env.client->placePut(auth.token, dto);
         testAssert(res->getStatusCode() == 200, assertWrap(res));
+
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
+        testAssert(returned->id == dto->id &&
+                   returned->owner_id == dto->owner_id &&
+                   returned->address == dto->address &&
+                   returned->latitude == dto->latitude &&
+                   returned->longitude == dto->longitude);
+    });
+
+    OATPP_LOGD("[PlaceController][PUT][201]", "Valid request");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->id = 989898;
+        dto->owner_id = auth.token_payload.user_id;
+        dto->address = "East street";
+        dto->latitude = 123.123;
+        dto->longitude = 321.321;
+
+        auto res = env.client->placePut(auth.token, dto);
+        testAssert(res->getStatusCode() == 201, assertWrap(res));
 
         auto returned =
           res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);

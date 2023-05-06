@@ -341,6 +341,30 @@ offerPutTest(TestEnvironment const& env, AuthContext const& auth)
                    returned->price == offer->price);
     });
 
+    OATPP_LOGD("[OfferController][PUT][201]", "Valid request");
+    deferFailure([&] {
+        auto offer = server::dto::OfferDto::createShared();
+        auto place = createDummyPlace(env, auth);
+        offer->id = 787878;
+        offer->place_id = place->id;
+        offer->date_from = 1;
+        offer->date_to = 2;
+        offer->description = "Different description";
+        offer->price = 1;
+
+        auto res = env.client->offerPut(auth.token, offer);
+        testAssert(res->getStatusCode() == 201, assertWrap(res));
+
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
+        testAssert(returned->id == offer->id &&
+                   returned->place_id == offer->place_id &&
+                   returned->date_from == offer->date_from &&
+                   returned->date_to == offer->date_to &&
+                   returned->description == offer->description &&
+                   returned->price == offer->price);
+    });
+
     OATPP_LOGD("[OfferController][PUT][400]", "Bad request - missing field");
     deferFailure([&] {
         auto offer = createDummyOffer(env, auth);
