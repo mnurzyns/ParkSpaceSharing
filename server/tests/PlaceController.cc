@@ -2,6 +2,7 @@
 
 #include "ApiClient.hh"
 #include "Assert.hh"
+#include "dto/OfferDto.hh"
 
 namespace tests {
 
@@ -250,13 +251,31 @@ placeDeleteTest(TestEnvironment const& env, AuthContext const& auth)
 {
     OATPP_LOGD("[PlaceController][DELETE][200]", "Valid request");
     deferFailure([&] {
+        // This also checks if offers connected to this place were deleted.
         auto place = createDummyPlace(env, auth);
+        auto offer = server::dto::OfferDto::createShared();
+        offer->place_id = place->id;
+        offer->date_from = 1;
+        offer->date_to = 2;
+        offer->description = "This should be deleted together with place";
+        offer->price = 3;
 
-        auto res1 = env.client->placeDelete(auth.token, place->id);
-        testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+        deferFailure([&] {
+            auto res1 = env.client->offerPost(auth.token, offer);
+            testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+            offer = res1->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
+        });
 
-        auto res2 = env.client->placeGetById(place->id);
-        testAssert(res2->getStatusCode() == 404, assertWrap(res2));
+        auto res2 = env.client->placeDelete(auth.token, place->id);
+        testAssert(res2->getStatusCode() == 200, assertWrap(res2));
+
+        auto res3 = env.client->placeGetById(place->id);
+        testAssert(res3->getStatusCode() == 404, assertWrap(res3));
+
+        deferFailure([&] {
+            auto res4 = env.client->offerGetById(offer->id);
+            testAssert(res4->getStatusCode() == 404, assertWrap(res4));
+        });
     });
 
     OATPP_LOGD("[PlaceController][DELETE][401]", "Unauthorized");

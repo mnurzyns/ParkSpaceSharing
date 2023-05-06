@@ -23,7 +23,9 @@ void
 placePutTest(TestEnvironment const& env, AuthContext const& auth);
 
 /*
-  Requires working GET endpoint.
+  Requires working endpoints:
+   - PlaceController POST, GET
+   - OfferController POST, DELETE
  */
 void
 placeDeleteTest(TestEnvironment const& env, AuthContext const& auth);

@@ -26,7 +26,7 @@ void
 offerPutTest(TestEnvironment const& env, AuthContext const& auth);
 
 /*
-  Requires working PlaceController DELETE endpoint.
+  Requires working GET, POST endpoints.
  */
 void
 offerDeleteTest(TestEnvironment const& env, AuthContext const& auth);
