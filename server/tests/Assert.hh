@@ -8,10 +8,21 @@
 #include <optional>
 #include <ostream>
 #include <source_location>
+#include <stdexcept>
 
 namespace tests {
 
+class AssertFailedError : public virtual std::runtime_error
+{
+  public:
+    AssertFailedError()
+      : std::runtime_error{ "AssertFailedError" }
+    {
+    }
+};
+
 using AssertMessageT = std::function<std::ostream&(std::ostream&)>;
+
 /*
   Asserts supplied value and yells at you if it's false.
 
@@ -35,5 +46,29 @@ testAssert(bool value,
 AssertMessageT
 assertWrap(
   std::shared_ptr<oatpp::web::protocol::http::incoming::Response> response);
+
+/*
+  If the supplied function throws AssertFailedError, instead of tests
+  failing immediately, they will fail when calling assertFailed().
+
+  The reasoning behind this is the following:
+  When we have a 'tree' of tests that look like this:
+
+  - OfferController
+    - GET
+     - 200
+     - 404
+  - PlaceController
+   - ...
+
+  In a situation when test 'OfferController->GET->200' fails, we still want to
+  execute other tests that follow, especially tests targeting the
+  PlaceController which is not affected by the previous failure.
+ */
+void
+deferFailure(std::function<void()> const& func);
+
+void
+assertDeferredFailures();
 
 } // namespace tests

@@ -1,4 +1,5 @@
 #include "FullTest.hh"
+#include "dto/PlaceDto.hh"
 
 #define CONFIG_ALLOW_MUTATION
 #include "Config.hh"
@@ -61,146 +62,277 @@ userSignIn(TestEnvironment const& env)
                         .token_payload = token_payload };
 }
 
+void
+placePostTest(TestEnvironment const& env, AuthContext const& auth)
+{
+    OATPP_LOGD("[PlaceController][POST][200]", "Valid request");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->owner_id = auth.token_payload.user_id;
+        dto->address = "West street";
+        dto->latitude = 25.31662036314199;
+        dto->longitude = 51.46711279943629;
+
+        auto res = env.client->placePost(auth.token, dto);
+        testAssert(res->getStatusCode() == 200, assertWrap(res));
+
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
+        testAssert(returned->id != nullptr &&
+                   returned->owner_id == dto->owner_id &&
+                   returned->address == dto->address &&
+                   returned->latitude == dto->latitude &&
+                   returned->longitude == dto->longitude);
+    });
+
+    OATPP_LOGD("[PlaceController][POST][400]", "Bad request");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->owner_id = auth.token_payload.user_id;
+        dto->address = nullptr;
+        dto->latitude = 25.31662036314199;
+        dto->longitude = 51.46711279943629;
+
+        auto res = env.client->placePost(auth.token, dto);
+        testAssert(res->getStatusCode() == 400, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][POST][401]", "Unauthorized");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->owner_id = auth.token_payload.user_id;
+        dto->address = "West street";
+        dto->latitude = 25.31662036314199;
+        dto->longitude = 51.46711279943629;
+
+        auto res = env.client->placePost("", dto);
+        testAssert(res->getStatusCode() == 401, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][POST][403]", "Forbidden");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->owner_id = 1; // Created by migrations
+        dto->address = "West street";
+        dto->latitude = 25.31662036314199;
+        dto->longitude = 51.46711279943629;
+
+        auto res = env.client->placePost(auth.token, dto);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][POST][409]", "Conflict");
+    deferFailure([&] {
+        auto dto = server::dto::PlaceDto::createShared();
+        dto->id = 1;
+        dto->owner_id = auth.token_payload.user_id;
+        dto->address = "West street";
+        dto->latitude = 25.31662036314199;
+        dto->longitude = 51.46711279943629;
+
+        auto res = env.client->placePost(auth.token, dto);
+        testAssert(res->getStatusCode() == 409, assertWrap(res));
+    });
+}
+
+/*
+  Requires working POST endpoint.
+ */
 oatpp::Object<server::dto::PlaceDto>
-placePost(TestEnvironment const& env,
-          AuthContext const& auth,
-          oatpp::Object<server::dto::PlaceDto> const& place_dto)
+createDummyPlace(TestEnvironment const& env, AuthContext const& auth)
 {
-    auto response = env.client->place_create_one(auth.token, place_dto);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
+    OATPP_LOGD("[PlaceController]", "Create dummy place");
+    auto dto = server::dto::PlaceDto::createShared();
+    dto->owner_id = auth.token_payload.user_id;
+    dto->address = "Dummy place";
+    dto->latitude = 25.31662036314199;
+    dto->longitude = 51.46711279943629;
 
-    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
-      env.mapper);
-}
-
-oatpp::Object<server::dto::PlaceDto>
-placePatch(TestEnvironment const& env,
-           AuthContext const& auth,
-           oatpp::UInt64 const& id,
-           oatpp::Object<server::dto::PlaceDto> const& place_dto)
-{
-    auto response = env.client->place_patch_one(auth.token, id, place_dto);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
-
-    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
-      env.mapper);
-}
-
-oatpp::Object<server::dto::PlaceDto>
-placePut(TestEnvironment const& env,
-         AuthContext const& auth,
-         oatpp::Object<server::dto::PlaceDto> const& place_dto)
-{
-    auto response = env.client->place_put_one(auth.token, place_dto);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
-
-    return response->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(
-      env.mapper);
+    auto res = env.client->placePost(auth.token, dto);
+    testAssert(res->getStatusCode() == 200, assertWrap(res));
+    return res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
 }
 
 void
-placeDelete(TestEnvironment const& env,
-            AuthContext const& auth,
-            oatpp::UInt64 const& id)
+placeGetByIdTest(TestEnvironment const& env, AuthContext const& auth)
 {
-    auto response = env.client->place_delete_one(auth.token, id);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
+    OATPP_LOGD("[PlaceController][GET][200]", "Valid request");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+
+        auto res = env.client->placeGetById(dto->id);
+        testAssert(res->getStatusCode() == 200, assertWrap(res));
+
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
+        testAssert(returned->id == dto->id &&
+                   returned->owner_id == dto->owner_id &&
+                   returned->address == dto->address &&
+                   returned->latitude == dto->latitude &&
+                   returned->longitude == dto->longitude);
+    });
+
+    OATPP_LOGD("[PlaceController][GET][404]", "Not found");
+    deferFailure([&] {
+        auto res = env.client->placeGetById(177013);
+        testAssert(res->getStatusCode() == 404, assertWrap(res));
+    });
 }
 
 void
-placeControllerTests(TestEnvironment const& env, AuthContext const& auth)
+placePatchTest(TestEnvironment const& env, AuthContext const& auth)
 {
-    OATPP_LOGD("[PlaceController]", "POST place");
-    auto place_post_input = server::dto::PlaceDto::createShared();
-    place_post_input->owner_id = auth.token_payload.user_id;
-    place_post_input->address = "West street";
-    place_post_input->latitude = 25.31662036314199;
-    place_post_input->longitude = 51.46711279943629;
+    OATPP_LOGD("[PlaceController][PATCH][200]", "Valid request");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        auto patch = server::dto::PlaceDto::createShared();
+        patch->address = "East street";
 
-    auto place_post_result = placePost(env, auth, place_post_input);
+        auto res = env.client->placePatch(auth.token, dto->id, patch);
+        testAssert(res->getStatusCode() == 200, assertWrap(res));
 
-    testAssert(place_post_result->id != nullptr &&
-               place_post_input->owner_id == place_post_result->owner_id &&
-               place_post_input->address == place_post_result->address &&
-               place_post_input->latitude == place_post_result->latitude &&
-               place_post_input->longitude == place_post_result->longitude);
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
+        testAssert(returned->id == dto->id &&
+                   returned->owner_id == dto->owner_id &&
+                   returned->address == "East street" &&
+                   returned->latitude == dto->latitude &&
+                   returned->longitude == dto->longitude);
+    });
 
-    // OATPP_LOGD("[PlaceController]", "PATCH place");
-    // auto place_patch_input = server::dto::PlaceDto::createShared();
-    // place_patch_input->owner_id  = nullptr;
-    // place_patch_input->latitude  = nullptr;
-    // place_patch_input->longitude = nullptr;
-    // place_patch_input->address = "East street";
-    // auto place_patch_result =
-    //   placePatch(env, auth, place_post_result->id, place_patch_input);
+    OATPP_LOGD("[PlaceController][PATCH][401]", "Unauthorized");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        auto patch = server::dto::PlaceDto::createShared();
+        patch->address = "East street";
 
-    // testAssert(place_patch_result->id != nullptr &&
-    //            place_post_result->owner_id == place_patch_result->owner_id &&
-    //            "East street" == place_patch_result->address &&
-    //            place_post_result->latitude == place_patch_result->latitude &&
-    //            place_post_result->longitude == place_patch_result->longitude);
+        auto res = env.client->placePatch("", dto->id, patch);
+        testAssert(res->getStatusCode() == 401, assertWrap(res));
+    });
 
-    OATPP_LOGD("[PlaceController]", "PUT place");
-    auto place_put_input = server::dto::PlaceDto::createShared();
-    place_put_input->id = place_post_result->id;
-    place_put_input->owner_id = auth.token_payload.user_id;
-    place_put_input->address = "North street";
-    place_put_input->latitude = 0.123;
-    place_put_input->longitude = 0.456;
+    OATPP_LOGD("[PlaceController][PATCH][403]", "Forbidden - id");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        auto patch = server::dto::PlaceDto::createShared();
+        // Place id=1 created by migrations.
+        patch->id = 1;
 
-    auto place_put_result = placePut(env, auth, place_put_input);
-    testAssert(place_put_result->id != nullptr &&
-               place_put_input->owner_id == place_put_result->owner_id &&
-               place_put_input->address == place_put_result->address &&
-               place_put_input->latitude == place_put_result->latitude &&
-               place_put_input->longitude == place_put_result->longitude);
+        auto res = env.client->placePatch(auth.token, dto->id, patch);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
 
-    OATPP_LOGD("[PlaceController]", "DELETE place");
-    placeDelete(env, auth, place_post_result->id);
-}
+    OATPP_LOGD("[PlaceController][PATCH][403]", "Forbidden - owner_id");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        auto patch = server::dto::PlaceDto::createShared();
+        // User id=1 created by migrations.
+        patch->id = dto->id;
+        patch->owner_id = 1;
 
-oatpp::Object<server::dto::OfferDto>
-offerPost(TestEnvironment const& env,
-          AuthContext const& auth,
-          oatpp::Object<server::dto::OfferDto> const& offer_input)
-{
-    auto response = env.client->offer_create_one(auth.token, offer_input);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
-    auto offer_returned =
-      response->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
-    return offer_returned;
-}
+        auto res = env.client->placePatch(auth.token, dto->id, patch);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
 
-void
-offerDelete(TestEnvironment const& env,
-            AuthContext const& auth,
-            oatpp::UInt64 const& offer_id)
-{
-    auto response = env.client->offer_delete_one(auth.token, offer_id);
-    testAssert(response->getStatusCode() == 200, assertWrap(response));
+    OATPP_LOGD("[PlaceController][PATCH][404]", "Not found");
+    deferFailure([&] {
+        auto patch = server::dto::PlaceDto::createShared();
+
+        auto res = env.client->placePatch(auth.token, 177013, patch);
+        testAssert(res->getStatusCode() == 404, assertWrap(res));
+    });
 }
 
 void
-offerControllerTests(TestEnvironment const& env,
-                     AuthContext const& auth,
-                     oatpp::UInt64 const& place_id)
+placePutTest(TestEnvironment const& env, AuthContext const& auth)
 {
-    auto offer_input = server::dto::OfferDto::createShared();
-    offer_input->place_id = *place_id;
-    offer_input->date_from = 2137;
-    offer_input->date_to = 3000;
-    offer_input->description = "Cozy parking space";
-    offer_input->price = 177013;
+    OATPP_LOGD("[PlaceController][PUT][200]", "Valid request");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        dto->address = "East street";
+        dto->latitude = 123.123;
+        dto->longitude = 321.321;
 
-    auto offer_returned = offerPost(env, auth, offer_input);
-    testAssert(offer_returned->id != nullptr &&
-               offer_input->place_id == offer_returned->place_id &&
-               offer_input->date_from == offer_returned->date_from &&
-               offer_input->date_to == offer_returned->date_to &&
-               offer_input->description == offer_returned->description &&
-               offer_input->price == offer_returned->price);
+        auto res = env.client->placePut(auth.token, dto);
+        testAssert(res->getStatusCode() == 200, assertWrap(res));
 
-    offerDelete(env, auth, offer_returned->id);
+        auto returned =
+          res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
+        testAssert(returned->id == dto->id &&
+                   returned->owner_id == dto->owner_id &&
+                   returned->address == dto->address &&
+                   returned->latitude == dto->latitude &&
+                   returned->longitude == dto->longitude);
+    });
+
+    OATPP_LOGD("[PlaceController][PUT][400]", "Bad request");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        dto->latitude = nullptr;
+
+        auto res = env.client->placePut(auth.token, dto);
+        testAssert(res->getStatusCode() == 400, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][PUT][401]", "Unauthorized");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+
+        auto res = env.client->placePut("", dto);
+        testAssert(res->getStatusCode() == 401, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][PUT][403]", "Forbidden - id");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        // Place id=1 created by migrations.
+        dto->id = 1;
+
+        auto res = env.client->placePut(auth.token, dto);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][PUT][403]", "Forbidden - owner_id");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        // User id=1 created by migrations.
+        dto->owner_id = 1;
+
+        auto res = env.client->placePut(auth.token, dto);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
+}
+
+void
+placeDeleteTest(TestEnvironment const& env, AuthContext const& auth)
+{
+    OATPP_LOGD("[PlaceController][DELETE][200]", "Valid request");
+    deferFailure([&] {
+        auto place = createDummyPlace(env, auth);
+
+        auto res = env.client->placeDelete(auth.token, place->id);
+        testAssert(res->getStatusCode() == 200, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][DELETE][401]", "Unauthorized");
+    deferFailure([&] {
+        auto place = createDummyPlace(env, auth);
+
+        auto res = env.client->placeDelete("", place->id);
+        testAssert(res->getStatusCode() == 401, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][DELETE][403]", "Unauthorized");
+    deferFailure([&] {
+        // Place id=1 created by migrations.
+        auto res = env.client->placeDelete(auth.token, 1);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][DELETE][404]", "Not found");
+    deferFailure([&] {
+        auto res = env.client->placeDelete(auth.token, 177013);
+        testAssert(res->getStatusCode() == 404, assertWrap(res));
+    });
 }
 
 void
@@ -211,20 +343,16 @@ allTests()
     userSignUp(env);
     auto auth = userSignIn(env);
 
-    placeControllerTests(env, auth);
+    placePostTest(env, auth);
+    placeGetByIdTest(env, auth);
+    placePatchTest(env, auth);
+    placePutTest(env, auth);
+    placeDeleteTest(env, auth);
 
-    // Place for offer controller
-    auto place_input = server::dto::PlaceDto::createShared();
-    place_input->owner_id = auth.token_payload.user_id;
-    place_input->address = "West street";
-    place_input->latitude = 25.31662036314199;
-    place_input->longitude = 51.46711279943629;
-    auto place_returned = placePost(env, auth, place_input);
-
-    offerControllerTests(env, auth, place_returned->id);
+    assertDeferredFailures();
 }
 
-} // namespace
+} // namespace tests
 
 void
 FullTest::onRun()

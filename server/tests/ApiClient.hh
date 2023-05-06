@@ -29,37 +29,41 @@ class ApiClient : public oatpp::web::client::ApiClient
              BODY_DTO(oatpp::Object<server::dto::SignInDto>, dto))
 
     // Place
+    API_CALL("GET",
+             "place/{id}",
+             placeGetById,
+             PATH(UInt64, id))
     API_CALL("POST",
              "place",
-             place_create_one,
+             placePost,
              AUTHORIZATION(String, auth_string, "Bearer"),
              BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
     API_CALL("PUT",
              "place",
-             place_put_one,
+             placePut,
              AUTHORIZATION(String, auth_string, "Bearer"),
              BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
     API_CALL("PATCH",
              "place/{id}",
-             place_patch_one,
+             placePatch,
              AUTHORIZATION(String, auth_string, "Bearer"),
              PATH(UInt64, id),
              BODY_DTO(oatpp::Object<server::dto::PlaceDto>, dto))
     API_CALL("DELETE",
              "place/{id}",
-             place_delete_one,
+             placeDelete,
              AUTHORIZATION(String, auth_string, "Bearer"),
              PATH(UInt64, id))
 
     // Offer
     API_CALL("POST",
              "offer",
-             offer_create_one,
+             offerPost,
              AUTHORIZATION(String, auth_string, "Bearer"),
              BODY_DTO(oatpp::Object<server::dto::OfferDto>, dto))
     API_CALL("DELETE",
              "offer/{id}",
-             offer_delete_one,
+             offerDelete,
              AUTHORIZATION(String, auth_string, "Bearer"),
              PATH(UInt64, id))
 };

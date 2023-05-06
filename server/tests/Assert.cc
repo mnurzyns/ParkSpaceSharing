@@ -10,19 +10,21 @@
 
 namespace tests {
 
+std::atomic<int> g_failed_non_critical = 0;
+
 void
 testAssert(bool value,
            std::optional<AssertMessageT> message,
            std::source_location const loc)
 {
     if (!value) {
-        std::cerr << "ASSERT FAILED: " << loc.file_name() << ":" << loc.line()
-                  << ":" << loc.column() << " " << loc.function_name() << '\n';
+        std::cerr << "\x1b[31mASSERT FAILED\x1b[39m: " << loc.file_name() << ":"
+                  << loc.line() << ":" << loc.column() << " "
+                  << loc.function_name() << '\n';
         if (message) {
             (*message)(std::cerr) << '\n';
         }
-        exit(1);
-        // throw std::runtime_error{"ASSERT FAILED"};
+        throw AssertFailedError{};
     }
 }
 
@@ -40,6 +42,25 @@ assertWrap(
           ostream << *response->readBodyToString();
           return ostream;
       };
+}
+
+void
+deferFailure(std::function<void()> const& func)
+{
+    try {
+        func();
+    } catch (AssertFailedError const& err) {
+        g_failed_non_critical += 1;
+    }
+}
+
+void
+assertDeferredFailures()
+{
+    if(g_failed_non_critical > 0) {
+        std::cerr << "\x1b[31mNumber of deferred tests failed\x1b[39m: " << g_failed_non_critical << "\n";
+        exit(EXIT_FAILURE);
+    }
 }
 
 } // namespace tests
