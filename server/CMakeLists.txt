@@ -77,6 +77,7 @@ target_sources(
   tests/Assert.cc
 
   tests/FullTest.cc
+  tests/PlaceController.cc
 )
 
 target_include_directories(server-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
