@@ -26,6 +26,7 @@
 #include "Assert.hh"
 #include "Context.hh"
 
+#include "AuthController.hh"
 #include "PlaceController.hh"
 #include "OfferController.hh"
 
@@ -72,6 +73,9 @@ allTests()
 
     userSignUp(env);
     auto auth = userSignIn(env);
+
+    signupPostTest(env);
+    signinPostTest(env);
 
     placePostTest(env, auth);
     placeGetByIdTest(env, auth);

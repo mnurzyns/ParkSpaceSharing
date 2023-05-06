@@ -77,6 +77,7 @@ target_sources(
   tests/Assert.cc
 
   tests/FullTest.cc
+  tests/AuthController.cc
   tests/PlaceController.cc
   tests/OfferController.cc
 )
