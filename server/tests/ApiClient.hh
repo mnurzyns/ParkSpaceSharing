@@ -56,10 +56,25 @@ class ApiClient : public oatpp::web::client::ApiClient
              PATH(UInt64, id))
 
     // Offer
+    API_CALL("GET",
+             "offer/{id}",
+             offerGetById,
+             PATH(UInt64, id))
     API_CALL("POST",
              "offer",
              offerPost,
              AUTHORIZATION(String, auth_string, "Bearer"),
+             BODY_DTO(oatpp::Object<server::dto::OfferDto>, dto))
+    API_CALL("PUT",
+             "offer",
+             offerPut,
+             AUTHORIZATION(String, auth_string, "Bearer"),
+             BODY_DTO(oatpp::Object<server::dto::OfferDto>, dto))
+    API_CALL("PATCH",
+             "offer/{id}",
+             offerPatch,
+             AUTHORIZATION(String, auth_string, "Bearer"),
+             PATH(UInt64, id),
              BODY_DTO(oatpp::Object<server::dto::OfferDto>, dto))
     API_CALL("DELETE",
              "offer/{id}",

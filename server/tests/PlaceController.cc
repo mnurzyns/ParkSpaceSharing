@@ -252,8 +252,11 @@ placeDeleteTest(TestEnvironment const& env, AuthContext const& auth)
     deferFailure([&] {
         auto place = createDummyPlace(env, auth);
 
-        auto res = env.client->placeDelete(auth.token, place->id);
-        testAssert(res->getStatusCode() == 200, assertWrap(res));
+        auto res1 = env.client->placeDelete(auth.token, place->id);
+        testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+
+        auto res2 = env.client->placeGetById(place->id);
+        testAssert(res2->getStatusCode() == 404, assertWrap(res2));
     });
 
     OATPP_LOGD("[PlaceController][DELETE][401]", "Unauthorized");

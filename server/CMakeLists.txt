@@ -78,6 +78,7 @@ target_sources(
 
   tests/FullTest.cc
   tests/PlaceController.cc
+  tests/OfferController.cc
 )
 
 target_include_directories(server-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)

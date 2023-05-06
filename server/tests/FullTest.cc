@@ -27,6 +27,7 @@
 #include "Context.hh"
 
 #include "PlaceController.hh"
+#include "OfferController.hh"
 
 namespace tests {
 
@@ -77,6 +78,12 @@ allTests()
     placePatchTest(env, auth);
     placePutTest(env, auth);
     placeDeleteTest(env, auth);
+
+    offerPostTest(env, auth);
+    offerGetByIdTest(env, auth);
+    offerPatchTest(env, auth);
+    offerPutTest(env, auth);
+    offerDeleteTest(env, auth);
 
     assertDeferredFailures();
 }
