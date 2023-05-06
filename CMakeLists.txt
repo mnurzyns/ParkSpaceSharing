@@ -14,6 +14,11 @@ if(NOT MSVC)
 else()
     # 4996 - getenv unsafe
     add_compile_options(/W4 /WX /wd4996)
+
+    # This variable is defined before including Config.hh file,
+    # but MSVC gives linker errors if Config.cc was not compiled with it.
+    # Works fine without it on GCC and Clang.
+    add_compile_definitions(CONFIG_ALLOW_MUTATION)
 endif()
 
 # If our standard library does not support source_location
