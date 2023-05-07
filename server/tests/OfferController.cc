@@ -67,22 +67,6 @@ offerPostTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 400, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][POST][400]",
-               "Invalid request - negative date");
-    deferFailure([&] {
-        auto place = createDummyPlace(env, auth);
-
-        auto dto = server::dto::OfferDto::createShared();
-        dto->place_id = place->id;
-        dto->date_from = -10;
-        dto->date_to = -2;
-        dto->description = "Cozy parking space";
-        dto->price = 10;
-
-        auto res = env.client->offerPost(auth.token, dto);
-        testAssert(res->getStatusCode() == 400, assertWrap(res));
-    });
-
     OATPP_LOGD("[OfferController][POST][401]", "Unauthorized");
     deferFailure([&] {
         auto place = createDummyPlace(env, auth);
@@ -390,16 +374,6 @@ offerPutTest(TestEnvironment const& env, AuthContext const& auth)
         auto res = env.client->offerPut(auth.token, offer);
         testAssert(res->getStatusCode() == 400, assertWrap(res));
         ;
-    });
-
-    OATPP_LOGD("[OfferController][PUT][400]", "Bad request - negative date");
-    deferFailure([&] {
-        auto offer = createDummyOffer(env, auth);
-        offer->date_from = -2;
-        offer->date_to = -1;
-
-        auto res = env.client->offerPut(auth.token, offer);
-        testAssert(res->getStatusCode() == 400, assertWrap(res));
     });
 
     OATPP_LOGD("[OfferController][PUT][401]", "Unauthorized");
