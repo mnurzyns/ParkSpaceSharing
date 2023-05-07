@@ -11,9 +11,8 @@ OfferService::createShared()
 void
 validateDateHTTP(UInt64 const& date_from, UInt64 const& date_to)
 {
-    OATPP_ASSERT_HTTP(date_from <= date_to,
-                      Status::CODE_400,
-                      "Invalid date range");
+    OATPP_ASSERT_HTTP(
+      date_from <= date_to, Status::CODE_400, "Invalid time range");
 }
 
 Object<OfferDto>
