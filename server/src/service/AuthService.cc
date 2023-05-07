@@ -1,10 +1,13 @@
 #include "AuthService.hh"
 
+#include "EmailValidation.hh"
+
 namespace server::service {
 
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
+    validateEmailHTTP(dto->email);
     {
         auto query_result = database_->getUserByEmail(dto->email);
 
