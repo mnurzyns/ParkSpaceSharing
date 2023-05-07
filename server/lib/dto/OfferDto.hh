@@ -19,9 +19,9 @@ class OfferDto : public oatpp::DTO
 
     DTO_FIELD(UInt64, place_id, "place_id");
 
-    DTO_FIELD(Int64, date_from, "date_from");
+    DTO_FIELD(UInt64, date_from, "date_from");
 
-    DTO_FIELD(Int64, date_to, "date_to");
+    DTO_FIELD(UInt64, date_to, "date_to");
 
     DTO_FIELD(String, description, "description");
 
