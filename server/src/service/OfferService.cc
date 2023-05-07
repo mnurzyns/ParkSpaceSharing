@@ -11,9 +11,8 @@ OfferService::createShared()
 void
 validateDateHTTP(UInt64 const& date_from, UInt64 const& date_to)
 {
-    OATPP_ASSERT_HTTP(date_from <= date_to,
-                      Status::CODE_400,
-                      "Invalid date range");
+    OATPP_ASSERT_HTTP(
+      date_from <= date_to, Status::CODE_400, "Invalid time range");
 }
 
 Object<OfferDto>
@@ -137,19 +136,42 @@ OfferService::putOne(Object<OfferDto> const& dto)
 Object<OfferDto>
 OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
 {
-    auto existing = this->getOne(id);
+    validateDateHTTP(dto->date_from, dto->date_to);
 
-    existing->id = dto->id ? dto->id : existing->id;
-    existing->place_id = dto->place_id ? dto->place_id : existing->place_id;
-    existing->date_from = dto->date_from ? dto->date_from : existing->date_from;
-    existing->date_to = dto->date_to ? dto->date_to : existing->date_to;
-    existing->description =
-      dto->description ? dto->description : existing->description;
-    existing->price = dto->price ? dto->price : existing->price;
+    bool update = false;
+    std::string query = "UPDATE offer SET ";
+    for (auto* prop : Object<OfferDto>::getPropertiesList()) {
+        if (prop->get(dto.get())) {
+            if (update) {
+                query += ", ";
+            }
+            query += std::string{} + prop->name + " = :dto." + prop->name;
+            update = true;
+        }
+    }
+    query += " WHERE id = :id RETURNING *;";
 
-    validateDateHTTP(existing->date_from, existing->date_to);
+    if (update) {
+        auto query_result =
+          database_->executeQuery(query, { { "dto", dto }, { "id", id } });
 
-    return this->putOne(existing);
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
+
+        OATPP_ASSERT_HTTP(
+          query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+        auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
+
+        OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                          Status::CODE_500,
+                          "Unexpected number of rows returned!")
+
+        return fetch_result[0];
+    }
+
+    return this->getOne(id);
 }
 
 Object<StatusDto>
