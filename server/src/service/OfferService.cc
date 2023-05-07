@@ -8,9 +8,19 @@ OfferService::createShared()
     return std::make_shared<OfferService>();
 }
 
+void
+validateDateHTTP(UInt64 const& date_from, UInt64 const& date_to)
+{
+    OATPP_ASSERT_HTTP(date_from <= date_to,
+                      Status::CODE_400,
+                      "Invalid date range");
+}
+
 Object<OfferDto>
 OfferService::createOne(Object<OfferDto> const& dto)
 {
+    validateDateHTTP(dto->date_from, dto->date_to);
+
     try {
         this->getOne(dto->id); // Will throw 404 if not found
         OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
@@ -104,6 +114,8 @@ OfferService::search(String const& query,
 Object<OfferDto>
 OfferService::putOne(Object<OfferDto> const& dto)
 {
+    validateDateHTTP(dto->date_from, dto->date_to);
+
     auto query_result = database_->replaceOffer(dto);
 
     OATPP_ASSERT_HTTP(query_result->isSuccess(),
@@ -134,6 +146,8 @@ OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
     existing->description =
       dto->description ? dto->description : existing->description;
     existing->price = dto->price ? dto->price : existing->price;
+
+    validateDateHTTP(existing->date_from, existing->date_to);
 
     return this->putOne(existing);
 }
