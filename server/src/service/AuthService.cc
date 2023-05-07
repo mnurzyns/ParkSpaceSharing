@@ -7,6 +7,10 @@ namespace server::service {
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
+    OATPP_ASSERT_HTTP(std::regex_match(dto->email->c_str(), EmailPattern),
+                    Status::CODE_422,
+                    "The email address is incorrect")
+
     validateEmailHTTP(dto->email);
     {
         auto query_result = database_->getUserByEmail(dto->email);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <botan/argon2.h>
 #include <botan/system_rng.h>
 #include <oatpp/core/Types.hpp>
@@ -26,6 +27,8 @@ class AuthService
                     database_); // NOLINT
     OATPP_COMPONENT(std::shared_ptr<TokenUtils>,
                     token_utils_component); // NOLINT
+    const std::regex EmailPattern{
+                    "(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"};
 
   public:
     Object<AuthDto>
