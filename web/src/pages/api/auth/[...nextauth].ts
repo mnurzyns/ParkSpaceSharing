@@ -11,20 +11,18 @@ import {
 
 export const authOptions = {
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       /* Step 1: update the token based on the user object */
       if (user) {
         token.user = user;
       }
-      console.log("jwt token:", token);
       return token;
     },
-    session({ session, token }) {
+    session({ session, token }: { session: any; token: any}) {
       /* Step 2: update the session.user based on the token object */
       if (token && session.user) {
         session.user = token.user;
       }
-      console.log("session", session);
       return session;
     },
   },
