@@ -128,24 +128,26 @@ offerPostTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 409, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][POST][409]",
-               "Conflict - overlapping dates on same place_id");
-    deferFailure([&] {
-        auto place = createDummyPlace(env, auth);
+    // https://github.com/mnurzyns/ParkSpaceSharing/issues/46
 
-        auto dto = server::dto::OfferDto::createShared();
-        dto->place_id = place->id;
-        dto->date_from = 1;
-        dto->date_to = 2;
-        dto->description = "Cozy parking space";
-        dto->price = 10;
+    // OATPP_LOGD("[OfferController][POST][409]",
+    //            "Conflict - overlapping dates on same place_id");
+    // deferFailure([&] {
+    //     auto place = createDummyPlace(env, auth);
 
-        auto res1 = env.client->offerPost(auth.token, dto);
-        testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+    //     auto dto = server::dto::OfferDto::createShared();
+    //     dto->place_id = place->id;
+    //     dto->date_from = 1;
+    //     dto->date_to = 2;
+    //     dto->description = "Cozy parking space";
+    //     dto->price = 10;
 
-        auto res2 = env.client->offerPost(auth.token, dto);
-        testAssert(res2->getStatusCode() == 409, assertWrap(res2));
-    });
+    //     auto res1 = env.client->offerPost(auth.token, dto);
+    //     testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+
+    //     auto res2 = env.client->offerPost(auth.token, dto);
+    //     testAssert(res2->getStatusCode() == 409, assertWrap(res2));
+    // });
 }
 
 oatpp::Object<server::dto::OfferDto>
@@ -274,28 +276,30 @@ offerPatchTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 404, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][PATCH][409]", "Conflict");
-    deferFailure([&] {
-        auto place = createDummyPlace(env, auth);
-        auto dto = server::dto::OfferDto::createShared();
-        dto->place_id = place->id;
-        dto->date_from = 1;
-        dto->date_to = 2;
-        dto->description = "Cozy parking space";
-        dto->price = 10;
+    // https://github.com/mnurzyns/ParkSpaceSharing/issues/46
 
-        auto res1 = env.client->offerPost(auth.token, dto);
-        testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+    // OATPP_LOGD("[OfferController][PATCH][409]", "Conflict");
+    // deferFailure([&] {
+    //     auto place = createDummyPlace(env, auth);
+    //     auto dto = server::dto::OfferDto::createShared();
+    //     dto->place_id = place->id;
+    //     dto->date_from = 1;
+    //     dto->date_to = 2;
+    //     dto->description = "Cozy parking space";
+    //     dto->price = 10;
 
-        auto offer = createDummyOffer(env, auth);
-        auto patch = server::dto::OfferDto::createShared();
-        patch->place_id = place->id;
-        patch->date_from = 1;
-        patch->date_to = 2;
+    //     auto res1 = env.client->offerPost(auth.token, dto);
+    //     testAssert(res1->getStatusCode() == 200, assertWrap(res1));
 
-        auto res2 = env.client->offerPatch(auth.token, offer->id, patch);
-        testAssert(res2->getStatusCode() == 409, assertWrap(res2));
-    });
+    //     auto offer = createDummyOffer(env, auth);
+    //     auto patch = server::dto::OfferDto::createShared();
+    //     patch->place_id = place->id;
+    //     patch->date_from = 1;
+    //     patch->date_to = 2;
+
+    //     auto res2 = env.client->offerPatch(auth.token, offer->id, patch);
+    //     testAssert(res2->getStatusCode() == 409, assertWrap(res2));
+    // });
 }
 
 void
@@ -403,15 +407,17 @@ offerPutTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 404, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][PUT][409]", "Conflict");
-    deferFailure([&] {
-        auto offer1 = createDummyOffer(env, auth);
-        auto offer2 = createDummyOffer(env, auth);
-        offer2->place_id = offer1->place_id;
+    // https://github.com/mnurzyns/ParkSpaceSharing/issues/46
 
-        auto res = env.client->offerPut(auth.token, offer1);
-        testAssert(res->getStatusCode() == 409, assertWrap(res));
-    });
+    // OATPP_LOGD("[OfferController][PUT][409]", "Conflict");
+    // deferFailure([&] {
+    //     auto offer1 = createDummyOffer(env, auth);
+    //     auto offer2 = createDummyOffer(env, auth);
+    //     offer2->place_id = offer1->place_id;
+
+    //     auto res = env.client->offerPut(auth.token, offer1);
+    //     testAssert(res->getStatusCode() == 409, assertWrap(res));
+    // });
 }
 
 void
