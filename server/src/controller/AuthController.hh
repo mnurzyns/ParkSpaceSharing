@@ -48,8 +48,6 @@ class AuthController : public oatpp::web::server::api::ApiController
                                              "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_409,
                                              "application/json");
-        info->addResponse<Object<StatusDto>>(Status::CODE_422,
-                                             "application/json");                                             
         info->addResponse<Object<StatusDto>>(Status::CODE_500,
                                              "application/json");
     }
