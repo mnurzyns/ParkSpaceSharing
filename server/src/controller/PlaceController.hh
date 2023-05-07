@@ -199,7 +199,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
-            ((!dto->owner_id || dto->owner_id == auth_object->user_id) &&
+            ((dto->owner_id ? auth_object->user_id == dto->owner_id : true) &&
              auth_object->user_id == service_.getOne(id)->owner_id),
           Status::CODE_403,
           "Cannot modify other place of another user as a regular user")
