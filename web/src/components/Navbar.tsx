@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Navbar() {
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    console.log(session);
+  }, [session]);
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -47,31 +55,40 @@ export default function Navbar() {
       </div>
       <div className="navbar-end">
         <div className="flex-none">
-          <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
-                <img src="https://i.pravatar.cc/300" alt="user avatar" />
-              </div>
-            </label>
+          {session ? (
+            <div className="dropdown dropdown-end">
+              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                <div className="w-10 rounded-full">
+                  <img src="https://i.pravatar.cc/300" alt="user avatar" />
+                </div>
+              </label>
 
-            <ul
-              tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+              <ul
+                tabIndex={0}
+                className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>
+                  <a className="justify-between">
+                    Profile
+                    <span className="badge">New</span>
+                  </a>
+                </li>
+                <li>
+                  <a>Settings</a>
+                </li>
+                <li onClick={() => signOut()}>
+                  <a>Logout</a>
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <button
+              onClick={() => signIn()}
+              className="btn btn-ghost bg-primary"
             >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
+              Sign In
+            </button>
+          )}
         </div>
       </div>
     </div>
