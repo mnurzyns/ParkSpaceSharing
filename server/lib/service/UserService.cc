@@ -1,5 +1,7 @@
 #include "UserService.hh"
 
+#include "EmailValidation.hh"
+
 namespace server::service {
 
 std::shared_ptr<UserService>
@@ -11,6 +13,8 @@ UserService::createShared()
 Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
+    validateEmailHTTP(dto->email);
+
     try {
         this->getOne(dto->id); // Will throw 404 if not found
         OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
@@ -104,6 +108,8 @@ UserService::search(String const& query,
 Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
+    validateEmailHTTP(dto->email);
+
     auto query_result = database_->replaceUser(dto);
 
     OATPP_ASSERT_HTTP(query_result->isSuccess(),
@@ -125,6 +131,10 @@ UserService::putOne(Object<UserDto> const& dto)
 Object<UserDto>
 UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
 {
+    if (dto->email) {
+        validateEmailHTTP(dto->email);
+    }
+
     auto existing = this->getOne(id);
 
     existing->id = dto->id ? dto->id : existing->id;

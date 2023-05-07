@@ -7,6 +7,7 @@ target_sources(
     lib/Config.cc
     lib/ErrorHandler.cc
     lib/TokenUtils.cc
+    lib/EmailValidation.cc
 
     lib/database/MainDatabase.cc
 
