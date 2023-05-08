@@ -94,6 +94,26 @@ class UserController : public oatpp::web::server::api::ApiController
         return createDtoResponse(Status::CODE_200, service_.getOne(id));
     }
 
+
+    ENDPOINT_INFO(getMyUser)
+    {
+        info->summary = "Get my user";
+        info->tags.emplace_back("user-controller");
+        info->addSecurityRequirement("JWT Bearer Auth", {});
+
+        info->addResponse<oatpp::Object<dto::UserDto>>(Status::CODE_200,
+                                                       "application/json");
+        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
+                                                         "application/json");
+        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
+                                                         "application/json");
+    }
+
+    ENDPOINT("GET", "myUser", getMyUser ,AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
+    {
+        return createDtoResponse(Status::CODE_200, service_.getOne(auth_object->user_id));
+    }
+
     ENDPOINT_INFO(search)
     {
         info->summary = "Search users";
