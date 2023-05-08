@@ -21,7 +21,7 @@ class UserDto : public oatpp::DTO
 
     DTO_FIELD(String, email, "email");
 
-    DTO_FIELD(String, tel_num, "tel_num");
+    DTO_FIELD(String, phone, "phone");
 
     DTO_FIELD(String, username, "username");
 

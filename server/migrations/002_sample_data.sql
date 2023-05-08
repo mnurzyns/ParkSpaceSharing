@@ -1,4 +1,4 @@
-INSERT INTO `user`(`email`, `tel_num`, `username`, `password`, `role`)
+INSERT INTO `user`(`email`, `phone`, `username`, `password`, `role`)
 VALUES
     ('bob@example.com', '+48 555 000 111', 'bob', '$argon2id$v=19$m=65536,t=1,p=1$f2TGePdZVRZHs70X6ZH4xQ$bJEePpbCDj5x+E76AU/WG7l2NJdFo4B+olw01jtGSnc', 1), -- password: passw0
     ('tom@example.com', '+48 555 000 222', 'tom', '$argon2id$v=19$m=65536,t=1,p=1$ckiPDphAdTCNFmgfTcY4tw$HDlGBWYluZ0YBxl2dPvY/GkGlspI8iSZnXr8Ze8D/pI', 1), -- password: passw1

@@ -13,7 +13,7 @@ class SignUpDto : public oatpp::DTO
 
     DTO_FIELD(oatpp::String, username, "username");
 
-    DTO_FIELD(oatpp::String, tel_num, "tel_num");
+    DTO_FIELD(oatpp::String, phone, "phone");
 
     DTO_FIELD(oatpp::String, email, "email");
 

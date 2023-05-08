@@ -10,8 +10,7 @@ target_sources(
     src/Config.cc
     src/ErrorHandler.cc
     src/TokenUtils.cc
-    src/EmailValidation.cc
-    src/Tel_numValidation.cc
+    src/Validator.cc
 
     src/database/MainDatabase.cc
 
