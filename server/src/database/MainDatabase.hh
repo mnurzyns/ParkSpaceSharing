@@ -24,8 +24,8 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(createUser,
           "INSERT INTO user"
-          "(id, email, tel_num, username, password, role) VALUES "
-          "(:user.id, :user.email, :user.tel_num, :user.username, :user.password, :user.role)"
+          "(id, email, username, password, role) VALUES "
+          "(:user.id, :user.email, :user.username, :user.password, :user.role)"
           "RETURNING *;",
           PARAM(oatpp::Object<dto::UserDto>, user))
 
@@ -33,8 +33,8 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(replaceUser,
           "REPLACE INTO user"
-          "(id, email, tel_num, username, password, role) VALUES "
-          "(:user.id, :user.email, :user.tel_num, :user.username, :user.password, :user.role)"
+          "(id, email, username, password, role) VALUES "
+          "(:user.id, :user.email, :user.username, :user.password, :user.role)"
           "RETURNING *;",
           PARAM(oatpp::Object<dto::UserDto>, user))
 
@@ -53,10 +53,6 @@ class MainDatabase : public oatpp::orm::DbClient
     QUERY(getUserByEmail,
           "SELECT * FROM user WHERE email=:email;",
           PARAM(oatpp::String, email))
-
-    QUERY(getUserByTel_num,
-          "SELECT * FROM user WHERE tel_num=:tel_num;",
-          PARAM(oatpp::String, tel_num))
 
     // Place
 

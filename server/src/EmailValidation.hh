@@ -11,10 +11,4 @@ static constexpr char const* EMAIL_REGEX =
 void
 validateEmailHTTP(oatpp::String const& email);
 
-static constexpr char const* TelNum_REGEX =
-  R"str(^[\+][0-9]{2,3}\s[0-9]{9}$)str";
-
-void
-validateTel_numHTTP(oatpp::String const& tel_num);
-
 } // namespace server

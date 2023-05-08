@@ -1,6 +1,6 @@
 #include "AuthService.hh"
 
-#include "RegexValidation.hh"
+#include "EmailValidation.hh"
 
 namespace server::service {
 
@@ -8,9 +8,6 @@ Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
     validateEmailHTTP(dto->email);
-    
-    validateTel_numHTTP(dto->tel_num);
-
     {
         auto query_result = database_->getUserByEmail(dto->email);
 
@@ -21,17 +18,6 @@ AuthService::signUp(Object<SignUpDto> const& dto)
         OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
                           Status::CODE_409,
                           "User with provided email already exists")
-    }
-    {
-        auto query_result = database_->getUserByTel_num(dto->tel_num);
-
-        OATPP_ASSERT_HTTP(query_result->isSuccess(),
-                          Status::CODE_500,
-                          query_result->getErrorMessage())
-
-        OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
-                          Status::CODE_409,
-                          "User with provided telephone number already exists")
     }
     {
         auto query_result = database_->getUserByUsername(dto->username);
@@ -48,7 +34,6 @@ AuthService::signUp(Object<SignUpDto> const& dto)
     auto user_dto = Object<UserDto>::createShared();
     user_dto->email = dto->email;
     user_dto->username = dto->username;
-    user_dto->tel_num = dto->tel_num;
     user_dto->password = Botan::argon2_generate_pwhash(
       dto->password->c_str(),
       dto->password->size(),

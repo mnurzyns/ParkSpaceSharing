@@ -3,7 +3,6 @@
 CREATE TABLE IF NOT EXISTS `user`(
     `id`       INTEGER  PRIMARY KEY,
     `email`    TEXT     NOT NULL UNIQUE,
-    `tel_num`   TEXT    NOT NULL UNIQUE,
     `username` TEXT     NOT NULL UNIQUE,
     `password` TEXT     NOT NULL,
     `role`     INTEGER  NOT NULL DEFAULT 1
@@ -47,18 +46,18 @@ CREATE INDEX IF NOT EXISTS `idx_offer_place_id`
 -- User FTS
 
 CREATE VIRTUAL TABLE IF NOT EXISTS `user_fts`
-    USING fts5(`user_id`, `user_tel_num`, `user_email`, `user_username`, tokenize="porter unicode61");
+    USING fts5(`user_id`, `user_email`, `user_username`, tokenize="porter unicode61");
 
 CREATE TRIGGER IF NOT EXISTS user_insert_trigger AFTER INSERT ON `user`
 BEGIN
-INSERT INTO `user_fts`(`user_id`, `user_tel_num`, `user_email`, `user_username`)
-VALUES (new.`id`, new.`tel_num`, new.`email`, new.`username`);
+INSERT INTO `user_fts`(`user_id`, `user_email`, `user_username`)
+VALUES (new.`id`, new.`email`, new.`username`);
 END;
 
 CREATE TRIGGER IF NOT EXISTS user_update_trigger AFTER UPDATE ON `user`
 BEGIN
-    REPLACE INTO `user_fts`(ROWID, `user_id`, `user_tel_num`, `user_email`, `user_username`)
-    VALUES (ROWID, new.`id`, new.`tel_num`, new.`email`, new.`username`);
+    REPLACE INTO `user_fts`(ROWID, `user_id`, `user_email`, `user_username`)
+    VALUES (ROWID, new.`id`, new.`email`, new.`username`);
 END;
 
 CREATE TRIGGER IF NOT EXISTS user_delete_trigger AFTER DELETE ON `user`

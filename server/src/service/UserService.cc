@@ -1,6 +1,6 @@
 #include "UserService.hh"
 
-#include "RegexValidation.hh"
+#include "EmailValidation.hh"
 
 namespace server::service {
 
@@ -14,8 +14,6 @@ Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
     validateEmailHTTP(dto->email);
-
-    validateTel_numHTTP(dto->tel_num);
 
     try {
         this->getOne(dto->id); // Will throw 404 if not found
@@ -111,7 +109,6 @@ Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
     validateEmailHTTP(dto->email);
-    validateTel_numHTTP(dto->tel_num);
 
     auto query_result = database_->replaceUser(dto);
 
@@ -138,15 +135,10 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
         validateEmailHTTP(dto->email);
     }
 
-    if (dto->tel_num) {
-        validateTel_numHTTP(dto->tel_num);
-    }
-
     auto existing = this->getOne(id);
 
     existing->id = dto->id ? dto->id : existing->id;
     existing->email = dto->email ? dto->email : existing->email;
-    existing->tel_num = dto->tel_num ? dto->tel_num : existing->tel_num;
     existing->username = dto->username ? dto->username : existing->username;
     existing->password = dto->password ? dto->password : existing->password;
     existing->role = dto->role ? dto->role : existing->role;
