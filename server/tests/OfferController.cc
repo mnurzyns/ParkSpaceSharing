@@ -257,7 +257,7 @@ offerPatchTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 401, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][PATCH][403]", "Forbidden");
+    OATPP_LOGD("[OfferController][PATCH][403]", "Forbidden - place_id");
     deferFailure([&] {
         auto offer = createDummyOffer(env, auth);
         auto patch = server::dto::OfferDto::createShared();
@@ -274,6 +274,17 @@ offerPatchTest(TestEnvironment const& env, AuthContext const& auth)
 
         auto res = env.client->offerPatch(auth.token, 177013, patch);
         testAssert(res->getStatusCode() == 404, assertWrap(res));
+    });
+
+    OATPP_LOGD("[OfferController][PATCH][409]", "Conflict - id");
+    deferFailure([&] {
+        auto offer = createDummyOffer(env, auth);
+        auto patch = server::dto::OfferDto::createShared();
+        // Offer id=1 created by migrations.
+        patch->id = 1;
+
+        auto res = env.client->offerPatch(auth.token, offer->id, patch);
+        testAssert(res->getStatusCode() == 409, assertWrap(res));
     });
 
     // https://github.com/mnurzyns/ParkSpaceSharing/issues/46

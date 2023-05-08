@@ -155,17 +155,6 @@ placePatchTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 401, assertWrap(res));
     });
 
-    OATPP_LOGD("[PlaceController][PATCH][403]", "Forbidden - id");
-    deferFailure([&] {
-        auto dto = createDummyPlace(env, auth);
-        auto patch = server::dto::PlaceDto::createShared();
-        // Place id=1 created by migrations.
-        patch->id = 1;
-
-        auto res = env.client->placePatch(auth.token, dto->id, patch);
-        testAssert(res->getStatusCode() == 403, assertWrap(res));
-    });
-
     OATPP_LOGD("[PlaceController][PATCH][403]", "Forbidden - owner_id");
     deferFailure([&] {
         auto dto = createDummyPlace(env, auth);
@@ -184,6 +173,17 @@ placePatchTest(TestEnvironment const& env, AuthContext const& auth)
 
         auto res = env.client->placePatch(auth.token, 177013, patch);
         testAssert(res->getStatusCode() == 404, assertWrap(res));
+    });
+
+    OATPP_LOGD("[PlaceController][PATCH][409]", "Conflict - id");
+    deferFailure([&] {
+        auto dto = createDummyPlace(env, auth);
+        auto patch = server::dto::PlaceDto::createShared();
+        // Place id=1 created by migrations.
+        patch->id = 1;
+
+        auto res = env.client->placePatch(auth.token, dto->id, patch);
+        testAssert(res->getStatusCode() == 409, assertWrap(res));
     });
 }
 
