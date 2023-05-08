@@ -69,17 +69,77 @@ OfferService::getOne(UInt64 const& id)
 }
 
 Object<OfferPageDto>
-OfferService::search(String const& query,
-                     UInt64 const& limit,
-                     UInt64 const& offset)
+OfferService::search(Object<OfferSearchDto> const& dto)
 {
-    char const* query_table_fts = " FROM offer_fts";
-    char const* query_filters =
-      query->empty() ? "" : " WHERE offer_fts MATCH :query";
+    std::string const base_part = " FROM offer_fts"
+                                  " INNER JOIN offer"
+                                  " ON offer.id = offer_fts.offer_id";
+    bool join_place = false;
+    std::string const join_place_part = " INNER JOIN place"
+                                        " ON place.id = offer.place_id";
+    std::string filters_part{};
+
+    if (dto->query) {
+        filters_part += " offer_fts MATCH :dto.query";
+    }
+
+    if (dto->place_id) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " offer.place_id = :dto.place_id";
+    }
+
+    if (dto->date_from) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " offer.date_from >= :dto.date_from";
+    }
+
+    if (dto->date_to) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " offer.date_to <= :dto.date_to";
+    }
+
+    if (dto->price_min) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " offer.price >= :dto.price_min";
+    }
+
+    if (dto->price_max) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " offer.price <= :dto.price_max";
+    }
+
+    if (dto->owner_id) {
+        join_place = true;
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " place.owner_id = :dto.owner_id";
+    }
+
+    if (dto->address) {
+        join_place = true;
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " place.address LIKE :dto.address";
+    }
+
+    // TODO(papaj-na-wrotkach): filter by location
 
     auto query_total_result = database_->executeQuery(
-      std::string{} + "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
-      { { "query", String(query) } });
+      "SELECT COUNT(*)" + base_part + (join_place ? join_place_part : "") +
+        (filters_part.empty() ? "" : " WHERE" + filters_part) + ";",
+      { { "dto", dto } });
 
     OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
                       Status::CODE_500,
@@ -92,19 +152,17 @@ OfferService::search(String const& query,
       fetch_total_result[0][0] > 0, Status::CODE_404, "No offers found")
 
     auto query_result = database_->executeQuery(
-      std::string{} + "SELECT offer.*" + query_table_fts +
-        " INNER JOIN offer ON offer.id = offer_fts.offer_id" + query_filters +
+      "SELECT offer.*" + base_part + (join_place ? join_place_part : "") +
+        (filters_part.empty() ? "" : " WHERE" + filters_part) +
         " LIMIT :offset,:limit;",
-      { { "query", String(query) },
-        { "offset", UInt64(offset) },
-        { "limit", UInt64(limit) } });
+      { { "dto", dto } });
 
     auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
 
     auto page = OfferPageDto::createShared();
     page->items = fetch_result;
-    page->limit = limit;
-    page->offset = offset;
+    page->limit = dto->limit;
+    page->offset = dto->offset;
     page->count = fetch_total_result[0][0];
 
     return page;
