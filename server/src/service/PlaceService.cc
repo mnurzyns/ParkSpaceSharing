@@ -12,8 +12,8 @@ Object<PlaceDto>
 PlaceService::createOne(Object<PlaceDto> const& dto)
 {
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Place already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "Place already exists")
     } catch (HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -125,6 +125,18 @@ PlaceService::putOne(Object<PlaceDto> const& dto)
 Object<PlaceDto>
 PlaceService::patchOne(UInt64 const& id, Object<PlaceDto> const& dto)
 {
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another place")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
+    }
+
     bool update = false;
     std::string query = "UPDATE place SET ";
     for (auto* prop : Object<PlaceDto>::getPropertiesList()) {

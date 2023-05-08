@@ -21,8 +21,8 @@ OfferService::createOne(Object<OfferDto> const& dto)
     validateDateHTTP(dto->date_from, dto->date_to);
 
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "Offer already exists")
     } catch (oatpp::web::protocol::http::HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -136,6 +136,18 @@ OfferService::putOne(Object<OfferDto> const& dto)
 Object<OfferDto>
 OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
 {
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another offer")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
+    }
+
     if (dto->date_from || dto->date_to) {
         validateDateHTTP(dto->date_from ? dto->date_from
                                         : getOne(id)->date_from,

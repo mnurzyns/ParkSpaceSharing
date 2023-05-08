@@ -16,8 +16,8 @@ UserService::createOne(Object<UserDto> const& dto)
     validateEmailHTTP(dto->email);
 
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "User already exists")
     } catch (oatpp::web::protocol::http::HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -131,6 +131,18 @@ UserService::putOne(Object<UserDto> const& dto)
 Object<UserDto>
 UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
 {
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another user")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
+    }
+
     if (dto->email) {
         validateEmailHTTP(dto->email);
     }

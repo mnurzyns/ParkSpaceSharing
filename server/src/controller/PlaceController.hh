@@ -12,7 +12,7 @@
 
 namespace server::controller {
 
-using HttpError = oatpp::web::protocol::http::HttpError;
+using oatpp::web::protocol::http::HttpError;
 
 class PlaceController : public oatpp::web::server::api::ApiController
 {
