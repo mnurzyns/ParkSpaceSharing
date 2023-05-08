@@ -1,8 +1,8 @@
-INSERT INTO `user`(`email`, `username`, `password`, `role`)
+INSERT INTO `user`(`email`, `tel_num`, `username`, `password`, `role`)
 VALUES
-    ('bob@example.com', 'bob', '$argon2id$v=19$m=65536,t=1,p=1$f2TGePdZVRZHs70X6ZH4xQ$bJEePpbCDj5x+E76AU/WG7l2NJdFo4B+olw01jtGSnc', 1), -- password: passw0
-    ('tom@example.com', 'tom', '$argon2id$v=19$m=65536,t=1,p=1$ckiPDphAdTCNFmgfTcY4tw$HDlGBWYluZ0YBxl2dPvY/GkGlspI8iSZnXr8Ze8D/pI', 1), -- password: passw1
-    ('admin@example.com', 'admin', '$argon2id$v=19$m=65536,t=1,p=1$rziInIOuKR9LrjujNEuCDQ$B4ZJZ4sV/fM614LVzNmwv3MWoVp3u5XImqbkee1H9g4', 0); -- password: admin
+    ('bob@example.com', '+48 555000111', 'bob', '$argon2id$v=19$m=65536,t=1,p=1$f2TGePdZVRZHs70X6ZH4xQ$bJEePpbCDj5x+E76AU/WG7l2NJdFo4B+olw01jtGSnc', 1), -- password: passw0
+    ('tom@example.com', '+12 555000222', 'tom', '$argon2id$v=19$m=65536,t=1,p=1$ckiPDphAdTCNFmgfTcY4tw$HDlGBWYluZ0YBxl2dPvY/GkGlspI8iSZnXr8Ze8D/pI', 1), -- password: passw1
+    ('admin@example.com', '+109 555000333', 'admin', '$argon2id$v=19$m=65536,t=1,p=1$rziInIOuKR9LrjujNEuCDQ$B4ZJZ4sV/fM614LVzNmwv3MWoVp3u5XImqbkee1H9g4', 0); -- password: admin
 
 INSERT INTO `place`(`owner_id`, `address`, `latitude`, `longitude`)
 VALUES
