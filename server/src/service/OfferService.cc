@@ -136,7 +136,11 @@ OfferService::putOne(Object<OfferDto> const& dto)
 Object<OfferDto>
 OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
 {
-    validateDateHTTP(dto->date_from, dto->date_to);
+    if (dto->date_from || dto->date_to) {
+        validateDateHTTP(dto->date_from ? dto->date_from
+                                        : getOne(id)->date_from,
+                         dto->date_to ? dto->date_to : getOne(id)->date_to);
+    }
 
     bool update = false;
     std::string query = "UPDATE offer SET ";
