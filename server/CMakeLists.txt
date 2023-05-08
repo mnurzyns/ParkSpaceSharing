@@ -10,7 +10,7 @@ target_sources(
     src/Config.cc
     src/ErrorHandler.cc
     src/TokenUtils.cc
-    src/EmailValidation.cc
+    src/RegexValidation.cc
 
     src/database/MainDatabase.cc
 
