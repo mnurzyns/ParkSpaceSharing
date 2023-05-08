@@ -238,11 +238,12 @@ offerPatchTest(TestEnvironment const& env, AuthContext const& auth)
                    returned->price == offer->price);
     });
 
-    OATPP_LOGD("[OfferController][PATCH][400]", "Bad request");
+    OATPP_LOGD("[OfferController][PATCH][400]", "Bad request - invalid date");
     deferFailure([&] {
         auto offer = createDummyOffer(env, auth);
         auto patch = server::dto::OfferDto::createShared();
-        patch->date_from = -2;
+        patch->date_to = 2;
+        patch->date_from = 3;
 
         auto res = env.client->offerPatch(auth.token, offer->id, patch);
         testAssert(res->getStatusCode() == 400, assertWrap(res));
