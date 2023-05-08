@@ -180,6 +180,8 @@ class OfferController : public oatpp::web::server::api::ApiController
 
         info->addResponse<oatpp::Object<dto::OfferDto>>(Status::CODE_200,
                                                         "application/json");
+        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
+                                                         "application/json");
         info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
                                                          "application/json");
         info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403,
