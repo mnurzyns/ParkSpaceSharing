@@ -1,10 +1,13 @@
 #include "OfferController.hh"
 
+#include "dto/OfferDto.hh"
+
+#include <oatpp/core/Types.hpp>
+
 #include "ApiClient.hh"
 #include "Assert.hh"
+#include "AuthController.hh"
 #include "PlaceController.hh"
-#include "dto/OfferDto.hh"
-#include <oatpp/core/Types.hpp>
 
 namespace tests {
 
@@ -258,7 +261,20 @@ offerPatchTest(TestEnvironment const& env, AuthContext const& auth)
         testAssert(res->getStatusCode() == 401, assertWrap(res));
     });
 
-    OATPP_LOGD("[OfferController][PATCH][403]", "Forbidden - place_id");
+    OATPP_LOGD("[OfferController][PATCH][403]", "Forbidden - change someone else's place");
+    deferFailure([&] {
+        auto other_auth = signinAsDummyUser(env);
+        auto offer = createDummyOffer(env, other_auth);
+
+        auto place = createDummyPlace(env, auth);
+        auto patch = server::dto::OfferDto::createShared();
+        patch->place_id = place->id;
+
+        auto res = env.client->offerPatch(auth.token, offer->id, patch);
+        testAssert(res->getStatusCode() == 403, assertWrap(res));
+    });
+
+    OATPP_LOGD("[OfferController][PATCH][403]", "Forbidden - change to someone else's place");
     deferFailure([&] {
         auto offer = createDummyOffer(env, auth);
         auto patch = server::dto::OfferDto::createShared();
