@@ -60,6 +60,9 @@ UserService::getOne(UInt64 const& id)
                       Status::CODE_500,
                       "Unexpected number of rows returned!")
 
+    // TODO(papaj-na-wrotkach): use polymorphic DTOs instead
+    fetch_result[0]->password = nullptr;
+
     return fetch_result[0];
 }
 
@@ -101,6 +104,11 @@ UserService::search(String const& query,
     page->limit = limit;
     page->offset = offset;
     page->count = fetch_total_result[0][0];
+
+    // TODO(papaj-na-wrotkach): use polymorphic DTOs instead
+    for (auto& user : *page->items) {
+        user->password = nullptr;
+    }
 
     return page;
 }
