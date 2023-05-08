@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS `user`(
     `id`       INTEGER  PRIMARY KEY,
     `email`    TEXT     NOT NULL UNIQUE,
+    `tel_num`  TEXT    NOT NULL UNIQUE,
     `username` TEXT     NOT NULL UNIQUE,
     `password` TEXT     NOT NULL,
     `role`     INTEGER  NOT NULL DEFAULT 1
