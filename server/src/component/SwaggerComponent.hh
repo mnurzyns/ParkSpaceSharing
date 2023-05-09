@@ -52,7 +52,7 @@ class SwaggerComponent
                    res_path.data())
 
         return oatpp::swagger::Resources::loadResources(
-          oatpp::String{ std::string{ res_path } });
+          String{ std::string{ res_path } });
     }());
 };
 

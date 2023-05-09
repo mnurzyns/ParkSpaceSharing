@@ -16,6 +16,7 @@ namespace server::controller {
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
 using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto;
+using oatpp::Object;
 
 class OfferController : public oatpp::web::server::api::ApiController
 {
@@ -51,7 +52,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+        info->addResponse<Object<OfferDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -85,7 +86,7 @@ class OfferController : public oatpp::web::server::api::ApiController
           Status::CODE_403,
           "Cannot create offer for another user's place as a regular user")
 
-        return createDtoResponse(Status::CODE_200,
+        return createDtoResponse(Status::CODE_201,
                                  offer_service_.createOne(dto));
     }
 
@@ -136,7 +137,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+        info->addResponse<Object<OfferDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -168,7 +169,7 @@ class OfferController : public oatpp::web::server::api::ApiController
                           "Cannot create or modify offer for another user's "
                           "place as a regular user")
 
-        return createDtoResponse(Status::CODE_200, offer_service_.putOne(dto));
+        return createDtoResponse(Status::CODE_201, offer_service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)
@@ -200,8 +201,11 @@ class OfferController : public oatpp::web::server::api::ApiController
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
-            auth_object->user_id ==
-              place_service_.getOne(dto->place_id)->owner_id,
+            (place_service_.getOne(offer_service_.getOne(id)->place_id)
+                 ->owner_id == auth_object->user_id &&
+             (!dto->place_id ||
+              place_service_.getOne(dto->place_id)->owner_id ==
+                auth_object->user_id)),
           Status::CODE_403,
           "Cannot modify offer for another user's place as a regular user")
 

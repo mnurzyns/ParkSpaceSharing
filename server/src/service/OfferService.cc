@@ -21,8 +21,8 @@ OfferService::createOne(Object<OfferDto> const& dto)
     validateDateHTTP(dto->date_from, dto->date_to);
 
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Offer already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "Offer already exists")
     } catch (oatpp::web::protocol::http::HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -197,19 +197,58 @@ OfferService::putOne(Object<OfferDto> const& dto)
 Object<OfferDto>
 OfferService::patchOne(UInt64 const& id, Object<OfferDto> const& dto)
 {
-    auto existing = this->getOne(id);
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another offer")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
+    }
 
-    existing->id = dto->id ? dto->id : existing->id;
-    existing->place_id = dto->place_id ? dto->place_id : existing->place_id;
-    existing->date_from = dto->date_from ? dto->date_from : existing->date_from;
-    existing->date_to = dto->date_to ? dto->date_to : existing->date_to;
-    existing->description =
-      dto->description ? dto->description : existing->description;
-    existing->price = dto->price ? dto->price : existing->price;
+    if (dto->date_from || dto->date_to) {
+        validateDateHTTP(dto->date_from ? dto->date_from
+                                        : getOne(id)->date_from,
+                         dto->date_to ? dto->date_to : getOne(id)->date_to);
+    }
 
-    validateDateHTTP(existing->date_from, existing->date_to);
+    bool update = false;
+    std::string query = "UPDATE offer SET ";
+    for (auto* prop : Object<OfferDto>::getPropertiesList()) {
+        if (prop->get(dto.get())) {
+            if (update) {
+                query += ", ";
+            }
+            query += std::string{} + prop->name + " = :dto." + prop->name;
+            update = true;
+        }
+    }
+    query += " WHERE id = :id RETURNING *;";
 
-    return this->putOne(existing);
+    if (update) {
+        auto query_result =
+          database_->executeQuery(query, { { "dto", dto }, { "id", id } });
+
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
+
+        OATPP_ASSERT_HTTP(
+          query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+        auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
+
+        OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                          Status::CODE_500,
+                          "Unexpected number of rows returned!")
+
+        return fetch_result[0];
+    }
+
+    return this->getOne(id);
 }
 
 Object<StatusDto>

@@ -1,13 +1,20 @@
 #include "AuthService.hh"
 
-#include "EmailValidation.hh"
+#include "Validator.hh"
 
 namespace server::service {
 
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
-    validateEmailHTTP(dto->email);
+    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                      Status::CODE_400,
+                      "Invalid email address")
+
+    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                      Status::CODE_400,
+                      "Invalid phone number")
+
     {
         auto query_result = database_->getUserByEmail(dto->email);
 
@@ -18,6 +25,17 @@ AuthService::signUp(Object<SignUpDto> const& dto)
         OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
                           Status::CODE_409,
                           "User with provided email already exists")
+    }
+    {
+        auto query_result = database_->getUserByPhone(dto->phone);
+
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
+
+        OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
+                          Status::CODE_409,
+                          "User with provided phone number already exists")
     }
     {
         auto query_result = database_->getUserByUsername(dto->username);
@@ -34,6 +52,7 @@ AuthService::signUp(Object<SignUpDto> const& dto)
     auto user_dto = Object<UserDto>::createShared();
     user_dto->email = dto->email;
     user_dto->username = dto->username;
+    user_dto->phone = dto->phone;
     user_dto->password = Botan::argon2_generate_pwhash(
       dto->password->c_str(),
       dto->password->size(),

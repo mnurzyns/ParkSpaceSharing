@@ -17,6 +17,7 @@ using namespace server::dto;                // NOLINT
 using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto,
   oatpp::web::protocol::http::HttpError;
 
+
 class PlaceController : public oatpp::web::server::api::ApiController
 {
   private:
@@ -50,7 +51,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+        info->addResponse<Object<PlaceDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -81,7 +82,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
           Status::CODE_403,
           "Cannot create place of another user as a regular user")
 
-        return createDtoResponse(Status::CODE_200, service_.createOne(dto));
+        return createDtoResponse(Status::CODE_201, service_.createOne(dto));
     }
 
     ENDPOINT_INFO(getOne)
@@ -131,7 +132,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+        info->addResponse<Object<PlaceDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -167,7 +168,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
             }
         }
 
-        return createDtoResponse(Status::CODE_200, service_.putOne(dto));
+        return createDtoResponse(Status::CODE_201, service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)
@@ -197,8 +198,8 @@ class PlaceController : public oatpp::web::server::api::ApiController
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
-            (dto->owner_id == auth_object->user_id &&
-             dto->owner_id == service_.getOne(id)->owner_id),
+            ((!dto->owner_id || auth_object->user_id == dto->owner_id) &&
+             auth_object->user_id == service_.getOne(id)->owner_id),
           Status::CODE_403,
           "Cannot modify other place of another user as a regular user")
 

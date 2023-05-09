@@ -1,6 +1,6 @@
 #include "UserService.hh"
 
-#include "EmailValidation.hh"
+#include "Validator.hh"
 
 namespace server::service {
 
@@ -13,11 +13,9 @@ UserService::createShared()
 Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
-    validateEmailHTTP(dto->email);
-
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "User already exists")
     } catch (oatpp::web::protocol::http::HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -116,8 +114,6 @@ UserService::search(String const& query,
 Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
-    validateEmailHTTP(dto->email);
-
     auto query_result = database_->replaceUser(dto);
 
     OATPP_ASSERT_HTTP(query_result->isSuccess(),
@@ -139,19 +135,64 @@ UserService::putOne(Object<UserDto> const& dto)
 Object<UserDto>
 UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
 {
-    if (dto->email) {
-        validateEmailHTTP(dto->email);
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another user")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
     }
 
-    auto existing = this->getOne(id);
+    if (dto->email) {
+        OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                          Status::CODE_400,
+                          "Invalid email address")
+    }
 
-    existing->id = dto->id ? dto->id : existing->id;
-    existing->email = dto->email ? dto->email : existing->email;
-    existing->username = dto->username ? dto->username : existing->username;
-    existing->password = dto->password ? dto->password : existing->password;
-    existing->role = dto->role ? dto->role : existing->role;
+    if (dto->phone) {
+        OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                          Status::CODE_400,
+                          "Invalid phone number")
+    }
 
-    return this->putOne(existing);
+    bool update = false;
+    std::string query = "UPDATE user SET ";
+    for (auto* prop : Object<UserDto>::getPropertiesList()) {
+        if (prop->get(dto.get())) {
+            if (update) {
+                query += ", ";
+            }
+            query += std::string{} + prop->name + " = :dto." + prop->name;
+            update = true;
+        }
+    }
+    query += " WHERE id = :id RETURNING *;";
+
+    if (!update) {
+        return this->getOne(id);
+    }
+
+    auto query_result =
+      database_->executeQuery(query, { { "dto", dto }, { "id", id } });
+
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
+
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
+
+    return fetch_result[0];
 }
 
 Object<StatusDto>

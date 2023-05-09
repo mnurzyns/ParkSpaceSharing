@@ -12,7 +12,8 @@ namespace server::service {
 
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
-using oatpp::Object, oatpp::web::protocol::http::Status;
+using oatpp::Object, oatpp::web::protocol::http::HttpError,
+  oatpp::web::protocol::http::Status;
 
 class UserService
 {
