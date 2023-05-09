@@ -31,4 +31,12 @@
 *.out
 *.app
 
+# Files and Directories
 build/*
+.vscode/*
+.cache/*
+
+**/config.toml
+/main.db
+
+/app_config
