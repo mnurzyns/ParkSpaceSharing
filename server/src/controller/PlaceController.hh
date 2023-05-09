@@ -49,7 +49,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+        info->addResponse<Object<PlaceDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -80,7 +80,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
           Status::CODE_403,
           "Cannot create place of another user as a regular user")
 
-        return createDtoResponse(Status::CODE_200, service_.createOne(dto));
+        return createDtoResponse(Status::CODE_201, service_.createOne(dto));
     }
 
     ENDPOINT_INFO(getOne)
@@ -135,7 +135,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+        info->addResponse<Object<PlaceDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -171,7 +171,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
             }
         }
 
-        return createDtoResponse(Status::CODE_200, service_.putOne(dto));
+        return createDtoResponse(Status::CODE_201, service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)
