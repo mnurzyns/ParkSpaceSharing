@@ -33,9 +33,7 @@ class PlaceService
     getOne(UInt64 const& id);
 
     Object<PlacePageDto>
-    search(String const& query,
-           UInt64 const& limit = uint64_t{ 20 },
-           UInt64 const& offset = uint64_t{ 0 });
+    search(Object<PlaceSearchDto> const& dto);
 
     Object<PlaceDto>
     putOne(Object<PlaceDto> const& dto);
