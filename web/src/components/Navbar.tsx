@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
+import { Session } from "next-auth";
+import exp from "constants";
 
-export default function Navbar() {
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    console.log(session);
-  }, [session]);
-
+const Navbar = ({ session }: { session: Session | null }) => {
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -39,9 +35,12 @@ export default function Navbar() {
             <li>
               <Link href="/addOffer">Add offer</Link>
             </li>
+            <li>
+              <Link href="/addPlace">Add place</Link>
+            </li>
           </ul>
         </div>
-        <a className="btn btn-ghost normal-case text-xl">ParkSpaceSharing</a>
+        <Link className="btn btn-ghost normal-case text-xl" href="/">ParkSpaceSharing</Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
@@ -50,6 +49,9 @@ export default function Navbar() {
           </li>
           <li>
             <Link href="/addOffer">Add offer</Link>
+          </li>
+          <li>
+            <Link href="/addPlace">Add place</Link>
           </li>
         </ul>
       </div>
@@ -94,3 +96,5 @@ export default function Navbar() {
     </div>
   );
 }
+
+export default Navbar;

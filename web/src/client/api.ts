@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Parking space sharing
- * Project created by trainees of Bakcyl Programowania in 2022/2023.
+ * Project created by trainees ofBakcyl Programowania in 2022/2023.
  *
  * The version of the OpenAPI document: 0.1.0
  * 
@@ -119,6 +119,91 @@ export interface OfferPageDto {
 /**
  * 
  * @export
+ * @interface OfferSearchDto
+ */
+export interface OfferSearchDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof OfferSearchDto
+     */
+    'query'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'place_id'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'date_from'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'date_to'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'price_min'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'price_max'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'owner_id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof OfferSearchDto
+     */
+    'address'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'latitude'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'longitude'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'distance'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'limit'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof OfferSearchDto
+     */
+    'offset'?: number;
+}
+/**
+ * 
+ * @export
  * @interface PlaceDto
  */
 export interface PlaceDto {
@@ -187,6 +272,75 @@ export interface PlacePageDto {
 /**
  * 
  * @export
+ * @interface PlaceSearchDto
+ */
+export interface PlaceSearchDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof PlaceSearchDto
+     */
+    'query'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'owner_id'?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof PlaceSearchDto
+     */
+    'address'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'latitude'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'longitude'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'distance'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'limit'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PlaceSearchDto
+     */
+    'offset'?: number;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const RoleInt8 = {
+    NUMBER_0: 0,
+    NUMBER_1: 1
+} as const;
+
+export type RoleInt8 = typeof RoleInt8[keyof typeof RoleInt8];
+
+
+/**
+ * 
+ * @export
  * @interface SignInDto
  */
 export interface SignInDto {
@@ -215,6 +369,12 @@ export interface SignUpDto {
      * @memberof SignUpDto
      */
     'username'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof SignUpDto
+     */
+    'phone'?: string;
     /**
      * 
      * @type {string}
@@ -276,6 +436,12 @@ export interface UserDto {
      * @type {string}
      * @memberof UserDto
      */
+    'phone'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDto
+     */
     'username'?: string;
     /**
      * 
@@ -285,11 +451,13 @@ export interface UserDto {
     'password'?: string;
     /**
      * 
-     * @type {number}
+     * @type {RoleInt8}
      * @memberof UserDto
      */
-    'role'?: number;
+    'role'?: RoleInt8;
 }
+
+
 /**
  * 
  * @export
@@ -428,7 +596,7 @@ export const AuthControllerApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signUp(signUpDto: SignUpDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthDto>> {
+        async signUp(signUpDto: SignUpDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatusDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signUp(signUpDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -459,7 +627,7 @@ export const AuthControllerApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signUp(signUpDto: SignUpDto, options?: any): AxiosPromise<AuthDto> {
+        signUp(signUpDto: SignUpDto, options?: any): AxiosPromise<StatusDto> {
             return localVarFp.signUp(signUpDto, options).then((request) => request(axios, basePath));
         },
     };
@@ -703,14 +871,14 @@ export const OfferControllerApiAxiosParamCreator = function (configuration?: Con
         /**
          * 
          * @summary Search offers
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {OfferSearchDto} offerSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (query?: string, limit?: number, offset?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/offer`;
+        search: async (offerSearchDto: OfferSearchDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'offerSearchDto' is not null or undefined
+            assertParamExists('search', 'offerSearchDto', offerSearchDto)
+            const localVarPath = `/offer/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -718,27 +886,18 @@ export const OfferControllerApiAxiosParamCreator = function (configuration?: Con
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (query !== undefined) {
-                localVarQueryParameter['query'] = query;
-            }
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (offset !== undefined) {
-                localVarQueryParameter['offset'] = offset;
-            }
-
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(offerSearchDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -814,14 +973,12 @@ export const OfferControllerApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Search offers
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {OfferSearchDto} offerSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(query?: string, limit?: number, offset?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OfferPageDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(query, limit, offset, options);
+        async search(offerSearchDto: OfferSearchDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OfferPageDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(offerSearchDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -888,14 +1045,12 @@ export const OfferControllerApiFactory = function (configuration?: Configuration
         /**
          * 
          * @summary Search offers
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {OfferSearchDto} offerSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(query?: string, limit?: number, offset?: number, options?: any): AxiosPromise<OfferPageDto> {
-            return localVarFp.search(query, limit, offset, options).then((request) => request(axios, basePath));
+        search(offerSearchDto: OfferSearchDto, options?: any): AxiosPromise<OfferPageDto> {
+            return localVarFp.search(offerSearchDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -971,15 +1126,13 @@ export class OfferControllerApi extends BaseAPI {
     /**
      * 
      * @summary Search offers
-     * @param {string} [query] 
-     * @param {number} [limit] 
-     * @param {number} [offset] 
+     * @param {OfferSearchDto} offerSearchDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OfferControllerApi
      */
-    public search(query?: string, limit?: number, offset?: number, options?: AxiosRequestConfig) {
-        return OfferControllerApiFp(this.configuration).search(query, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    public search(offerSearchDto: OfferSearchDto, options?: AxiosRequestConfig) {
+        return OfferControllerApiFp(this.configuration).search(offerSearchDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1189,14 +1342,14 @@ export const PlaceControllerApiAxiosParamCreator = function (configuration?: Con
         /**
          * 
          * @summary Search places
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {PlaceSearchDto} placeSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search: async (query?: string, limit?: number, offset?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/place`;
+        search: async (placeSearchDto: PlaceSearchDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'placeSearchDto' is not null or undefined
+            assertParamExists('search', 'placeSearchDto', placeSearchDto)
+            const localVarPath = `/place/search`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1204,27 +1357,18 @@ export const PlaceControllerApiAxiosParamCreator = function (configuration?: Con
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            if (query !== undefined) {
-                localVarQueryParameter['query'] = query;
-            }
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (offset !== undefined) {
-                localVarQueryParameter['offset'] = offset;
-            }
-
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(placeSearchDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1300,14 +1444,12 @@ export const PlaceControllerApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Search places
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {PlaceSearchDto} placeSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async search(query?: string, limit?: number, offset?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlacePageDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.search(query, limit, offset, options);
+        async search(placeSearchDto: PlaceSearchDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlacePageDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.search(placeSearchDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -1374,14 +1516,12 @@ export const PlaceControllerApiFactory = function (configuration?: Configuration
         /**
          * 
          * @summary Search places
-         * @param {string} [query] 
-         * @param {number} [limit] 
-         * @param {number} [offset] 
+         * @param {PlaceSearchDto} placeSearchDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        search(query?: string, limit?: number, offset?: number, options?: any): AxiosPromise<PlacePageDto> {
-            return localVarFp.search(query, limit, offset, options).then((request) => request(axios, basePath));
+        search(placeSearchDto: PlaceSearchDto, options?: any): AxiosPromise<PlacePageDto> {
+            return localVarFp.search(placeSearchDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1457,15 +1597,13 @@ export class PlaceControllerApi extends BaseAPI {
     /**
      * 
      * @summary Search places
-     * @param {string} [query] 
-     * @param {number} [limit] 
-     * @param {number} [offset] 
+     * @param {PlaceSearchDto} placeSearchDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PlaceControllerApi
      */
-    public search(query?: string, limit?: number, offset?: number, options?: AxiosRequestConfig) {
-        return PlaceControllerApiFp(this.configuration).search(query, limit, offset, options).then((request) => request(this.axios, this.basePath));
+    public search(placeSearchDto: PlaceSearchDto, options?: AxiosRequestConfig) {
+        return PlaceControllerApiFp(this.configuration).search(placeSearchDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

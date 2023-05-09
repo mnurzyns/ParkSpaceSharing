@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Parking space sharing
- * Project created by trainees of Bakcyl Programowania in 2022/2023.
+ * Project created by trainees ofBakcyl Programowania in 2022/2023.
  *
  * The version of the OpenAPI document: 0.1.0
  * 

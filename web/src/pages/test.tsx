@@ -1,3 +1,4 @@
+import { setBearerAuthToObject } from "@/client/common";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect } from "react";
 
@@ -12,6 +13,7 @@ export default function Component() {
     return (
       <>
         {" "}
+
         Signed in as {session.user?.email} {session.user?.token} <br />{" "}
         <button onClick={() => signOut()}>Sign out</button>{" "}
       </>

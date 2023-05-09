@@ -6,17 +6,20 @@ import { BaseAPI } from "@/client/base";
 import { OfferControllerApi, OfferDto } from "@/client/api";
 import { useEffect, useState } from "react";
 import { off } from "process";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const [offers, setOffers] = useState<OfferDto[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
+
+  const { data: session } = useSession();
 
   useEffect(() => {
     const client: OfferControllerApi = new OfferControllerApi();
     client
-      .search(undefined, itemsPerPage, currentPage * itemsPerPage)
+      .search({limit: itemsPerPage, offset: currentPage * itemsPerPage})
       .then((res) => {
         if (res.data.items != null) {
           console.log(res.data);
@@ -37,13 +40,15 @@ export default function Home() {
     setCurrentPage((prevPage) => prevPage - 1);
   };
 
+
+
   return (
     <div>
-      <Navbar />
-      <div className="flex flex-wrap justify-around">
+      <Navbar session={session} />
+      <div className="flex flex-wrap justify-around ">
         {offers?.map((offer, index) => (
           <div key={index}>
-            <div className="card w-96 bg-gradient-to-br from-purple-600 via-primary to-primary text-white p-2 shadow-md">
+            <div className="card w-80 m-4 bg-gradient-to-br from-purple-600 via-primary to-primary text-white p-2 shadow-md">
               <div className="card-body">
                 <h2 className="card-title">Offer {offer.id}</h2>
                 <p>Place ID: {offer.place_id}</p>

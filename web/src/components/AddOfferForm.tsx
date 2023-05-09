@@ -1,7 +1,8 @@
-import { OfferControllerApi } from "@/client";
-import { useState } from "react";
+import { Configuration, OfferControllerApi, PlaceControllerApi, PlaceDto } from "@/client";
+import { User } from "next-auth";
+import { useEffect, useState } from "react";
 
-const AddOfferForm = () => {
+const AddOfferForm = ({user}: {user: User})  => {
   const [formData, setFormData] = useState({
     place_id: 0,
     date_from: 0,
@@ -9,6 +10,7 @@ const AddOfferForm = () => {
     description: "",
     price: 0,
   });
+  const [places, setPlaces] = useState<PlaceDto[]>([]);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -17,27 +19,60 @@ const AddOfferForm = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const client: OfferControllerApi = new OfferControllerApi();
-    client.createOne(formData);
-    console.log(formData);
+    const client: OfferControllerApi = new OfferControllerApi(new Configuration({ accessToken: user.token }));
+    const dateFromTimestamp = new Date(formData.date_from).getTime() / 1000;
+    const dateToTimestamp = new Date(formData.date_to).getTime() / 1000;
+    const priceAsNumber = Number(formData.price);
+    const place_idAsNumber = Number(formData.place_id);
+    if (place_idAsNumber === 0) {
+      return;
+    }
+
+    const submittedData = {
+      ...formData,
+      place_id: place_idAsNumber,
+      price: priceAsNumber,
+      date_from: dateFromTimestamp,
+      date_to: dateToTimestamp,
+    };
+    client.createOne(submittedData);
   };
+
+  useEffect(() => {
+    const placeApi = new PlaceControllerApi(new Configuration({ accessToken: user.token }));
+    placeApi.search({owner_id: user.id })
+      .then((res) => {
+        if (res.data.items != null) {
+          console.log(res.data);
+          setPlaces(res.data.items);
+        }
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  }, [user.id, user.token]);
 
   return (
     <div>
       <form onSubmit={handleSubmit} className="p-4 space-y-4">
-        <div>
+      <div>
           <label htmlFor="place_id" className="block mb-2">
-            Place ID:
+            Address:
           </label>
-          <input
-            type="number"
+          <select
             name="place_id"
             id="place_id"
             value={formData.place_id}
             onChange={handleChange}
-            placeholder="Place ID"
-            className="input input-bordered w-full"
-          />
+            className="select select-bordered w-full"
+          >
+            <option selected={true} value={0}>Select Address</option>
+            {places.map((place) => (
+              <option key={place.id} value={place.id}>
+                {place.address} {place.id}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label htmlFor="date_from" className="block mb-2">
