@@ -7,8 +7,14 @@ namespace server::service {
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
-    ValidateEmailHTTP(dto->email);
-    ValidatePhoneHTTP(dto->phone);
+    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                      Status::CODE_400,
+                      "Invalid email address")
+
+    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                      Status::CODE_400,
+                      "Invalid phone number")
+
     {
         auto query_result = database_->getUserByEmail(dto->email);
 
@@ -29,7 +35,7 @@ AuthService::signUp(Object<SignUpDto> const& dto)
 
         OATPP_ASSERT_HTTP(!query_result->hasMoreToFetch(),
                           Status::CODE_409,
-                          "User with provided telephone number already exists")
+                          "User with provided phone number already exists")
     }
     {
         auto query_result = database_->getUserByUsername(dto->username);

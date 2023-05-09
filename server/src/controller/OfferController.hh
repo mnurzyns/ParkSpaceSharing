@@ -13,6 +13,10 @@
 
 namespace server::controller {
 
+using namespace oatpp::data::mapping::type; // NOLINT
+using namespace server::dto;                // NOLINT
+using oatpp::Object;
+
 class OfferController : public oatpp::web::server::api::ApiController
 {
   private:
@@ -47,27 +51,27 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<oatpp::Object<dto::OfferDto>>(Status::CODE_200,
-                                                        "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_409,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_409,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("POST",
              "offer",
              createOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
-             BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
+             BODY_DTO(Object<OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->place_id && dto->date_from && dto->date_to &&
                             dto->description && dto->price,
@@ -90,12 +94,12 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->summary = "Get one offer";
         info->tags.emplace_back("offer-controller");
 
-        info->addResponse<oatpp::Object<dto::OfferDto>>(Status::CODE_200,
-                                                        "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("GET", "offer/{id}", getOne, PATH(UInt64, id))
@@ -112,12 +116,12 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->queryParams["limit"].required = false;
         info->queryParams["offset"].required = false;
 
-        info->addResponse<oatpp::Object<dto::OfferPageDto>>(Status::CODE_200,
-                                                            "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<OfferPageDto>>(Status::CODE_200,
+                                                "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("GET",
@@ -137,25 +141,25 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<oatpp::Object<dto::OfferDto>>(Status::CODE_200,
-                                                        "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("PUT",
              "offer",
              putOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
-             BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
+             BODY_DTO(Object<OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->id && dto->place_id && dto->date_from &&
                             dto->date_to && dto->description && dto->price,
@@ -178,18 +182,18 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<oatpp::Object<dto::OfferDto>>(Status::CODE_200,
-                                                        "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_400,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("PATCH",
@@ -197,7 +201,7 @@ class OfferController : public oatpp::web::server::api::ApiController
              patchOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id),
-             BODY_DTO(oatpp::Object<dto::OfferDto>, dto))
+             BODY_DTO(Object<OfferDto>, dto))
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
@@ -216,16 +220,16 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_200,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_401,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_403,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_404,
-                                                         "application/json");
-        info->addResponse<oatpp::Object<dto::StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_200,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("DELETE",

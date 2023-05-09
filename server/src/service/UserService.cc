@@ -13,9 +13,13 @@ UserService::createShared()
 Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
-    ValidateEmailHTTP(dto->email);
+    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                      Status::CODE_400,
+                      "Invalid email address")
 
-    ValidatePhoneHTTP(dto->phone);
+    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                      Status::CODE_400,
+                      "Invalid phone number")
 
     try {
         this->getOne(dto->id); // Will throw 404 if not found
@@ -118,8 +122,13 @@ UserService::search(String const& query,
 Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
-    ValidateEmailHTTP(dto->email);
-    ValidatePhoneHTTP(dto->phone);
+    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                      Status::CODE_400,
+                      "Invalid email address")
+
+    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                      Status::CODE_400,
+                      "Invalid phone number")
 
     auto query_result = database_->replaceUser(dto);
 
@@ -143,11 +152,15 @@ Object<UserDto>
 UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
 {
     if (dto->email) {
-        ValidateEmailHTTP(dto->email);
+        OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                          Status::CODE_400,
+                          "Invalid email address")
     }
 
     if (dto->phone) {
-        ValidatePhoneHTTP(dto->phone);
+        OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                          Status::CODE_400,
+                          "Invalid phone number")
     }
 
     auto existing = this->getOne(id);
