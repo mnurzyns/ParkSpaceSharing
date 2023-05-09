@@ -60,6 +60,35 @@ PlaceService::getOne(UInt64 const& id)
 }
 
 Object<PlacePageDto>
+PlaceService::getPlacesByOwner(UInt64 const& id,   
+                               UInt64 const& limit,
+                               UInt64 const& offset)
+{
+    auto query_total_result = database_->countPlacesByOwner(id,limit,offset);
+
+    OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
+                      Status::CODE_500,
+                      query_total_result->getErrorMessage())
+
+    auto fetch_total_result = query_total_result->fetch<Vector<Vector<UInt64>>>();
+
+    OATPP_ASSERT_HTTP(
+      fetch_total_result[0][0] > 0, Status::CODE_404, "No places found")
+
+    auto query_result = database_->getPlacesByOwner(id,limit,offset);
+
+    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
+
+    auto page = PlacePageDto::createShared();
+    page->items = fetch_result;
+    page->limit = limit;
+    page->offset = offset;
+    page->count = fetch_total_result[0][0];
+
+    return page;
+}
+
+Object<PlacePageDto>
 PlaceService::search(String const& query,
                      UInt64 const& limit,
                      UInt64 const& offset)

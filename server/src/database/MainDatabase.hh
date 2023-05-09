@@ -73,6 +73,16 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(getPlace, "SELECT * FROM place WHERE id=:id;", PARAM(UInt64, id))
 
+    QUERY(getPlacesByOwner, "SELECT * FROM place WHERE owner_id=:id LIMIT :offset, :limit;", 
+          PARAM(UInt64, id),
+          PARAM(UInt64, limit),
+          PARAM(UInt64, offset))
+
+    QUERY(countPlacesByOwner, "SELECT COUNT(*) FROM place WHERE owner_id=:id LIMIT :offset, :limit;", 
+          PARAM(UInt64, id),
+          PARAM(UInt64, limit),
+          PARAM(UInt64, offset))
+
     QUERY(replacePlace,
           "REPLACE INTO place"
           "(id, owner_id, address, latitude, longitude) VALUES "

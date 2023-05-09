@@ -101,6 +101,25 @@ class PlaceController : public oatpp::web::server::api::ApiController
         return createDtoResponse(Status::CODE_200, service_.getOne(id));
     }
 
+    ENDPOINT_INFO(getMyPlaces)
+    {
+        info->summary = "Get one place";
+        info->tags.emplace_back("place-controller");
+        info->addSecurityRequirement("JWT Bearer Auth", {});
+
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
+    }
+
+    ENDPOINT("GET", "myPlaces", getMyPlaces, AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
+    {
+        return createDtoResponse(Status::CODE_200, service_.getPlacesByOwner(auth_object->user_id));
+    }
+
     ENDPOINT_INFO(search)
     {
         info->summary = "Search places";
