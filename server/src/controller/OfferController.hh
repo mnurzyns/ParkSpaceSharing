@@ -201,8 +201,11 @@ class OfferController : public oatpp::web::server::api::ApiController
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
-            auth_object->user_id ==
-              place_service_.getOne(dto->place_id)->owner_id,
+            (place_service_.getOne(offer_service_.getOne(id)->place_id)
+                 ->owner_id == auth_object->user_id &&
+             (!dto->place_id ||
+              place_service_.getOne(dto->place_id)->owner_id ==
+                auth_object->user_id)),
           Status::CODE_403,
           "Cannot modify offer for another user's place as a regular user")
 
