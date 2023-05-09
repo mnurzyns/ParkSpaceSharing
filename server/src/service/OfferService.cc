@@ -151,10 +151,13 @@ OfferService::search(Object<OfferSearchDto> const& dto)
     OATPP_ASSERT_HTTP(
       fetch_total_result[0][0] > 0, Status::CODE_404, "No offers found")
 
+    dto->limit = dto->limit ? dto->limit : UInt64{ 20 };
+    dto->offset = dto->offset ? dto->offset : UInt64{ uint64_t{ 0 } };
+
     auto query_result = database_->executeQuery(
       "SELECT offer.*" + base_part + (join_place ? join_place_part : "") +
         (filters_part.empty() ? "" : " WHERE" + filters_part) +
-        " LIMIT :offset,:limit;",
+        " LIMIT :dto.offset,:dto.limit;",
       { { "dto", dto } });
 
     auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();

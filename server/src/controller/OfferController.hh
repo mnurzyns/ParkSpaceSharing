@@ -112,9 +112,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->summary = "Search offers";
         info->tags.emplace_back("offer-controller");
 
-        info->queryParams["query"].required = false;
-        info->queryParams["limit"].required = false;
-        info->queryParams["offset"].required = false;
+        info->body.required = false;
 
         info->addResponse<Object<OfferPageDto>>(Status::CODE_200,
                                                 "application/json");
@@ -127,7 +125,7 @@ class OfferController : public oatpp::web::server::api::ApiController
     ENDPOINT("POST",
              "offer/search",
              search,
-             BODY_DTO(Object<OfferSearchDto>, dto))
+             BODY_DTO(Object<OfferSearchDto>, dto, {}))
     {
         return createDtoResponse(Status::CODE_200, offer_service_.search(dto));
     }
@@ -180,17 +178,17 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
         info->addResponse<Object<OfferDto>>(Status::CODE_200,
-                                                        "application/json");
+                                            "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
-                                                         "application/json");
+                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_401,
-                                                         "application/json");
+                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_403,
-                                                         "application/json");
+                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_404,
-                                                         "application/json");
+                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_500,
-                                                         "application/json");
+                                             "application/json");
     }
 
     ENDPOINT("PATCH",

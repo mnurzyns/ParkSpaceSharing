@@ -12,7 +12,10 @@
 
 namespace server::controller {
 
-using HttpError = oatpp::web::protocol::http::HttpError;
+using namespace oatpp::data::mapping::type; // NOLINT
+using namespace server::dto;                // NOLINT
+using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto,
+  oatpp::web::protocol::http::HttpError;
 
 class PlaceController : public oatpp::web::server::api::ApiController
 {
@@ -47,25 +50,25 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<dto::PlaceDto>>(Status::CODE_200,
-                                                 "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_400,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_401,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_403,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_409,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_409,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("POST",
              "place",
              createOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
-             BODY_DTO(Object<dto::PlaceDto>, dto))
+             BODY_DTO(Object<PlaceDto>, dto, {}))
     {
         OATPP_ASSERT_HTTP(dto->owner_id && dto->address && dto->latitude &&
                             dto->longitude,
@@ -86,12 +89,12 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->summary = "Get one place";
         info->tags.emplace_back("place-controller");
 
-        info->addResponse<Object<dto::PlaceDto>>(Status::CODE_200,
-                                                 "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_404,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("GET", "place/{id}", getOne, PATH(UInt64, id))
@@ -104,27 +107,22 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->summary = "Search places";
         info->tags.emplace_back("place-controller");
 
-        info->queryParams["query"].required = false;
-        info->queryParams["limit"].required = false;
-        info->queryParams["offset"].required = false;
+        info->body.required = false;
 
-        info->addResponse<Object<dto::PlacePageDto>>(Status::CODE_200,
-                                                     "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_404,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<PlacePageDto>>(Status::CODE_200,
+                                                "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
-    ENDPOINT("GET",
-             "place",
+    ENDPOINT("POST",
+             "place/search",
              search,
-             QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
-             QUERY(UInt64, offset, "offset", uint64_t{ 0 }))
+             BODY_DTO(Object<PlaceSearchDto>, dto))
     {
-        return createDtoResponse(Status::CODE_200,
-                                 service_.search(query, limit, offset));
+        return createDtoResponse(Status::CODE_200, service_.search(dto));
     }
 
     ENDPOINT_INFO(putOne)
@@ -133,23 +131,23 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<dto::PlaceDto>>(Status::CODE_200,
-                                                 "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_400,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_401,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_403,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_400,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("PUT",
              "place",
              putOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
-             BODY_DTO(Object<dto::PlaceDto>, dto))
+             BODY_DTO(Object<PlaceDto>, dto))
     {
         OATPP_ASSERT_HTTP(dto->id && dto->owner_id && dto->address &&
                             dto->latitude && dto->longitude,
@@ -178,16 +176,16 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<dto::PlaceDto>>(Status::CODE_200,
-                                                 "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_401,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_403,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_404,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("PATCH",
@@ -195,7 +193,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
              patchOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
              PATH(UInt64, id),
-             BODY_DTO(Object<dto::PlaceDto>, dto))
+             BODY_DTO(Object<PlaceDto>, dto))
     {
         OATPP_ASSERT_HTTP(
           auth_object->user_role == Role::Admin ||
@@ -213,16 +211,16 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_200,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_401,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_403,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_404,
-                                                  "application/json");
-        info->addResponse<Object<dto::StatusDto>>(Status::CODE_500,
-                                                  "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_200,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_401,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_403,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
     }
 
     ENDPOINT("DELETE",
