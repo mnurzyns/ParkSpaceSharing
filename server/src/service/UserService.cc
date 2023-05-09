@@ -1,6 +1,6 @@
 #include "UserService.hh"
 
-#include "EmailValidation.hh"
+#include "Validator.hh"
 
 namespace server::service {
 
@@ -13,8 +13,6 @@ UserService::createShared()
 Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
-    validateEmailHTTP(dto->email);
-
     try {
         OATPP_ASSERT_HTTP(
           !this->getOne(dto->id), Status::CODE_409, "User already exists")
@@ -116,8 +114,6 @@ UserService::search(String const& query,
 Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
-    validateEmailHTTP(dto->email);
-
     auto query_result = database_->replaceUser(dto);
 
     OATPP_ASSERT_HTTP(query_result->isSuccess(),
@@ -152,7 +148,15 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
     }
 
     if (dto->email) {
-        validateEmailHTTP(dto->email);
+        OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+                          Status::CODE_400,
+                          "Invalid email address")
+    }
+
+    if (dto->phone) {
+        OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+                          Status::CODE_400,
+                          "Invalid phone number")
     }
 
     bool update = false;
@@ -168,27 +172,27 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
     }
     query += " WHERE id = :id RETURNING *;";
 
-    if (update) {
-        auto query_result =
-          database_->executeQuery(query, { { "dto", dto }, { "id", id } });
-
-        OATPP_ASSERT_HTTP(query_result->isSuccess(),
-                          Status::CODE_500,
-                          query_result->getErrorMessage())
-
-        OATPP_ASSERT_HTTP(
-          query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
-
-        auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
-
-        OATPP_ASSERT_HTTP(fetch_result->size() == 1,
-                          Status::CODE_500,
-                          "Unexpected number of rows returned!")
-
-        return fetch_result[0];
+    if (!update) {
+        return this->getOne(id);
     }
 
-    return this->getOne(id);
+    auto query_result =
+      database_->executeQuery(query, { { "dto", dto }, { "id", id } });
+
+    OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                      Status::CODE_500,
+                      query_result->getErrorMessage())
+
+    OATPP_ASSERT_HTTP(
+      query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+    auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
+
+    OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                      Status::CODE_500,
+                      "Unexpected number of rows returned!")
+
+    return fetch_result[0];   
 }
 
 Object<StatusDto>

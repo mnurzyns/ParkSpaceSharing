@@ -1,4 +1,5 @@
 #include "MainDatabase.hh"
+#include <set>
 
 namespace server::database {
 

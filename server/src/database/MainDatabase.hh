@@ -4,7 +4,6 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/orm/DbClient.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
-#include <set>
 
 #include "dto/OfferDto.hh"
 #include "dto/PlaceDto.hh"
@@ -13,6 +12,10 @@
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 namespace server::database {
+
+using namespace oatpp::data::mapping::type; // NOLINT
+using namespace server::dto;                // NOLINT
+using oatpp::Object;
 
 class MainDatabase : public oatpp::orm::DbClient
 {
@@ -24,23 +27,23 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(createUser,
           "INSERT INTO user"
-          "(id, email, username, password, role) VALUES "
-          "(:user.id, :user.email, :user.username, :user.password, :user.role)"
+          "(id, email, phone, username, password, role) VALUES "
+          "(:user.id, :user.email, :user.phone, :user.username, "
+          ":user.password, :user.role)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::UserDto>, user))
+          PARAM(Object<UserDto>, user))
 
-    QUERY(getUser, "SELECT * FROM user WHERE id=:id;", PARAM(oatpp::UInt64, id))
+    QUERY(getUser, "SELECT * FROM user WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(replaceUser,
           "REPLACE INTO user"
-          "(id, email, username, password, role) VALUES "
-          "(:user.id, :user.email, :user.username, :user.password, :user.role)"
+          "(id, email, phone, username, password, role) VALUES "
+          "(:user.id, :user.email, :user.phone, :user.username, "
+          ":user.password, :user.role)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::UserDto>, user))
+          PARAM(Object<UserDto>, user))
 
-    QUERY(deleteUser,
-          "DELETE FROM user WHERE id=:id;",
-          PARAM(oatpp::UInt64, id))
+    QUERY(deleteUser, "DELETE FROM user WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(deleteAllUsers, "DELETE FROM user;")
 
@@ -48,11 +51,15 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(getUserByUsername,
           "SELECT * FROM user WHERE username=:username;",
-          PARAM(oatpp::String, username))
+          PARAM(String, username))
 
     QUERY(getUserByEmail,
           "SELECT * FROM user WHERE email=:email;",
-          PARAM(oatpp::String, email))
+          PARAM(String, email))
+
+    QUERY(getUserByPhone,
+          "SELECT * FROM user WHERE phone=:phone;",
+          PARAM(String, phone))
 
     // Place
 
@@ -62,11 +69,9 @@ class MainDatabase : public oatpp::orm::DbClient
           "(:place.id, :place.owner_id, :place.address, :place.latitude, "
           ":place.longitude)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::PlaceDto>, place))
+          PARAM(Object<PlaceDto>, place))
 
-    QUERY(getPlace,
-          "SELECT * FROM place WHERE id=:id;",
-          PARAM(oatpp::UInt64, id))
+    QUERY(getPlace, "SELECT * FROM place WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(replacePlace,
           "REPLACE INTO place"
@@ -74,11 +79,9 @@ class MainDatabase : public oatpp::orm::DbClient
           "(:place.id, :place.owner_id, :place.address, :place.latitude, "
           ":place.longitude)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::PlaceDto>, place))
+          PARAM(Object<PlaceDto>, place))
 
-    QUERY(deletePlace,
-          "DELETE FROM place WHERE id=:id;",
-          PARAM(oatpp::UInt64, id))
+    QUERY(deletePlace, "DELETE FROM place WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(deleteAllPlaces, "DELETE FROM place;")
 
@@ -90,11 +93,9 @@ class MainDatabase : public oatpp::orm::DbClient
           "(:offer.id, :offer.place_id, :offer.date_from, :offer.date_to, "
           ":offer.description, :offer.price)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::OfferDto>, offer))
+          PARAM(Object<OfferDto>, offer))
 
-    QUERY(getOffer,
-          "SELECT * FROM offer WHERE id=:id;",
-          PARAM(oatpp::UInt64, id))
+    QUERY(getOffer, "SELECT * FROM offer WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(replaceOffer,
           "REPLACE INTO offer"
@@ -102,11 +103,9 @@ class MainDatabase : public oatpp::orm::DbClient
           "(:offer.id, :offer.place_id, :offer.date_from, :offer.date_to, "
           ":offer.description, :offer.price)"
           "RETURNING *;",
-          PARAM(oatpp::Object<dto::OfferDto>, offer))
+          PARAM(Object<OfferDto>, offer))
 
-    QUERY(deleteOffer,
-          "DELETE FROM offer WHERE id=:id;",
-          PARAM(oatpp::UInt64, id))
+    QUERY(deleteOffer, "DELETE FROM offer WHERE id=:id;", PARAM(UInt64, id))
 
     QUERY(deleteAllOffers, "DELETE FROM offer;")
 };
