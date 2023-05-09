@@ -43,7 +43,7 @@ class PlaceService
     Object<PlaceDto>
     patchOne(UInt64 const& id, Object<PlaceDto> const& dto);
 
-    Object<dto::StatusDto>
+    Object<StatusDto>
     deleteOne(UInt64 const& id);
 };
 

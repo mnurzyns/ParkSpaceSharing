@@ -12,8 +12,8 @@ Object<PlaceDto>
 PlaceService::createOne(Object<PlaceDto> const& dto)
 {
     try {
-        this->getOne(dto->id); // Will throw 404 if not found
-        OATPP_ASSERT_HTTP(false, Status::CODE_409, "Place already exists")
+        OATPP_ASSERT_HTTP(
+          !this->getOne(dto->id), Status::CODE_409, "Place already exists")
     } catch (HttpError& e) {
         if (e.getInfo().status != Status::CODE_404) {
             throw;
@@ -125,15 +125,52 @@ PlaceService::putOne(Object<PlaceDto> const& dto)
 Object<PlaceDto>
 PlaceService::patchOne(UInt64 const& id, Object<PlaceDto> const& dto)
 {
-    auto existing = this->getOne(id);
+    if (dto->id && dto->id != id) {
+        try {
+            OATPP_ASSERT_HTTP(!getOne(dto->id),
+                              Status::CODE_409,
+                              "Cannot change id to id of another place")
+        } catch (HttpError& error) {
+            if (error.getInfo().status != Status::CODE_404) {
+                throw;
+            }
+        }
+    }
 
-    existing->id = dto->id ? dto->id : existing->id;
-    existing->owner_id = dto->owner_id ? dto->owner_id : existing->owner_id;
-    existing->address = dto->address ? dto->address : existing->address;
-    existing->latitude = dto->latitude ? dto->latitude : existing->latitude;
-    existing->longitude = dto->longitude ? dto->longitude : existing->longitude;
+    bool update = false;
+    std::string query = "UPDATE place SET ";
+    for (auto* prop : Object<PlaceDto>::getPropertiesList()) {
+        if (prop->get(dto.get())) {
+            if (update) {
+                query += ", ";
+            }
+            query += std::string{} + prop->name + " = :dto." + prop->name;
+            update = true;
+        }
+    }
+    query += " WHERE id = :id RETURNING *;";
 
-    return this->putOne(existing);
+    if (update) {
+        auto query_result =
+          database_->executeQuery(query, { { "dto", dto }, { "id", id } });
+
+        OATPP_ASSERT_HTTP(query_result->isSuccess(),
+                          Status::CODE_500,
+                          query_result->getErrorMessage())
+
+        OATPP_ASSERT_HTTP(
+          query_result->hasMoreToFetch(), Status::CODE_500, "No rows returned!")
+
+        auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
+
+        OATPP_ASSERT_HTTP(fetch_result->size() == 1,
+                          Status::CODE_500,
+                          "Unexpected number of rows returned!")
+
+        return fetch_result[0];
+    }
+
+    return this->getOne(id);
 }
 
 Object<StatusDto>

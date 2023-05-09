@@ -11,11 +11,13 @@ class SignUpDto : public oatpp::DTO
 {
     DTO_INIT(SignUpDto, DTO)
 
-    DTO_FIELD(oatpp::String, username, "username");
+    DTO_FIELD(String, username, "username");
 
-    DTO_FIELD(oatpp::String, email, "email");
+    DTO_FIELD(String, phone, "phone");
 
-    DTO_FIELD(oatpp::String, password, "password");
+    DTO_FIELD(String, email, "email");
+
+    DTO_FIELD(String, password, "password");
 };
 
 #include OATPP_CODEGEN_END(DTO)
