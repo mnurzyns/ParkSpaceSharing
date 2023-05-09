@@ -11,6 +11,10 @@
 
 namespace tests {
 
+static std::atomic<unsigned> g_phone_last_i = 100;
+
+
+// TODO(Piotr Stefańsk): Add tests targeting phone numbers.
 void
 signupPostTest(TestEnvironment const& env)
 {
@@ -21,6 +25,7 @@ signupPostTest(TestEnvironment const& env)
         // Add line number to username and email to avoid collision.
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = "jan@jan.jan" + std::to_string(__LINE__);
+        dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
         dto->password = "jan";
 
         auto res = env.client->signup(dto);
@@ -34,6 +39,7 @@ signupPostTest(TestEnvironment const& env)
         // Add line number to username and email to avoid collision.
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = "jan@jan.jan" + std::to_string(__LINE__);
+        dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
         dto->password = nullptr;
 
         auto res = env.client->signup(dto);
@@ -47,6 +53,7 @@ signupPostTest(TestEnvironment const& env)
         // Add line number to username and email to avoid collision.
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = std::to_string(__LINE__);
+        dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
         dto->password = "jan";
 
         auto res = env.client->signup(dto);
@@ -60,6 +67,7 @@ signupPostTest(TestEnvironment const& env)
         // Add line number to username and email to avoid collision.
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = "jan@jan.jan" + std::to_string(__LINE__);
+        dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
         dto->password = "jan";
 
         auto res1 = env.client->signup(dto);
@@ -147,6 +155,7 @@ signupDummyUser(TestEnvironment const& env)
     dto->username = "jan" + std::to_string(__LINE__ + offset++);
     dto->email = "jan@jan.jan" + std::to_string(__LINE__ + offset++);
     dto->password = "jan";
+    dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
 
     auto res = env.client->signup(dto);
     testAssert(res->getStatusCode() == 201, assertWrap(res));
