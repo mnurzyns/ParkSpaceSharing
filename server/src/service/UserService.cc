@@ -13,14 +13,6 @@ UserService::createShared()
 Object<UserDto>
 UserService::createOne(Object<UserDto> const& dto)
 {
-    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
-                      Status::CODE_400,
-                      "Invalid email address")
-
-    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
-                      Status::CODE_400,
-                      "Invalid phone number")
-
     try {
         this->getOne(dto->id); // Will throw 404 if not found
         OATPP_ASSERT_HTTP(false, Status::CODE_409, "User already exists")
@@ -122,14 +114,6 @@ UserService::search(String const& query,
 Object<UserDto>
 UserService::putOne(Object<UserDto> const& dto)
 {
-    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
-                      Status::CODE_400,
-                      "Invalid email address")
-
-    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
-                      Status::CODE_400,
-                      "Invalid phone number")
-
     auto query_result = database_->replaceUser(dto);
 
     OATPP_ASSERT_HTTP(query_result->isSuccess(),
