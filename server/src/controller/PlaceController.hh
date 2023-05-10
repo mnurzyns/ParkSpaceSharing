@@ -14,7 +14,9 @@ namespace server::controller {
 
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
-using oatpp::Object, oatpp::web::protocol::http::HttpError;
+using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto,
+  oatpp::web::protocol::http::HttpError;
+
 
 class PlaceController : public oatpp::web::server::api::ApiController
 {
@@ -67,7 +69,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
              "place",
              createOne,
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object),
-             BODY_DTO(Object<PlaceDto>, dto))
+             BODY_DTO(Object<PlaceDto>, dto, {}))
     {
         OATPP_ASSERT_HTTP(dto->owner_id && dto->address && dto->latitude &&
                             dto->longitude,
@@ -123,7 +125,12 @@ class PlaceController : public oatpp::web::server::api::ApiController
              QUERY(UInt64, offset, "offset", uint64_t{ 0 }),
              AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
     {
-        return createDtoResponse(Status::CODE_200, service_.getPlacesByOwner(auth_object->user_id,limit,offset));
+        auto dto = PlaceSearchDto::createShared();
+        dto->owner_id = auth_object->user_id;
+        dto->limit = limit;
+        dto->offset = offset;
+        
+        return createDtoResponse(Status::CODE_200, service_.search(dto));
     }
 
     ENDPOINT_INFO(search)
@@ -131,9 +138,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->summary = "Search places";
         info->tags.emplace_back("place-controller");
 
-        info->queryParams["query"].required = false;
-        info->queryParams["limit"].required = false;
-        info->queryParams["offset"].required = false;
+        info->body.required = false;
 
         info->addResponse<Object<PlacePageDto>>(Status::CODE_200,
                                                 "application/json");
@@ -143,15 +148,12 @@ class PlaceController : public oatpp::web::server::api::ApiController
                                              "application/json");
     }
 
-    ENDPOINT("GET",
-             "place",
+    ENDPOINT("POST",
+             "place/search",
              search,
-             QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
-             QUERY(UInt64, offset, "offset", uint64_t{ 0 }))
+             BODY_DTO(Object<PlaceSearchDto>, dto))
     {
-        return createDtoResponse(Status::CODE_200,
-                                 service_.search(query, limit, offset));
+        return createDtoResponse(Status::CODE_200, service_.search(dto));
     }
 
     ENDPOINT_INFO(putOne)

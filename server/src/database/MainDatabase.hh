@@ -73,14 +73,6 @@ class MainDatabase : public oatpp::orm::DbClient
 
     QUERY(getPlace, "SELECT * FROM place WHERE id=:id;", PARAM(UInt64, id))
 
-    QUERY(getPlacesByOwner, "SELECT * FROM place WHERE owner_id=:id LIMIT :offset, :limit;", 
-          PARAM(UInt64, id),
-          PARAM(UInt64, limit),
-          PARAM(UInt64, offset))
-
-    QUERY(countPlacesByOwner, "SELECT COUNT(*) FROM place WHERE owner_id=:id;", 
-          PARAM(UInt64, id))
-
     QUERY(replacePlace,
           "REPLACE INTO place"
           "(id, owner_id, address, latitude, longitude) VALUES "
@@ -104,14 +96,6 @@ class MainDatabase : public oatpp::orm::DbClient
           PARAM(Object<OfferDto>, offer))
 
     QUERY(getOffer, "SELECT * FROM offer WHERE id=:id;", PARAM(UInt64, id))
-
-    QUERY(countOffersByOwner, "SELECT COUNT(offer.id) FROM offer INNER JOIN place ON place.id = offer.place_id WHERE place.owner_id = :id ;", 
-          PARAM(UInt64, id))
-
-    QUERY(getOffersByOwner, "SELECT offer.* FROM offer INNER JOIN place ON place.id = offer.place_id WHERE place.owner_id = :id LIMIT :offset, :limit;", 
-          PARAM(UInt64, id),
-          PARAM(UInt64, limit),
-          PARAM(UInt64, offset))
 
     QUERY(replaceOffer,
           "REPLACE INTO offer"

@@ -33,14 +33,7 @@ class OfferService
     getOne(UInt64 const& id);
 
     Object<OfferPageDto>
-    getOffersByOwner(UInt64 const& id,   
-                     UInt64 const& limit = uint64_t{ 20 },
-                     UInt64 const& offset = uint64_t{ 0 });
-
-    Object<OfferPageDto>
-    search(String const& query,
-           UInt64 const& limit = uint64_t{ 20 },
-           UInt64 const& offset = uint64_t{ 0 });
+    search(Object<OfferSearchDto> const& dto);
 
     Object<OfferDto>
     putOne(Object<OfferDto> const& dto);

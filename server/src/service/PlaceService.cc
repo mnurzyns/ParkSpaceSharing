@@ -60,46 +60,37 @@ PlaceService::getOne(UInt64 const& id)
 }
 
 Object<PlacePageDto>
-PlaceService::getPlacesByOwner(UInt64 const& id,   
-                               UInt64 const& limit,
-                               UInt64 const& offset)
+PlaceService::search(Object<PlaceSearchDto> const& dto)
 {
-    auto query_total_result = database_->countPlacesByOwner(id);
+    std::string const base_part = " FROM place_fts"
+                                  " INNER JOIN place"
+                                  " ON place.id = place_fts.place_id";
+    std::string filters_part{};
 
-    OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
-                      Status::CODE_500,
-                      query_total_result->getErrorMessage())
+    if (dto->query) {
+        filters_part += " place_fts MATCH :dto.query";
+    }
 
-    auto fetch_total_result = query_total_result->fetch<Vector<Vector<UInt64>>>();
+    if (dto->owner_id) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " place.owner_id = :dto.owner_id";
+    }
 
-    OATPP_ASSERT_HTTP(
-      fetch_total_result[0][0] > 0, Status::CODE_404, "No places found")
+    if (dto->address) {
+        if (!filters_part.empty()) {
+            filters_part += " AND";
+        }
+        filters_part += " place.address LIKE :dto.address";
+    }
 
-    auto query_result = database_->getPlacesByOwner(id,limit,offset);
-
-    auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
-
-    auto page = PlacePageDto::createShared();
-    page->items = fetch_result;
-    page->limit = limit;
-    page->offset = offset;
-    page->count = fetch_total_result[0][0];
-
-    return page;
-}
-
-Object<PlacePageDto>
-PlaceService::search(String const& query,
-                     UInt64 const& limit,
-                     UInt64 const& offset)
-{
-    char const* query_table_fts = " FROM place_fts";
-    char const* query_filters =
-      query->empty() ? "" : " WHERE place_fts MATCH :query";
+    // TODO(papaj-na-wrotkach): filter by location
 
     auto query_total_result = database_->executeQuery(
-      std::string{} + "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
-      { { "query", String(query) } });
+      "SELECT COUNT(*)" + base_part +
+        (filters_part.empty() ? "" : " WHERE" + filters_part) + ";",
+      { { "dto", dto } });
 
     OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
                       Status::CODE_500,
@@ -109,22 +100,23 @@ PlaceService::search(String const& query,
       query_total_result->fetch<Vector<Vector<UInt64>>>();
 
     OATPP_ASSERT_HTTP(
-      fetch_total_result[0][0] > 0, Status::CODE_404, "No places found")
+      fetch_total_result[0][0] > 0, Status::CODE_404, "No offers found")
+
+    dto->limit = dto->limit ? dto->limit : UInt64{ 20 };
+    dto->offset = dto->offset ? dto->offset : UInt64{ uint64_t{ 0 } };
 
     auto query_result = database_->executeQuery(
-      std::string{} + "SELECT place.*" + query_table_fts +
-        " INNER JOIN place ON place.id = place_fts.place_id" + query_filters +
-        " LIMIT :offset,:limit;",
-      { { "query", String(query) },
-        { "offset", UInt64(offset) },
-        { "limit", UInt64(limit) } });
+      "SELECT place.*" + base_part +
+        (filters_part.empty() ? "" : " WHERE" + filters_part) +
+        " LIMIT :dto.offset,:dto.limit;",
+      { { "dto", dto } });
 
     auto fetch_result = query_result->fetch<Vector<Object<PlaceDto>>>();
 
     auto page = PlacePageDto::createShared();
     page->items = fetch_result;
-    page->limit = limit;
-    page->offset = offset;
+    page->limit = dto->limit;
+    page->offset = dto->offset;
     page->count = fetch_total_result[0][0];
 
     return page;
