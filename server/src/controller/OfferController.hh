@@ -107,6 +107,31 @@ class OfferController : public oatpp::web::server::api::ApiController
         return createDtoResponse(Status::CODE_200, offer_service_.getOne(id));
     }
 
+        ENDPOINT_INFO(getMyOffers)
+    {
+        info->summary = "Get my offers";
+        info->tags.emplace_back("offer-controller");
+        info->addSecurityRequirement("JWT Bearer Auth", {});
+
+        info->queryParams["limit"].required = false;
+        info->queryParams["offset"].required = false;
+
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_404,
+                                             "application/json");
+        info->addResponse<Object<StatusDto>>(Status::CODE_500,
+                                             "application/json");
+    }
+
+    ENDPOINT("GET", "myOffers", getMyOffers, 
+             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
+             QUERY(UInt64, offset, "offset", uint64_t{ 0 }),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
+    {
+        return createDtoResponse(Status::CODE_200, offer_service_.getOffersByOwner(auth_object->user_id,limit,offset));
+    }
+
     ENDPOINT_INFO(search)
     {
         info->summary = "Search offers";

@@ -103,9 +103,12 @@ class PlaceController : public oatpp::web::server::api::ApiController
 
     ENDPOINT_INFO(getMyPlaces)
     {
-        info->summary = "Get one place";
+        info->summary = "Get my places";
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
+
+        info->queryParams["limit"].required = false;
+        info->queryParams["offset"].required = false;
 
         info->addResponse<Object<PlaceDto>>(Status::CODE_200,
                                             "application/json");
@@ -115,9 +118,12 @@ class PlaceController : public oatpp::web::server::api::ApiController
                                              "application/json");
     }
 
-    ENDPOINT("GET", "myPlaces", getMyPlaces, AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
+    ENDPOINT("GET", "myPlaces", getMyPlaces, 
+             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
+             QUERY(UInt64, offset, "offset", uint64_t{ 0 }),
+             AUTHORIZATION(std::shared_ptr<TokenPayload>, auth_object))
     {
-        return createDtoResponse(Status::CODE_200, service_.getPlacesByOwner(auth_object->user_id));
+        return createDtoResponse(Status::CODE_200, service_.getPlacesByOwner(auth_object->user_id,limit,offset));
     }
 
     ENDPOINT_INFO(search)

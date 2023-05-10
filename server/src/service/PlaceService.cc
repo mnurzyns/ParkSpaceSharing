@@ -64,7 +64,7 @@ PlaceService::getPlacesByOwner(UInt64 const& id,
                                UInt64 const& limit,
                                UInt64 const& offset)
 {
-    auto query_total_result = database_->countPlacesByOwner(id,limit,offset);
+    auto query_total_result = database_->countPlacesByOwner(id);
 
     OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
                       Status::CODE_500,

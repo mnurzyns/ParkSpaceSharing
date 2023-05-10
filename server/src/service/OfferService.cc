@@ -69,6 +69,35 @@ OfferService::getOne(UInt64 const& id)
 }
 
 Object<OfferPageDto>
+OfferService::getOffersByOwner(UInt64 const& id,   
+                               UInt64 const& limit,
+                               UInt64 const& offset)
+{
+    auto query_total_result = database_->countOffersByOwner(id);
+
+    OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
+                      Status::CODE_500,
+                      query_total_result->getErrorMessage())
+
+    auto fetch_total_result = query_total_result->fetch<Vector<Vector<UInt64>>>();
+
+    OATPP_ASSERT_HTTP(
+      fetch_total_result[0][0] > 0, Status::CODE_404, "No offers found")
+
+    auto query_result = database_->getOffersByOwner(id,limit,offset);
+
+    auto fetch_result = query_result->fetch<Vector<Object<OfferDto>>>();
+
+    auto page = OfferPageDto::createShared();
+    page->items = fetch_result;
+    page->limit = limit;
+    page->offset = offset;
+    page->count = fetch_total_result[0][0];
+
+    return page;
+}
+
+Object<OfferPageDto>
 OfferService::search(String const& query,
                      UInt64 const& limit,
                      UInt64 const& offset)
