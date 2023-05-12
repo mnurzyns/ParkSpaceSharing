@@ -15,6 +15,7 @@ namespace server::controller {
 
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
+using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto;
 using oatpp::Object;
 
 class OfferController : public oatpp::web::server::api::ApiController
@@ -51,7 +52,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+        info->addResponse<Object<OfferDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -85,7 +86,7 @@ class OfferController : public oatpp::web::server::api::ApiController
           Status::CODE_403,
           "Cannot create offer for another user's place as a regular user")
 
-        return createDtoResponse(Status::CODE_200,
+        return createDtoResponse(Status::CODE_201,
                                  offer_service_.createOne(dto));
     }
 
@@ -112,9 +113,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->summary = "Search offers";
         info->tags.emplace_back("offer-controller");
 
-        info->queryParams["query"].required = false;
-        info->queryParams["limit"].required = false;
-        info->queryParams["offset"].required = false;
+        info->body.required = false;
 
         info->addResponse<Object<OfferPageDto>>(Status::CODE_200,
                                                 "application/json");
@@ -124,15 +123,12 @@ class OfferController : public oatpp::web::server::api::ApiController
                                              "application/json");
     }
 
-    ENDPOINT("GET",
-             "offer",
+    ENDPOINT("POST",
+             "offer/search",
              search,
-             QUERY(String, query, "query", std::string{}),
-             QUERY(UInt64, limit, "limit", uint64_t{ 20 }),
-             QUERY(UInt64, offset, "offset", uint64_t{ 0 }))
+             BODY_DTO(Object<OfferSearchDto>, dto, {}))
     {
-        return createDtoResponse(Status::CODE_200,
-                                 offer_service_.search(query, limit, offset));
+        return createDtoResponse(Status::CODE_200, offer_service_.search(dto));
     }
 
     ENDPOINT_INFO(putOne)
@@ -141,7 +137,7 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
-        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+        info->addResponse<Object<OfferDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
                                              "application/json");
@@ -173,7 +169,7 @@ class OfferController : public oatpp::web::server::api::ApiController
                           "Cannot create or modify offer for another user's "
                           "place as a regular user")
 
-        return createDtoResponse(Status::CODE_200, offer_service_.putOne(dto));
+        return createDtoResponse(Status::CODE_201, offer_service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)

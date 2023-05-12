@@ -192,7 +192,7 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
                       Status::CODE_500,
                       "Unexpected number of rows returned!")
 
-    return fetch_result[0];   
+    return fetch_result[0];
 }
 
 Object<StatusDto>

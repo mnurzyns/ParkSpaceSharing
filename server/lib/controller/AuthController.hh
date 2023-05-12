@@ -54,7 +54,8 @@ class AuthController : public oatpp::web::server::api::ApiController
 
     ENDPOINT("POST", "signup", signUp, BODY_DTO(Object<SignUpDto>, dto))
     {
-        OATPP_ASSERT_HTTP(dto->email && dto->password && dto->username,
+        OATPP_ASSERT_HTTP(dto->email && dto->phone && dto->password &&
+                            dto->username,
                           Status::CODE_400,
                           "Required parameter not provided")
 

@@ -5,6 +5,29 @@ option(SANITIZERS "Enable sanitizers" ON)
 
 project(ParkingSpaceSharing LANGUAGES CXX VERSION 0.0.1)
 
+# If on clang, enable opaque pointers.
+# They are enabled by default on versions => 15,
+# and necessary for lto
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_link_options(-opaque-pointers)
+endif()
+
+# Try to use lld linker when using clang
+# Dosen't work with MacOS
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    find_program(LD_LLD_FOUND ld.lld ld64.lld lld-link)
+    if(LD_LLD_FOUND)
+        message(STATUS "Using lld linker")
+        add_link_options(-fuse-ld=lld)
+    else()
+        message(WARNING "Could not find lld linker")
+    endif()
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    include(cmake/ipo.cmake)
+endif()
+
 if(NOT MSVC)
     add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
 
