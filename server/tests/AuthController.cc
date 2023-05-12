@@ -13,8 +13,6 @@ namespace tests {
 
 static std::atomic<unsigned> g_phone_last_i = 100;
 
-
-// TODO(Piotr Stefańsk): Add tests targeting phone numbers.
 void
 signupPostTest(TestEnvironment const& env)
 {
@@ -39,8 +37,8 @@ signupPostTest(TestEnvironment const& env)
         // Add line number to username and email to avoid collision.
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = "jan@jan.jan" + std::to_string(__LINE__);
-        dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
-        dto->password = nullptr;
+        dto->phone = nullptr;
+        dto->password = "jan";
 
         auto res = env.client->signup(dto);
         testAssert(res->getStatusCode() == 400, assertWrap(res));
@@ -54,6 +52,20 @@ signupPostTest(TestEnvironment const& env)
         dto->username = "jan" + std::to_string(__LINE__);
         dto->email = std::to_string(__LINE__);
         dto->phone = "+48 123 123 " + std::to_string(g_phone_last_i++);
+        dto->password = "jan";
+
+        auto res = env.client->signup(dto);
+        testAssert(res->getStatusCode() == 400, assertWrap(res));
+    });
+
+    OATPP_LOGD("[AuthController][signup][400]", "Bad request - invalid phone number");
+    deferFailure([&] {
+        auto dto = server::dto::SignUpDto::createShared();
+
+        // Add line number to username and email to avoid collision.
+        dto->username = "jan" + std::to_string(__LINE__);
+        dto->email = std::to_string(__LINE__);
+        dto->phone = "+48 1223 123 " + std::to_string(g_phone_last_i++);
         dto->password = "jan";
 
         auto res = env.client->signup(dto);
