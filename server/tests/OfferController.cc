@@ -14,7 +14,7 @@ namespace tests {
 void
 offerPostTest(TestEnvironment const& env, AuthContext const& auth)
 {
-    OATPP_LOGD("[OfferController][POST][200]", "Valid request");
+    OATPP_LOGD("[OfferController][POST][201]", "Valid request");
     deferFailure([&] {
         auto place = createDummyPlace(env, auth);
 
@@ -26,7 +26,7 @@ offerPostTest(TestEnvironment const& env, AuthContext const& auth)
         dto->price = 10;
 
         auto res = env.client->offerPost(auth.token, dto);
-        testAssert(res->getStatusCode() == 200, assertWrap(res));
+        testAssert(res->getStatusCode() == 201, assertWrap(res));
 
         auto returned =
           res->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
@@ -166,7 +166,7 @@ createDummyOffer(TestEnvironment const& env, AuthContext const& auth)
     dto->price = 10;
 
     auto res = env.client->offerPost(auth.token, dto);
-    testAssert(res->getStatusCode() == 200, assertWrap(res));
+    testAssert(res->getStatusCode() == 201, assertWrap(res));
 
     return res->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
 }

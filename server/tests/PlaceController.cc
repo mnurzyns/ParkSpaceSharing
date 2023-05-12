@@ -10,7 +10,7 @@ namespace tests {
 void
 placePostTest(TestEnvironment const& env, AuthContext const& auth)
 {
-    OATPP_LOGD("[PlaceController][POST][200]", "Valid request");
+    OATPP_LOGD("[PlaceController][POST][201]", "Valid request");
     deferFailure([&] {
         auto dto = server::dto::PlaceDto::createShared();
         dto->owner_id = auth.token_payload.user_id;
@@ -19,7 +19,7 @@ placePostTest(TestEnvironment const& env, AuthContext const& auth)
         dto->longitude = 51.46711279943629;
 
         auto res = env.client->placePost(auth.token, dto);
-        testAssert(res->getStatusCode() == 200, assertWrap(res));
+        testAssert(res->getStatusCode() == 201, assertWrap(res));
 
         auto returned =
           res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
@@ -94,7 +94,7 @@ createDummyPlace(TestEnvironment const& env, AuthContext const& auth)
     dto->longitude = 51.46711279943629;
 
     auto res = env.client->placePost(auth.token, dto);
-    testAssert(res->getStatusCode() == 200, assertWrap(res));
+    testAssert(res->getStatusCode() == 201, assertWrap(res));
     return res->readBodyToDto<oatpp::Object<server::dto::PlaceDto>>(env.mapper);
 }
 
@@ -284,7 +284,7 @@ placeDeleteTest(TestEnvironment const& env, AuthContext const& auth)
 
         deferFailure([&] {
             auto res1 = env.client->offerPost(auth.token, offer);
-            testAssert(res1->getStatusCode() == 200, assertWrap(res1));
+            testAssert(res1->getStatusCode() == 201, assertWrap(res1));
             offer = res1->readBodyToDto<oatpp::Object<server::dto::OfferDto>>(env.mapper);
         });
 
