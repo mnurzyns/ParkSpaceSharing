@@ -1,19 +1,19 @@
 #include "Validator.hh"
 
-#include <regex>
+#include <re2/re2.h>
 
 namespace server {
 
 bool
-validateEmail(char const* email)
+validateEmail(std::string_view email)
 {
-    return std::regex_search(email, std::regex{ EMAIL_REGEX });
+    return RE2::FullMatch(email, RE2{ EMAIL_REGEX });
 }
 
 bool
-validatePhone(char const* phone)
+validatePhone(std::string_view phone)
 {
-    return std::regex_search(phone, std::regex{ PHONE_REGEX });
+    return RE2::FullMatch(phone, RE2{ PHONE_REGEX });
 }
 
 } // namespace server

@@ -70,6 +70,7 @@ find_package(jwt-cpp 0.6.0 REQUIRED)
 find_package(nlohmann_json 3.9.0 REQUIRED)
 find_package(botan 2.19.3 REQUIRED)
 find_package(toml11 3.7 REQUIRED)
+find_package(re2 REQUIRED)
 
 if(NOT SOURCE_LOCATION_SUPPORTED)
   find_package(source_location REQUIRED)

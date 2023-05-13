@@ -43,6 +43,7 @@ target_link_libraries(
     PUBLIC nlohmann_json::nlohmann_json
     PUBLIC toml11::toml11
     PUBLIC botan::botan
+    PUBLIC re2::re2
 )
 
 install(TARGETS server DESTINATION bin)

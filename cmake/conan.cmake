@@ -24,6 +24,7 @@ conan_cmake_configure(
     nlohmann_json/3.11.2
     toml11/3.7.1
     botan/2.19.3
+    re2/20230301
     ${CONAN_EXTRA_REQUIRES}
 
     GENERATORS
