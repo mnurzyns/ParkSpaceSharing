@@ -62,13 +62,21 @@ PlaceService::getOne(UInt64 const& id)
 Object<PlacePageDto>
 PlaceService::search(Object<PlaceSearchDto> const& dto)
 {
-    std::string const base_part = " FROM place_fts"
-                                  " INNER JOIN place"
-                                  " ON place.id = place_fts.place_id";
+    std::string const base_part = " FROM place";
     std::string filters_part{};
 
     if (dto->query) {
-        filters_part += " place_fts MATCH :dto.query";
+        filters_part += " place.id IN (SELECT place_fts.ROWID"
+                        " FROM place_fts"
+
+                        " INNER JOIN user_fts"
+                        " ON user_fts.ROWID = place_fts.owner_id"
+
+                        " WHERE place_fts.ROWID IN (SELECT ROWID"
+                        " FROM place_fts WHERE place_fts MATCH :dto.query)"
+
+                        " OR user_fts.ROWID IN (SELECT ROWID"
+                        " FROM user_fts WHERE user_fts MATCH :dto.query))";
     }
 
     if (dto->owner_id) {
@@ -76,13 +84,6 @@ PlaceService::search(Object<PlaceSearchDto> const& dto)
             filters_part += " AND";
         }
         filters_part += " place.owner_id = :dto.owner_id";
-    }
-
-    if (dto->address) {
-        if (!filters_part.empty()) {
-            filters_part += " AND";
-        }
-        filters_part += " place.address LIKE :dto.address";
     }
 
     // TODO(papaj-na-wrotkach): filter by location
