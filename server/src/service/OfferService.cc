@@ -71,23 +71,37 @@ OfferService::getOne(UInt64 const& id)
 Object<OfferPageDto>
 OfferService::search(Object<OfferSearchDto> const& dto)
 {
-    std::string const base_part = " FROM offer_fts"
-                                  " INNER JOIN offer"
-                                  " ON offer.id = offer_fts.offer_id";
+    std::string const base_part = " FROM offer";
     bool join_place = false;
     std::string const join_place_part = " INNER JOIN place"
                                         " ON place.id = offer.place_id";
     std::string filters_part{};
 
     if (dto->query) {
-        filters_part += " offer_fts MATCH :dto.query";
+        filters_part += " offer.id IN (SELECT offer_fts.ROWID"
+                        " FROM offer_fts"
+
+                        " INNER JOIN place_fts"
+                        " ON place_fts.ROWID = offer_fts.place_id"
+
+                        " INNER JOIN user_fts"
+                        " ON user_fts.ROWID = place_fts.owner_id"
+
+                        " WHERE offer_fts.ROWID IN (SELECT ROWID"
+                        " FROM offer_fts WHERE offer_fts MATCH :dto.query)"
+
+                        " OR place_fts.ROWID IN (SELECT ROWID"
+                        " FROM place_fts WHERE place_fts MATCH :dto.query)"
+
+                        " OR user_fts.ROWID IN (SELECT ROWID"
+                        " FROM user_fts WHERE user_fts MATCH :dto.query))";
     }
 
     if (dto->place_id) {
         if (!filters_part.empty()) {
             filters_part += " AND";
         }
-        filters_part += " offer.place_id = :dto.place_id";
+        filters_part += " place_id = :dto.place_id";
     }
 
     if (dto->date_from) {
@@ -102,6 +116,12 @@ OfferService::search(Object<OfferSearchDto> const& dto)
             filters_part += " AND";
         }
         filters_part += " offer.date_to <= :dto.date_to";
+    }
+
+    if (dto->price_min && dto->price_max) {
+        OATPP_ASSERT_HTTP(dto->price_min <= dto->price_max,
+                          Status::CODE_400,
+                          "Minimal price cannot be more than maximal price")
     }
 
     if (dto->price_min) {
@@ -124,14 +144,6 @@ OfferService::search(Object<OfferSearchDto> const& dto)
             filters_part += " AND";
         }
         filters_part += " place.owner_id = :dto.owner_id";
-    }
-
-    if (dto->address) {
-        join_place = true;
-        if (!filters_part.empty()) {
-            filters_part += " AND";
-        }
-        filters_part += " place.address LIKE :dto.address";
     }
 
     // TODO(papaj-na-wrotkach): filter by location
