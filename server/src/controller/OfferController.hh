@@ -16,7 +16,7 @@ namespace server::controller {
 using namespace oatpp::data::mapping::type; // NOLINT
 using namespace server::dto;                // NOLINT
 using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto;
-using oatpp::Object;
+using oatpp::Object, oatpp::web::protocol::http::HttpError;
 
 class OfferController : public oatpp::web::server::api::ApiController
 {
@@ -137,6 +137,8 @@ class OfferController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("offer-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
+        info->addResponse<Object<OfferDto>>(Status::CODE_200,
+                                            "application/json");
         info->addResponse<Object<OfferDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
@@ -169,7 +171,18 @@ class OfferController : public oatpp::web::server::api::ApiController
                           "Cannot create or modify offer for another user's "
                           "place as a regular user")
 
-        return createDtoResponse(Status::CODE_201, offer_service_.putOne(dto));
+        auto status = Status::CODE_200;
+        try {
+            offer_service_.getOne(dto->id);
+        } catch (HttpError& error) {
+            if (error.getInfo().status == Status::CODE_404) {
+                status = Status::CODE_201;
+            } else {
+                throw;
+            }
+        }
+
+        return createDtoResponse(status, offer_service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)
