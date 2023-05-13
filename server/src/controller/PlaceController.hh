@@ -17,7 +17,6 @@ using namespace server::dto;                // NOLINT
 using dto::OfferDto, dto::OfferPageDto, dto::OfferSearchDto, dto::StatusDto,
   oatpp::web::protocol::http::HttpError;
 
-
 class PlaceController : public oatpp::web::server::api::ApiController
 {
   private:
@@ -132,6 +131,8 @@ class PlaceController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("place-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
+        info->addResponse<Object<PlaceDto>>(Status::CODE_200,
+                                            "application/json");
         info->addResponse<Object<PlaceDto>>(Status::CODE_201,
                                             "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
@@ -155,6 +156,7 @@ class PlaceController : public oatpp::web::server::api::ApiController
                           Status::CODE_400,
                           "Required parameter not provided")
 
+        auto status = Status::CODE_200;
         try {
             OATPP_ASSERT_HTTP(
               auth_object->user_role == Role::Admin ||
@@ -163,12 +165,14 @@ class PlaceController : public oatpp::web::server::api::ApiController
               Status::CODE_403,
               "Cannot create or modify place of another user as a regular user")
         } catch (HttpError& error) {
-            if (error.getInfo().status != Status::CODE_404) {
+            if (error.getInfo().status == Status::CODE_404) {
+                status = Status::CODE_201;
+            } else {
                 throw;
             }
         }
 
-        return createDtoResponse(Status::CODE_201, service_.putOne(dto));
+        return createDtoResponse(status, service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)
