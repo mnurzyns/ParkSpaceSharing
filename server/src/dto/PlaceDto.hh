@@ -34,8 +34,6 @@ class PlaceSearchDto : public oatpp::DTO
 
     DTO_FIELD(UInt64, owner_id, "owner_id");
 
-    DTO_FIELD(String, address, "address");
-
     DTO_FIELD(Float64, latitude, "latitude");
 
     DTO_FIELD(Float64, longitude, "longitude");
