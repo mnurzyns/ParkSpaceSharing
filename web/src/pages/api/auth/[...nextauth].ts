@@ -103,6 +103,7 @@ export const authOptions = {
               name: userFromRequest.username!,
               email: userFromRequest.email!,
               role: userFromRequest.role!,
+              phone: userFromRequest.phone!,
               token: rawToken!,
             };
             return user;
@@ -151,6 +152,7 @@ export const authOptions = {
             name: userFromRequest.username!,
             email: userFromRequest.email!,
             role: userFromRequest.role!,
+            phone: userFromRequest.phone!,
             token: rawToken!,
           };
           return user;
