@@ -63,3 +63,4 @@ cmake --build build
 | [`nlohmann_json`](https://github.com/nlohmann/json)       | **3.11.2**     |
 | [`toml11`](https://github.com/ToruNiina/toml11)           | **3.7.1**      |
 | [`Botan`](https://github.com/randombit/botan)             | **2.19.3**     |
+| [`re2`](https://github.com/google/re2)                    | **2023-03-01** |
