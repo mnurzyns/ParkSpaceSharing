@@ -15,7 +15,9 @@
 namespace server::component {
 
 using oatpp::data::mapping::ObjectMapper, oatpp::network::ConnectionHandler,
-  oatpp::network::ServerConnectionProvider, oatpp::web::server::HttpRouter;
+  oatpp::network::ServerConnectionProvider,
+  oatpp::web::server::interceptor::AllowCorsGlobal,
+  oatpp::web::server::HttpRouter;
 
 class AppComponent
 {
@@ -79,8 +81,8 @@ class AppComponent
           std::make_shared<
             oatpp::web::server::interceptor::AllowOptionsGlobal>());
 
-        tmp->addResponseInterceptor(
-          std::make_shared<oatpp::web::server::interceptor::AllowCorsGlobal>());
+        tmp->addResponseInterceptor(std::make_shared<AllowCorsGlobal>(
+          "*", "GET, POST, DELETE, PATCH, PUT, OPTIONS"));
 
         tmp->setErrorHandler(
           std::make_shared<ErrorHandler>(object_mapper_component));
