@@ -1,34 +1,42 @@
 import Navbar from "@/components/Navbar";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import AddPlaceForm from "@/components/AddPlaceForm";
 import { OfferDto, OfferControllerApi } from "@/client";
 import BuyButton from "@/components/BuyButton";
 import RemoveOfferButton from "@/components/RemoveOfferButton";
+import { Session } from "next-auth";
+
+
+
+const fetchOffers = async (session: Session, callback: Dispatch<SetStateAction<OfferDto[]>>) => {
+  const client: OfferControllerApi = new OfferControllerApi();
+  client
+    .search({ limit: 50, offset: 0, owner_id: session?.user?.id })
+    .then((res) => {
+      if (res.data.items != null) {
+        console.log(res.data);
+        callback(res.data.items);
+      }
+    })
+    .catch((err) => {
+      console.log(err.response);
+    });
+};
 
 export default function Profile() {
   const { data: session } = useSession();
   const [offers, setOffers] = useState<OfferDto[]>([]);
-
+  
   useEffect(() => {
-    const fetchOffers = async () => {
-      const client: OfferControllerApi = new OfferControllerApi();
-      client
-        .search({ limit: 50, offset: 0, owner_id: session?.user?.id })
-        .then((res) => {
-          if (res.data.items != null) {
-            console.log(res.data);
-            setOffers(res.data.items);
-          }
-        })
-        .catch((err) => {
-          console.log(err.response);
-        });
-    };
     if (session) {
-      fetchOffers();
+      fetchOffers(session,setOffers);
     }
   }, [session]);
+
+
+  
+
 
   if (session) {
     return (
@@ -58,7 +66,7 @@ export default function Profile() {
                       <p>Price: ${offer.price}</p>
 
                       <div className="card-actions justify-end">
-                        <RemoveOfferButton offer_id={offer.id!} token={session.user?.token!} />
+                        <RemoveOfferButton offer_id={offer.id!} session={session} offers={offers} setOffers={setOffers} />
                       </div>
                     </div>
                   </div>

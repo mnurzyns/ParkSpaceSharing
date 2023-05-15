@@ -1,8 +1,25 @@
-import { Configuration, OfferControllerApi, PlaceControllerApi } from "@/client";
+import {
+  Configuration,
+  OfferControllerApi,
+  OfferDto,
+  PlaceControllerApi,
+} from "@/client";
+import { Session } from "next-auth";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { off } from "process";
+import { Dispatch, SetStateAction, useState } from "react";
 
-const RemoveOfferButton = ({ offer_id, token}: { offer_id: number, token: string }) => {
+const RemoveOfferButton = ({
+  offer_id,
+  session,
+  offers,
+  setOffers,
+}: {
+  offer_id: number;
+  session: Session;
+  offers: OfferDto[];
+  setOffers: Dispatch<SetStateAction<OfferDto[]>>;
+}) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -16,9 +33,11 @@ const RemoveOfferButton = ({ offer_id, token}: { offer_id: number, token: string
 
     try {
       // Fetch data from an API or perform any asynchronous task
-      const client: OfferControllerApi = new OfferControllerApi(new Configuration({ accessToken: token }));
+      const client: OfferControllerApi = new OfferControllerApi(
+        new Configuration({ accessToken: session.user?.token })
+      );
       const place = await client.deleteOne(offer_id);
-      router.push("/profile");
+      setOffers(offers.filter((offer) => offer.id !== offer_id));
     } catch (error) {
       // Handle any errors
       console.error("Error:", error);
