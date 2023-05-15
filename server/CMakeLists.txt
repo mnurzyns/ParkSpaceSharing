@@ -46,8 +46,6 @@ target_link_libraries(
     PUBLIC re2::re2
 )
 
-install(TARGETS server DESTINATION bin)
-
 install(
     DIRECTORY "${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res/"
     DESTINATION "share/${PROJECT_NAME}/oatpp-swagger-res"
@@ -68,6 +66,8 @@ target_link_libraries(
 
     PRIVATE server
 )
+
+install(TARGETS server-exe DESTINATION bin)
 
 # TODO if tests enabled
 add_executable(server-tests)
@@ -92,5 +92,7 @@ target_link_libraries(
     PRIVATE server
     PRIVATE $<$<NOT:$<BOOL:${SOURCE_LOCATION_SUPPORTED}>>:source_location::source_location>
 )
+
+install(TARGETS server-tests DESTINATION bin)
 
 add_test(NAME server COMMAND server-tests)
