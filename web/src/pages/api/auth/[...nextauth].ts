@@ -8,17 +8,19 @@ import {
   UserControllerApi,
   UserDto,
 } from "@/client";
+import { JWT } from "next-auth/jwt";
+import { AdapterUser } from "next-auth/adapters";
 
 export const authOptions = {
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user }: { token: JWT; user?: User | AdapterUser | undefined; }) {
       /* Step 1: update the token based on the user object */
       if (user) {
         token.user = user;
       }
       return token;
     },
-    session({ session, token }: { session: any; token: any }) {
+    session({ session, token }: { session: any; token: JWT }) {
       /* Step 2: update the session.user based on the token object */
       if (token && session.user) {
         session.user = token.user;

@@ -51,8 +51,8 @@ const UserProfilePage = () => {
           <Navbar session={session} />
           <div className="container mx-auto py-12">
             <div className="px-4 py-2 text-center">
-              <h2 className="text-3xl font-bold">{session.user?.name}</h2>
-              <p className="text-gray-500">{session.user?.phone}</p>
+              <h2 className="text-3xl font-bold">{session?.user?.name}</h2>
+              <p className="text-gray-500">{session?.user?.phone}</p>
             </div>
             <div className="flex flex-wrap justify-around ">
               {offers?.map((offer, index) => (
