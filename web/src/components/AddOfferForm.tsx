@@ -20,8 +20,8 @@ const AddOfferForm = ({user}: {user: User})  => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const client: OfferControllerApi = new OfferControllerApi(new Configuration({ accessToken: user.token }));
-    const dateFromTimestamp = new Date(formData.date_from).getTime() / 1000;
-    const dateToTimestamp = new Date(formData.date_to).getTime() / 1000;
+    const dateFromTimestamp = new Date(formData.date_from).getTime();
+    const dateToTimestamp = new Date(formData.date_to).getTime();
     const priceAsNumber = Number(formData.price);
     const place_idAsNumber = Number(formData.place_id);
     if (place_idAsNumber === 0) {
