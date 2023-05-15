@@ -7,6 +7,7 @@ import { OfferControllerApi, OfferDto } from "@/client/api";
 import { useEffect, useState } from "react";
 import { off } from "process";
 import { useSession } from "next-auth/react";
+import BuyButton from "@/components/BuyButton";
 
 export default function Home() {
   const [offers, setOffers] = useState<OfferDto[]>([]);
@@ -17,6 +18,7 @@ export default function Home() {
   const { data: session } = useSession();
 
   useEffect(() => {
+
     const client: OfferControllerApi = new OfferControllerApi();
     client
       .search({limit: itemsPerPage, offset: currentPage * itemsPerPage})
@@ -60,9 +62,7 @@ export default function Home() {
                 <p>Price: ${offer.price}</p>
 
                 <div className="card-actions justify-end">
-                  <button className="bg-secondary hover:bg-secondary-focus text-white font-semibold py-2 px-4 mt-4 rounded-lg shadow-md transition duration-200">
-                    Buy Now
-                  </button>
+                  <BuyButton place_id={offer.place_id!} />
                 </div>
               </div>
             </div>
