@@ -4,6 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import AddPlaceForm from "@/components/AddPlaceForm";
 import { OfferDto, OfferControllerApi } from "@/client";
 import BuyButton from "@/components/BuyButton";
+import RemoveOfferButton from "@/components/RemoveOfferButton";
 
 export default function Profile() {
   const { data: session } = useSession();
@@ -57,7 +58,7 @@ export default function Profile() {
                       <p>Price: ${offer.price}</p>
 
                       <div className="card-actions justify-end">
-                        <BuyButton place_id={offer.place_id!} />
+                        <RemoveOfferButton offer_id={offer.id!} token={session.user?.token!} />
                       </div>
                     </div>
                   </div>
