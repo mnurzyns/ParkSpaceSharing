@@ -7,11 +7,11 @@ namespace server::service {
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
-    OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+    OATPP_ASSERT_HTTP(validateEmail(*dto->email),
                       Status::CODE_400,
                       "Invalid email address")
 
-    OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+    OATPP_ASSERT_HTTP(validatePhone(*dto->phone),
                       Status::CODE_400,
                       "Invalid phone number")
 

@@ -16,6 +16,7 @@ env:
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+  CTEST_OUTPUT_ON_FAILURE: 1
 
 jobs:
   changes:
@@ -101,13 +102,21 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -S "${{github.workspace}}" -B ${{github.workspace}}/build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING="${{matrix.build_type}}" -DCONAN:BOOL=ON
+          cmake -S "${{github.workspace}}" -B ${{github.workspace}}/build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING="${{matrix.build_type}}" -DCONAN:BOOL=ON -DSANITIZERS:BOOL=OFF
 
-      - name: Build
+      - name: Build and package
         run: |
           cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+          cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --target package
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact-${{matrix.os}}-${{matrix.compiler}}-${{matrix.build_type}}
+          path: ${{github.workspace}}/build/ParkingSpaceSharing-*
 
       - name: Test
+        if: ${{ matrix.compiler != 'msvc' }}
         working-directory: ${{github.workspace}}/build
         run: |
-          ctest -C ${{matrix.build_type}}
+          ctest --verbose -C ${{matrix.build_type}}

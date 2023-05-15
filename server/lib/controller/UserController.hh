@@ -11,6 +11,8 @@
 
 namespace server::controller {
 
+using oatpp::web::protocol::http::HttpError;
+
 class UserController : public oatpp::web::server::api::ApiController
 {
   private:
@@ -128,6 +130,8 @@ class UserController : public oatpp::web::server::api::ApiController
         info->tags.emplace_back("user-controller");
         info->addSecurityRequirement("JWT Bearer Auth", {});
 
+        info->addResponse<Object<UserDto>>(Status::CODE_200,
+                                           "application/json");
         info->addResponse<Object<UserDto>>(Status::CODE_201,
                                            "application/json");
         info->addResponse<Object<StatusDto>>(Status::CODE_400,
@@ -156,7 +160,18 @@ class UserController : public oatpp::web::server::api::ApiController
           Status::CODE_403,
           "Cannot create or modify other user as a regular user")
 
-        return createDtoResponse(Status::CODE_201, service_.putOne(dto));
+        auto status = Status::CODE_200;
+        try {
+            service_.getOne(dto->id);
+        } catch (HttpError& error) {
+            if (error.getInfo().status == Status::CODE_404) {
+                status = Status::CODE_201;
+            } else {
+                throw;
+            }
+        }
+
+        return createDtoResponse(status, service_.putOne(dto));
     }
 
     ENDPOINT_INFO(patchOne)

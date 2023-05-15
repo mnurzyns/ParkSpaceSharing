@@ -69,12 +69,15 @@ UserService::search(String const& query,
                     UInt64 const& limit,
                     UInt64 const& offset)
 {
-    char const* query_table_fts = " FROM user_fts";
-    char const* query_filters =
-      query->empty() ? "" : " WHERE user_fts MATCH :query";
+    char const* query_base = " FROM user";
+    char const* query_filters = query->empty()
+                                  ? ""
+                                  : " WHERE user.id IN (SELECT user_fts.ROWID"
+                                    " FROM user_fts"
+                                    " WHERE user_fts MATCH :query)";
 
     auto query_total_result = database_->executeQuery(
-      std::string{} + "SELECT COUNT(*)" + query_table_fts + query_filters + ";",
+      std::string{} + "SELECT COUNT(*)" + query_base + query_filters + ";",
       { { "query", String(query) } });
 
     OATPP_ASSERT_HTTP(query_total_result->isSuccess(),
@@ -87,13 +90,12 @@ UserService::search(String const& query,
     OATPP_ASSERT_HTTP(
       fetch_total_result[0][0] > 0, Status::CODE_404, "No users found")
 
-    auto query_result = database_->executeQuery(
-      std::string{} + "SELECT user.*" + query_table_fts +
-        " INNER JOIN user ON user.id = user_fts.user_id" + query_filters +
-        " LIMIT :offset,:limit;",
-      { { "query", String(query) },
-        { "offset", UInt64(offset) },
-        { "limit", UInt64(limit) } });
+    auto query_result =
+      database_->executeQuery(std::string{} + "SELECT user.*" + query_base +
+                                query_filters + " LIMIT :offset,:limit;",
+                              { { "query", String(query) },
+                                { "offset", UInt64(offset) },
+                                { "limit", UInt64(limit) } });
 
     auto fetch_result = query_result->fetch<Vector<Object<UserDto>>>();
 

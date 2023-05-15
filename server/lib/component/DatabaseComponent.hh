@@ -16,8 +16,10 @@ class DatabaseComponent
       std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>,
       database_connection_provider)
     ([] {
-        auto tmp = std::make_shared<oatpp::sqlite::ConnectionProvider>(
-          server::Config::getInstance().database_path);
+        auto const& database_path = server::Config::getInstance().database_path;
+        OATPP_LOGI("Database", "\tReading database from \"%s\"", database_path.c_str());
+        auto tmp =
+          std::make_shared<oatpp::sqlite::ConnectionProvider>(database_path);
         return oatpp::sqlite::ConnectionPool::createShared(
           tmp, 10, std::chrono::seconds{ 5 });
     }());
