@@ -6,10 +6,12 @@ import { OfferDto, OfferControllerApi } from "@/client";
 import BuyButton from "@/components/BuyButton";
 import RemoveOfferButton from "@/components/RemoveOfferButton";
 import { Session } from "next-auth";
+import PlacesList from "@/components/PlacesList";
 
-
-
-const fetchOffers = async (session: Session, callback: Dispatch<SetStateAction<OfferDto[]>>) => {
+const fetchOffers = async (
+  session: Session,
+  callback: Dispatch<SetStateAction<OfferDto[]>>
+) => {
   const client: OfferControllerApi = new OfferControllerApi();
   client
     .search({ limit: 50, offset: 0, owner_id: session?.user?.id })
@@ -27,16 +29,12 @@ const fetchOffers = async (session: Session, callback: Dispatch<SetStateAction<O
 export default function Profile() {
   const { data: session } = useSession();
   const [offers, setOffers] = useState<OfferDto[]>([]);
-  
+
   useEffect(() => {
     if (session) {
-      fetchOffers(session,setOffers);
+      fetchOffers(session, setOffers);
     }
   }, [session]);
-
-
-  
-
 
   if (session) {
     return (
@@ -46,6 +44,10 @@ export default function Profile() {
           <div className="px-4 py-2 text-center">
             <h2 className="text-3xl font-bold">{session?.user?.name}</h2>
             <p className="text-gray-500">{session?.user?.phone}</p>
+          </div>
+          <div>
+            <PlacesList session={session} />
+
           </div>
           <div className="flex flex-wrap justify-around ">
             {offers.length > 0 ? (
@@ -66,7 +68,12 @@ export default function Profile() {
                       <p>Price: ${offer.price}</p>
 
                       <div className="card-actions justify-end">
-                        <RemoveOfferButton offer_id={offer.id!} session={session} offers={offers} setOffers={setOffers} />
+                        <RemoveOfferButton
+                          offer_id={offer.id!}
+                          session={session}
+                          offers={offers}
+                          setOffers={setOffers}
+                        />
                       </div>
                     </div>
                   </div>
