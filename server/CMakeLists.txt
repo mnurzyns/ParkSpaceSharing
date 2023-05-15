@@ -47,6 +47,11 @@ target_link_libraries(
 )
 
 install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/migrations/"
+    DESTINATION "share/${PROJECT_NAME}/migrations"
+)
+
+install(
     DIRECTORY "${oatpp_oatpp-swagger_INCLUDE_DIR}/../bin/oatpp-swagger/res/"
     DESTINATION "share/${PROJECT_NAME}/oatpp-swagger-res"
 )

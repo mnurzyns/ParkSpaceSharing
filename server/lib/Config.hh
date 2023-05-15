@@ -22,6 +22,7 @@ struct Config
     std::uint16_t port;
 
     std::string database_path;
+    std::string database_migrations_path;
 
     std::string jwt_secret;
     std::string jwt_issuer;
@@ -57,6 +58,7 @@ struct [[maybe_unused]] from<Config>
     from_toml(toml::value const& val) // NOLINT
     {
         auto const& server = toml::find_or(val, "server", toml::value{});
+        auto const& database = toml::find_or(server, "database", toml::value{});
         auto const& jwt = toml::find_or(server, "jwt", toml::value{});
         auto const& swagger = toml::find_or(server, "swagger", toml::value{});
 
@@ -64,7 +66,9 @@ struct [[maybe_unused]] from<Config>
             .bind = toml::find_or<std::string>(server, "bind", "0.0.0.0"),
             .port = toml::find_or<std::uint16_t>(server, "port", 8000),
             .database_path =
-              toml::find_or<std::string>(server, "database_path", "main.db"),
+              toml::find_or<std::string>(database, "path", "main.db"),
+            .database_migrations_path = toml::find_or<std::string>(
+              database, "migrations_path", "/usr/local/share/" PROJECT_NAME "/migrations"),
             .jwt_secret = toml::find_or<std::string>(jwt, "secret", "secret"),
             .jwt_issuer = toml::find_or<std::string>(jwt, "issuer", "issuer"),
             .jwt_expire_after = toml::find_or<std::uint64_t>(
@@ -100,7 +104,11 @@ struct [[maybe_unused]] into<Config>
                     { "issuer", config.jwt_issuer },
                     { "secret", config.jwt_secret },
                   } },
-                { "database_path", config.database_path },
+                { "database",
+                  {
+                    { "migrations_path", config.database_migrations_path },
+                    { "path", config.database_path },
+                  } },
                 { "port", config.port },
                 { "bind", config.bind },
               } } });
