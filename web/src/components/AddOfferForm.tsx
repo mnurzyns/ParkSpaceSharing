@@ -66,7 +66,7 @@ const AddOfferForm = ({user}: {user: User})  => {
             onChange={handleChange}
             className="select select-bordered w-full"
           >
-            <option selected={true} value={0}>Select Address</option>
+            <option value={0}>Select Address</option>
             {places.map((place) => (
               <option key={place.id} value={place.id}>
                 {place.address} {place.id}
