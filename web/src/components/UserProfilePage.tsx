@@ -42,11 +42,17 @@ const UserProfilePage = () => {
           console.log(err.response);
         });
     };
+
     if (id) {
       fetchUser();
       fetchOffers();
     }
-  }, [id]);
+
+    // Redirect to /profile if session user ID is the same as id
+    if (session?.user?.id === Number(id)) {
+      router.push("/profile");
+    }
+  }, [id, router, session]);
 
   return (
     <div>
@@ -76,10 +82,6 @@ const UserProfilePage = () => {
                         </p>
                         <p>Description: {offer.description}</p>
                         <p>Price: ${offer.price}</p>
-
-                        <div className="card-actions justify-end">
-                          <BuyButton place_id={offer.place_id!} />
-                        </div>
                       </div>
                     </div>
                   </div>
