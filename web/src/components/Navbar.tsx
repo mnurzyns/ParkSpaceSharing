@@ -77,7 +77,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                 </li>
                 <li>
                   <Link className="justify-between" href="/settings">
-                    Edit account info
+                    Edit profile
                     <span className="badge">New</span>
                   </Link>
                 </li>
