@@ -69,7 +69,7 @@ const AddOfferForm = ({user}: {user: User})  => {
             <option value={0}>Select Address</option>
             {places.map((place) => (
               <option key={place.id} value={place.id}>
-                {place.address} {place.id}
+                {place.address}
               </option>
             ))}
           </select>

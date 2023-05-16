@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  AuthControllerApi,
   Configuration,
   UserControllerApi,
-  UserDto,
+  UserDto
 } from "@/client";
 import { useSession } from "next-auth/react";
-import { mockProviders } from "next-auth/client/__tests__/helpers/mocks";
-import credentials = mockProviders.credentials;
 import Navbar from "@/components/Navbar";
 
 const Settings = () => {
   const [dto, setDto] = useState<UserDto>({});
   const { data: session } = useSession();
-
-  useEffect(() => {
-    if (session)
-      new UserControllerApi().getOne(session!.user!.id).then(({ data }) => {
-        setDto(data);
-      });
-  }, [session]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -43,10 +33,9 @@ const Settings = () => {
             <input
               type="text"
               className="input input-ghost"
+              placeholder={session?.user?.name}
               value={dto.username}
-              onChange={(e) =>
-                setDto((old) => ({ ...old, username: e.target.value }))
-              }
+              onChange={(e) => setDto(old => ({ ...old, username: e.target.value}))}
               required={false}
             />
           </div>
@@ -57,9 +46,10 @@ const Settings = () => {
             <input
               type="email"
               className="input input-ghost"
+              placeholder={session?.user?.email}
               value={dto.email}
               onChange={(e) =>
-                setDto((old) => ({ ...old, email: e.target.value }))
+                  setDto(old => ({ ...old, email: e.target.value}))
               }
               required={false}
             />
@@ -71,9 +61,10 @@ const Settings = () => {
             <input
               type="text"
               className="input input-ghost"
+              placeholder={session?.user?.phone}
               value={dto.phone}
               onChange={(e) =>
-                setDto((old) => ({ ...old, phone: e.target.value }))
+                  setDto(old =>({ ...old, phone: e.target.value}))
               }
               required={false}
             />
