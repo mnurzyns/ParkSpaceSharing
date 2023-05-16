@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace server {
+namespace server::utils {
 
 // RFC 5322 compliant email regex
 static constexpr std::string_view EMAIL_REGEX =
@@ -18,4 +18,10 @@ validateEmail(std::string_view email);
 bool
 validatePhone(std::string_view phone);
 
-} // namespace server
+std::string
+hashPassword(std::string_view password);
+
+bool
+checkHash(std::string_view hash, std::string_view password);
+
+}  // namespace server::utils

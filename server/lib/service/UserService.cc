@@ -1,6 +1,6 @@
 #include "UserService.hh"
 
-#include "Validator.hh"
+#include "utils.hh"
 
 namespace server::service {
 
@@ -150,13 +150,13 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
     }
 
     if (dto->email) {
-        OATPP_ASSERT_HTTP(validateEmail(dto->email->c_str()),
+        OATPP_ASSERT_HTTP(utils::validateEmail(*dto->email),
                           Status::CODE_400,
                           "Invalid email address")
     }
 
     if (dto->phone) {
-        OATPP_ASSERT_HTTP(validatePhone(dto->phone->c_str()),
+        OATPP_ASSERT_HTTP(utils::validatePhone(*dto->phone),
                           Status::CODE_400,
                           "Invalid phone number")
     }
@@ -178,6 +178,10 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
         return this->getOne(id);
     }
 
+    if (dto->password) {
+        dto->password = utils::hashPassword(*dto->password);
+    }
+
     auto query_result =
       database_->executeQuery(query, { { "dto", dto }, { "id", id } });
 
@@ -193,6 +197,8 @@ UserService::patchOne(UInt64 const& id, Object<UserDto> const& dto)
     OATPP_ASSERT_HTTP(fetch_result->size() == 1,
                       Status::CODE_500,
                       "Unexpected number of rows returned!")
+
+    fetch_result[0]->password = nullptr;
 
     return fetch_result[0];
 }

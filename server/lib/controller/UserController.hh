@@ -206,12 +206,12 @@ class UserController : public oatpp::web::server::api::ApiController
                             auth_object->user_id == id,
                           Status::CODE_403,
                           "Cannot modify other user as a regular user")
-
-        OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
-                            dto->role == existing->role,
-                          Status::CODE_403,
-                          "Cannot modify role as a regular user")
-
+        if (dto->role) {
+            OATPP_ASSERT_HTTP(auth_object->user_role == Role::Admin ||
+                                dto->role == existing->role,
+                              Status::CODE_403,
+                              "Cannot modify role as a regular user")
+        }
         return createDtoResponse(Status::CODE_200, service_.patchOne(id, dto));
     }
 

@@ -7,7 +7,7 @@ target_sources(
     lib/Config.cc
     lib/ErrorHandler.cc
     lib/TokenUtils.cc
-    lib/Validator.cc
+    lib/utils.cc
 
     lib/database/MainDatabase.cc
 

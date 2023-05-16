@@ -44,7 +44,7 @@ cmake --build build
 ### Run
 ```bash
 # server
-./build/bin/server
+./build/bin/pss-server
 
 # client
 ./build/bin/client

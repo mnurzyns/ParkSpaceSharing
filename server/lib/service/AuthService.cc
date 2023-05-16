@@ -1,17 +1,16 @@
 #include "AuthService.hh"
-
-#include "Validator.hh"
+#include "utils.hh"
 
 namespace server::service {
 
 Object<StatusDto>
 AuthService::signUp(Object<SignUpDto> const& dto)
 {
-    OATPP_ASSERT_HTTP(validateEmail(*dto->email),
+    OATPP_ASSERT_HTTP(utils::validateEmail(*dto->email),
                       Status::CODE_400,
                       "Invalid email address")
 
-    OATPP_ASSERT_HTTP(validatePhone(*dto->phone),
+    OATPP_ASSERT_HTTP(utils::validatePhone(*dto->phone),
                       Status::CODE_400,
                       "Invalid phone number")
 
@@ -53,13 +52,7 @@ AuthService::signUp(Object<SignUpDto> const& dto)
     user_dto->email = dto->email;
     user_dto->username = dto->username;
     user_dto->phone = dto->phone;
-    user_dto->password = Botan::argon2_generate_pwhash(
-      dto->password->c_str(),
-      dto->password->size(),
-      Botan::system_rng(),
-      1,
-      65536, // TODO(papaj-na-wrotkach): move to config
-      1);
+    user_dto->password = utils::hashPassword(*dto->password);
     user_dto->role = user_dto->role = Role::User;
 
     auto query_result = database_->createUser(user_dto);
@@ -100,9 +93,7 @@ AuthService::signIn(Object<SignInDto> const& dto)
                       Status::CODE_500,
                       "Unexpected number of rows returned!")
 
-    OATPP_ASSERT_HTTP(Botan::argon2_check_pwhash(dto->password->c_str(),
-                                                 dto->password->size(),
-                                                 fetch[0]->password),
+    OATPP_ASSERT_HTTP(utils::checkHash(*fetch[0]->password, *dto->password),
                       Status::CODE_401,
                       "Invalid credentials")
 
