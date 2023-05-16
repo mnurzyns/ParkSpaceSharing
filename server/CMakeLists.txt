@@ -6,9 +6,8 @@ target_sources(
     lib/AuthHandler.cc
     lib/Config.cc
     lib/ErrorHandler.cc
-    lib/PasswordUtils.cc
     lib/TokenUtils.cc
-    lib/Validator.cc
+    lib/utils.cc
 
     lib/database/MainDatabase.cc
 
