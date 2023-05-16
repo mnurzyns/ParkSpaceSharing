@@ -76,7 +76,10 @@ const Navbar = ({ session }: { session: Session | null }) => {
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link className="justify-between" href="/settings">
+                    Edit account info
+                    <span className="badge">New</span>
+                  </Link>
                 </li>
                 <li onClick={() => signOut()}>
                   <a>Logout</a>
